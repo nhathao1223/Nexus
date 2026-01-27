@@ -226,67 +226,167 @@ exports.deleteProduct = async (req, res) => {
     res.redirect('/admin/products');
   }
 };
-exports.getEditProduct = async (req, res) => {
+
+// Orders Management
+exports.getOrders = async (req, res) => {
   try {
-    const { id } = req.params;
-    const product = await Product.findById(id).populate('category');
-    const categories = await Category.find({ deleted: false, status: 'active' });
+    const page = parseInt(req.query.page) || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
+    let query = {};
     
-    if (!product) {
-      req.flash('error_msg', 'Không tìm thấy sản phẩm');
-      return res.redirect('/admin/products');
+    if (req.query.status) {
+      query.status = req.query.status;
     }
 
-    res.render('admin/products/edit', {
-      title: 'Chỉnh sửa sản phẩm',
-      product,
-      categories
+    if (req.query.search) {
+      const users = await User.find({
+        $or: [
+          { fullName: { $regex: req.query.search, $options: 'i' } },
+          { email: { $regex: req.query.search, $options: 'i' } }
+        ]
+      }).select('_id');
+      
+      query.user = { $in: users.map(u => u._id) };
+    }
+
+    const orders = await Order.find(query)
+      .populate('user', 'fullName email')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await Order.countDocuments(query);
+    const totalPages = Math.ceil(total / limit);
+
+    res.render('admin/orders/index', {
+      title: 'Quản lý đơn hàng',
+      orders,
+      currentPage: page,
+      totalPages,
+      query: req.query
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('admin/error', { title: 'Lỗi', error });
+  }
+};
+
+exports.getOrderDetail = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const order = await Order.findById(id)
+      .populate('user', 'fullName email phone')
+      .populate('items.product');
+
+    if (!order) {
+      req.flash('error_msg', 'Không tìm thấy đơn hàng');
+      return res.redirect('/admin/orders');
+    }
+
+    res.render('admin/orders/detail', {
+      title: 'Chi tiết đơn hàng',
+      order
     });
   } catch (error) {
     console.error(error);
     req.flash('error_msg', 'Có lỗi xảy ra');
-    res.redirect('/admin/products');
+    res.redirect('/admin/orders');
   }
 };
 
-exports.putEditProduct = async (req, res) => {
+exports.updateOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, price, discountPercentage, stock, category, status, featured } = req.body;
+    const { status } = req.body;
+
+    await Order.findByIdAndUpdate(id, { status });
+
+    res.json({ success: true, message: 'Cập nhật trạng thái đơn hàng thành công' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Có lỗi xảy ra' });
+  }
+};
+
+// Users Management
+exports.getUsers = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+
+    let query = { deleted: false };
     
-    const slug = title.toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/đ/g, 'd')
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-');
-
-    const updateData = {
-      title,
-      slug,
-      description,
-      price,
-      discountPercentage: discountPercentage || 0,
-      stock,
-      category,
-      status,
-      featured: featured === 'on'
-    };
-
-    // Nếu có upload ảnh mới
-    if (req.files && req.files.length > 0) {
-      const images = req.files.map(file => `/uploads/products/${file.filename}`);
-      updateData.images = images;
-      updateData.thumbnail = images[0];
+    if (req.query.role) {
+      query.role = req.query.role;
     }
 
-    await Product.findByIdAndUpdate(id, updateData);
+    if (req.query.search) {
+      query.$or = [
+        { fullName: { $regex: req.query.search, $options: 'i' } },
+        { email: { $regex: req.query.search, $options: 'i' } }
+      ];
+    }
 
-    req.flash('success_msg', 'Cập nhật sản phẩm thành công');
-    res.redirect('/admin/products');
+    const users = await User.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await User.countDocuments(query);
+    const totalPages = Math.ceil(total / limit);
+
+    res.render('admin/users/index', {
+      title: 'Quản lý người dùng',
+      users,
+      currentPage: page,
+      totalPages,
+      query: req.query
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('admin/error', { title: 'Lỗi', error });
+  }
+};
+
+exports.getUserDetail = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    
+    if (!user) {
+      req.flash('error_msg', 'Không tìm thấy người dùng');
+      return res.redirect('/admin/users');
+    }
+
+    const orders = await Order.find({ user: id })
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    res.render('admin/users/detail', {
+      title: 'Chi tiết người dùng',
+      user,
+      orders
+    });
   } catch (error) {
     console.error(error);
     req.flash('error_msg', 'Có lỗi xảy ra');
-    res.redirect(`/admin/products/${req.params.id}/edit`);
+    res.redirect('/admin/users');
+  }
+};
+
+exports.updateUserStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    await User.findByIdAndUpdate(id, { status });
+
+    res.json({ success: true, message: 'Cập nhật trạng thái người dùng thành công' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Có lỗi xảy ra' });
   }
 };

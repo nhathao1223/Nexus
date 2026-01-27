@@ -39,4 +39,14 @@ router.get('/categories/:id/edit', categoryController.getEditCategory);
 router.put('/categories/:id', categoryController.putEditCategory);
 router.delete('/categories/:id', categoryController.deleteCategory);
 
+// Orders
+router.get('/orders', adminController.getOrders);
+router.get('/orders/:id', adminController.getOrderDetail);
+router.patch('/orders/:id/status', adminController.updateOrderStatus);
+
+// Users
+router.get('/users', adminController.getUsers);
+router.get('/users/:id', adminController.getUserDetail);
+router.patch('/users/:id/status', adminController.updateUserStatus);
+
 module.exports = router;
