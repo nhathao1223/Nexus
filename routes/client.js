@@ -20,5 +20,14 @@ router.get('/logout', authController.logout);
 // Cart
 router.get('/cart', clientController.getCart);
 router.post('/cart/add', clientController.addToCart);
+router.post('/cart/remove', clientController.removeFromCart);
+router.post('/cart/update', clientController.updateCart);
+
+// Checkout
+router.get('/checkout', requireAuth, clientController.getCheckout);
+router.post('/checkout', requireAuth, clientController.postCheckout);
+
+// Orders
+router.get('/orders/:id', requireAuth, clientController.getOrder);
 
 module.exports = router;

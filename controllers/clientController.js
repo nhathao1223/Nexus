@@ -216,3 +216,131 @@ exports.addToCart = async (req, res) => {
     res.status(500).json({ success: false, message: 'Có lỗi xảy ra' });
   }
 };
+
+exports.removeFromCart = (req, res) => {
+  try {
+    const { productId } = req.body;
+    
+    if (req.session.cart) {
+      req.session.cart = req.session.cart.filter(item => item.productId !== productId);
+    }
+    
+    res.json({ success: true, message: 'Đã xóa sản phẩm khỏi giỏ hàng' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Có lỗi xảy ra' });
+  }
+};
+
+exports.updateCart = (req, res) => {
+  try {
+    const { productId, quantity } = req.body;
+    
+    if (req.session.cart) {
+      const item = req.session.cart.find(item => item.productId === productId);
+      if (item) {
+        item.quantity = parseInt(quantity);
+        if (item.quantity <= 0) {
+          req.session.cart = req.session.cart.filter(item => item.productId !== productId);
+        }
+      }
+    }
+    
+    res.json({ success: true, message: 'Đã cập nhật giỏ hàng' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Có lỗi xảy ra' });
+  }
+};
+
+exports.getCheckout = (req, res) => {
+  const cart = req.session.cart || [];
+  
+  if (cart.length === 0) {
+    return res.redirect('/cart');
+  }
+  
+  let total = 0;
+  cart.forEach(item => {
+    const itemPrice = item.price * (1 - item.discountPercentage/100);
+    total += itemPrice * item.quantity;
+  });
+  
+  res.render('client/checkout', {
+    title: 'Thanh toán',
+    cart,
+    total,
+    user: req.user
+  });
+};
+
+exports.postCheckout = async (req, res) => {
+  try {
+    const cart = req.session.cart || [];
+    
+    if (cart.length === 0) {
+      return res.redirect('/cart');
+    }
+    
+    // Tạo đơn hàng mới
+    const Order = require('../models/Order');
+    
+    let total = 0;
+    const orderItems = cart.map(item => {
+      const itemPrice = item.price * (1 - item.discountPercentage/100);
+      total += itemPrice * item.quantity;
+      return {
+        product: item.productId,
+        title: item.title,
+        price: itemPrice,
+        quantity: item.quantity
+      };
+    });
+    
+    const order = new Order({
+      user: req.user._id,
+      items: orderItems,
+      totalAmount: total,
+      shippingAddress: {
+        fullName: req.body.fullName,
+        phone: req.body.phone,
+        address: req.body.address,
+        city: req.body.city,
+        district: req.body.district
+      },
+      paymentMethod: req.body.paymentMethod || 'cod',
+      status: 'pending'
+    });
+    
+    await order.save();
+    
+    // Xóa giỏ hàng
+    req.session.cart = [];
+    
+    res.redirect('/orders/' + order._id);
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('client/error', { title: 'Lỗi', error });
+  }
+};
+
+exports.getOrder = async (req, res) => {
+  try {
+    const order = await Order.findOne({
+      _id: req.params.id,
+      user: req.user._id
+    }).populate('items.product');
+    
+    if (!order) {
+      return res.status(404).render('client/404', { title: 'Không tìm thấy đơn hàng' });
+    }
+    
+    res.render('client/order-detail', {
+      title: 'Chi tiết đơn hàng',
+      order
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('client/error', { title: 'Lỗi', error });
+  }
+};

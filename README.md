@@ -1,4 +1,4 @@
-# E-Commerce Website - NodeJS
+# NEXUS Website - NodeJS
 
 Website thương mại điện tử hoàn chỉnh sử dụng NodeJS theo mô hình MVC.
 

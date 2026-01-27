@@ -1,7 +1,7 @@
 {
   "name": "ecommerce-nodejs",
   "version": "1.0.0",
-  "description": "E-Commerce Website with NodeJS MVC",
+  "description": "NEXUS Website with NodeJS MVC",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
