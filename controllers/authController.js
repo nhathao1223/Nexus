@@ -60,19 +60,28 @@ exports.postLogin = async (req, res) => {
     }
 
     req.session.user = {
-      id: user._id,
+      _id: user._id,
       fullName: user.fullName,
       email: user.email,
       role: user.role
     };
 
-    req.flash('success_msg', 'Đăng nhập thành công!');
-    
-    if (user.role === 'admin') {
-      return res.redirect('/admin/dashboard');
-    }
-    
-    res.redirect('/');
+    // Đảm bảo session được lưu
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        req.flash('error_msg', 'Có lỗi xảy ra');
+        return res.redirect('/login');
+      }
+      
+      req.flash('success_msg', 'Đăng nhập thành công!');
+      
+      if (user.role === 'admin') {
+        return res.redirect('/admin/dashboard');
+      }
+      
+      res.redirect('/');
+    });
   } catch (error) {
     console.error(error);
     req.flash('error_msg', 'Có lỗi xảy ra');

@@ -28,6 +28,12 @@ router.get('/checkout', requireAuth, clientController.getCheckout);
 router.post('/checkout', requireAuth, clientController.postCheckout);
 
 // Orders
+router.get('/orders', requireAuth, clientController.getUserOrders);
 router.get('/orders/:id', requireAuth, clientController.getOrder);
+
+// Profile
+router.get('/profile', requireAuth, clientController.getProfile);
+router.post('/profile', requireAuth, clientController.updateProfile);
+router.post('/profile/change-password', requireAuth, clientController.changePassword);
 
 module.exports = router;

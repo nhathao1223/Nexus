@@ -1,5 +1,7 @@
 const Product = require('../models/Product');
 const Category = require('../models/Category');
+const User = require('../models/User');
+const Order = require('../models/Order');
 
 exports.getHome = async (req, res) => {
   try {
@@ -342,5 +344,93 @@ exports.getOrder = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).render('client/error', { title: 'Lỗi', error });
+  }
+};
+
+exports.getUserOrders = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    const orders = await Order.find({ user: req.user._id })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await Order.countDocuments({ user: req.user._id });
+    const totalPages = Math.ceil(total / limit);
+
+    res.render('client/orders', {
+      title: 'Đơn hàng của tôi',
+      orders,
+      currentPage: page,
+      totalPages
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('client/error', { title: 'Lỗi', error });
+  }
+};
+
+exports.getProfile = async (req, res) => {
+  try {
+    res.render('client/profile', {
+      title: 'Thông tin tài khoản',
+      user: req.user
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('client/error', { title: 'Lỗi', error });
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const { fullName, phone } = req.body;
+    
+    await User.findByIdAndUpdate(req.user._id, {
+      fullName,
+      phone
+    });
+
+    req.flash('success_msg', 'Cập nhật thông tin thành công');
+    res.redirect('/profile');
+  } catch (error) {
+    console.error(error);
+    req.flash('error_msg', 'Có lỗi xảy ra');
+    res.redirect('/profile');
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    
+    if (newPassword !== confirmPassword) {
+      req.flash('error_msg', 'Mật khẩu xác nhận không khớp');
+      return res.redirect('/profile');
+    }
+
+    const user = await User.findById(req.user._id);
+    const bcrypt = require('bcrypt');
+    
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      req.flash('error_msg', 'Mật khẩu hiện tại không đúng');
+      return res.redirect('/profile');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await User.findByIdAndUpdate(req.user._id, {
+      password: hashedPassword
+    });
+
+    req.flash('success_msg', 'Đổi mật khẩu thành công');
+    res.redirect('/profile');
+  } catch (error) {
+    console.error(error);
+    req.flash('error_msg', 'Có lỗi xảy ra');
+    res.redirect('/profile');
   }
 };
