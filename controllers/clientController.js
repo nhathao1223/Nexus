@@ -184,6 +184,11 @@ exports.getCart = (req, res) => {
   });
 };
 
+exports.getCartCount = (req, res) => {
+  const cartCount = req.session.cart ? req.session.cart.length : 0;
+  res.json({ count: cartCount });
+};
+
 exports.addToCart = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
@@ -212,7 +217,12 @@ exports.addToCart = async (req, res) => {
       });
     }
 
-    res.json({ success: true, message: 'Đã thêm vào giỏ hàng', cartCount: req.session.cart.length });
+    res.json({ 
+      success: true, 
+      message: 'Đã thêm vào giỏ hàng', 
+      cartCount: req.session.cart.length,
+      productTitle: product.title
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Có lỗi xảy ra' });

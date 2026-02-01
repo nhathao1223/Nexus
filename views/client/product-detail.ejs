@@ -433,8 +433,11 @@
         const result = await response.json();
         
         if (result.success) {
-          // Show success message
-          alert('Đã thêm sản phẩm vào giỏ hàng!');
+          // Show success message with product name
+          showToast(`Đã thêm "${result.productTitle}" vào giỏ hàng!`, 'success');
+          
+          // Update cart counter in header
+          updateCartCounter(result.cartCount);
           
           // Change button appearance temporarily
           const originalHTML = this.innerHTML;
@@ -449,13 +452,63 @@
             this.classList.add('btn-outline-primary');
           }, 2000);
         } else {
-          alert(result.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
+          showToast(result.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng', 'error');
         }
       } catch (error) {
         console.error('Error:', error);
-        alert('Có lỗi xảy ra. Vui lòng thử lại.');
+        showToast('Có lỗi xảy ra. Vui lòng thử lại.', 'error');
       }
     });
+
+    // Toast notification function
+    function showToast(message, type = 'success') {
+      // Remove existing toast
+      const existingToast = document.querySelector('.toast-notification');
+      if (existingToast) {
+        existingToast.remove();
+      }
+
+      // Create toast
+      const toast = document.createElement('div');
+      toast.className = `toast-notification alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+      toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+      toast.innerHTML = `
+        <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      `;
+
+      document.body.appendChild(toast);
+
+      // Auto remove after 3 seconds
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.remove();
+        }
+      }, 3000);
+    }
+
+    // Update cart counter in header
+    function updateCartCounter(count) {
+      const counter = document.getElementById('cart-counter');
+      if (count > 0) {
+        if (counter) {
+          counter.textContent = count;
+        } else {
+          // Create counter if it doesn't exist
+          const cartLink = document.querySelector('a[href="/cart"]');
+          const newCounter = document.createElement('span');
+          newCounter.id = 'cart-counter';
+          newCounter.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger';
+          newCounter.textContent = count;
+          cartLink.appendChild(newCounter);
+        }
+      } else {
+        if (counter) {
+          counter.remove();
+        }
+      }
+    }
   </script>
 </body>
 </html>

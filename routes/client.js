@@ -19,6 +19,7 @@ router.get('/logout', authController.logout);
 
 // Cart
 router.get('/cart', clientController.getCart);
+router.get('/cart/count', clientController.getCartCount);
 router.post('/cart/add', clientController.addToCart);
 router.post('/cart/remove', clientController.removeFromCart);
 router.post('/cart/update', clientController.updateCart);
