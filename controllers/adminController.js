@@ -82,8 +82,14 @@ exports.getCreateProduct = async (req, res) => {
     const categories = await Category.find({ deleted: false, status: 'active' });
     res.render('admin/products/create', {
       title: 'Thêm sản phẩm',
-      categories
+      categories,
+      formData: req.session.formData || {},
+      errors: req.session.errors || []
     });
+    
+    // Clear session data after rendering
+    delete req.session.formData;
+    delete req.session.errors;
   } catch (error) {
     console.error(error);
     req.flash('error_msg', 'Có lỗi xảy ra');
@@ -94,6 +100,20 @@ exports.getCreateProduct = async (req, res) => {
 exports.postCreateProduct = async (req, res) => {
   try {
     const { title, description, price, discountPercentage, stock, category, status, featured } = req.body;
+    
+    // Validate required fields manually for better error handling
+    const errors = [];
+    if (!title || title.trim() === '') errors.push('Tên sản phẩm không được để trống');
+    if (!price || isNaN(price) || parseFloat(price) < 0) errors.push('Giá phải là số dương');
+    if (!stock || isNaN(stock) || parseInt(stock) < 0) errors.push('Số lượng phải là số nguyên dương');
+    if (!category) errors.push('Danh mục không được để trống');
+    
+    if (errors.length > 0) {
+      req.session.formData = req.body;
+      req.session.errors = errors;
+      req.flash('error_msg', errors[0]);
+      return res.redirect('/admin/products/create');
+    }
     
     const slug = title.toLowerCase()
       .normalize('NFD')
@@ -106,16 +126,16 @@ exports.postCreateProduct = async (req, res) => {
     const thumbnail = images[0] || '';
 
     const product = new Product({
-      title,
+      title: title.trim(),
       slug,
-      description,
-      price,
-      discountPercentage: discountPercentage || 0,
-      stock,
+      description: description ? description.trim() : '',
+      price: parseFloat(price),
+      discountPercentage: discountPercentage ? parseFloat(discountPercentage) : 0,
+      stock: parseInt(stock),
       category,
       images,
       thumbnail,
-      status,
+      status: status || 'active',
       featured: featured === 'on'
     });
 
@@ -124,8 +144,17 @@ exports.postCreateProduct = async (req, res) => {
     req.flash('success_msg', 'Thêm sản phẩm thành công');
     res.redirect('/admin/products');
   } catch (error) {
-    console.error(error);
-    req.flash('error_msg', 'Có lỗi xảy ra');
+    console.error('Error creating product:', error);
+    
+    // Save form data to session to preserve it
+    req.session.formData = req.body;
+    
+    if (error.code === 11000) {
+      req.flash('error_msg', 'Tên sản phẩm đã tồn tại');
+    } else {
+      req.flash('error_msg', 'Có lỗi xảy ra khi thêm sản phẩm');
+    }
+    
     res.redirect('/admin/products/create');
   }
 };
@@ -158,6 +187,18 @@ exports.putEditProduct = async (req, res) => {
     const { id } = req.params;
     const { title, description, price, discountPercentage, stock, category, status, featured } = req.body;
     
+    // Validate required fields manually for better error handling
+    const errors = [];
+    if (!title || title.trim() === '') errors.push('Tên sản phẩm không được để trống');
+    if (!price || isNaN(price) || parseFloat(price) < 0) errors.push('Giá phải là số dương');
+    if (!stock || isNaN(stock) || parseInt(stock) < 0) errors.push('Số lượng phải là số nguyên dương');
+    if (!category) errors.push('Danh mục không được để trống');
+    
+    if (errors.length > 0) {
+      req.flash('error_msg', errors[0]);
+      return res.redirect(`/admin/products/${id}/edit`);
+    }
+    
     const slug = title.toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
@@ -166,14 +207,14 @@ exports.putEditProduct = async (req, res) => {
       .replace(/\s+/g, '-');
 
     const updateData = {
-      title,
+      title: title.trim(),
       slug,
-      description,
-      price,
-      discountPercentage: discountPercentage || 0,
-      stock,
+      description: description ? description.trim() : '',
+      price: parseFloat(price),
+      discountPercentage: discountPercentage ? parseFloat(discountPercentage) : 0,
+      stock: parseInt(stock),
       category,
-      status,
+      status: status || 'active',
       featured: featured === 'on'
     };
 
@@ -189,8 +230,14 @@ exports.putEditProduct = async (req, res) => {
     req.flash('success_msg', 'Cập nhật sản phẩm thành công');
     res.redirect('/admin/products');
   } catch (error) {
-    console.error(error);
-    req.flash('error_msg', 'Có lỗi xảy ra');
+    console.error('Error updating product:', error);
+    
+    if (error.code === 11000) {
+      req.flash('error_msg', 'Tên sản phẩm đã tồn tại');
+    } else {
+      req.flash('error_msg', 'Có lỗi xảy ra khi cập nhật sản phẩm');
+    }
+    
     res.redirect(`/admin/products/${req.params.id}/edit`);
   }
 };

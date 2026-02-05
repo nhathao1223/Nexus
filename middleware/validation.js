@@ -21,15 +21,17 @@ exports.validateProduct = [
   body('title').trim().notEmpty().withMessage('Tên sản phẩm không được để trống'),
   body('price').isFloat({ min: 0 }).withMessage('Giá phải là số dương'),
   body('stock').isInt({ min: 0 }).withMessage('Số lượng phải là số nguyên dương'),
-  body('category').notEmpty().withMessage('Danh mục không được để trống'),
-  body('description').trim().notEmpty().withMessage('Mô tả không được để trống')
+  body('category').notEmpty().withMessage('Danh mục không được để trống')
+  // Bỏ validation description vì có thể để trống
 ];
 
 exports.handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     req.flash('error_msg', errors.array()[0].msg);
-    return res.redirect('back');
+    // Sửa redirect back thành redirect cụ thể
+    const referer = req.get('Referrer') || '/admin/products';
+    return res.redirect(referer);
   }
   next();
 };

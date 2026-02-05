@@ -1,0 +1,326 @@
+/* Product Cards Styling */
+.product-card {
+  transition: all 0.3s ease;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 100%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  position: relative; /* ✅ Card có position: relative */
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  border-color: #007bff;
+}
+
+/* ✅ Khung chứa ảnh theo đúng mẫu */
+.img-zoom {
+  position: relative;
+  width: 100%;
+  height: 220px; /* ✅ Khung ảnh có height cố định */
+  border-radius: 12px 12px 0 0;
+  overflow: visible; /* ✅ Cho phép badge nằm ngoài khung */
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 30px; /* ✅ Dời hình ảnh xuống để badge không đè lên */
+}
+
+/* ✅ Ảnh theo đúng nguyên tắc */
+.product-image {
+  width: 100%; /* ✅ Khung ảnh có height cố định */
+  height: 190px; /* ✅ Giảm height để hình ảnh không bị cắt */
+  object-fit: cover; /* ✅ Ảnh có object-fit: cover */
+  object-position: center;
+  transition: transform 0.3s ease;
+  border-radius: 0;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.1);
+}
+
+/* ✅ Discount badge với position absolute - nằm ngoài khung ảnh */
+.discount-badge {
+  position: absolute; /* ✅ Badge có position: absolute */
+  top: -8px;
+  left: 12px;
+  z-index: 10;
+  background: linear-gradient(135deg, #dc3545, #c82333) !important;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+  border: none;
+  color: white;
+}
+
+/* ✅ Sale Hot Badge với position absolute */
+.sale-hot-badge {
+  position: absolute; /* ✅ Badge có position: absolute */
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  background: linear-gradient(135deg, #ffc107, #ff8c00);
+  border-radius: 0 12px 0 12px;
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  min-width: 45px;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+}
+
+.sale-text {
+  display: block;
+  line-height: 1;
+  font-size: 0.65rem;
+}
+
+.hot-text {
+  display: block;
+  line-height: 1;
+  font-size: 0.55rem;
+}
+
+/* Product title - Fixed height to prevent text overflow */
+.product-title {
+  height: 50px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.product-title:hover {
+  color: #007bff;
+}
+
+/* Price section - Fixed height */
+.price-section {
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-bottom: 8px;
+}
+
+.current-price {
+  font-size: 1.2rem !important;
+  font-weight: 700 !important;
+  color: #dc3545 !important;
+  margin-bottom: 2px;
+}
+
+.original-price {
+  font-size: 0.85rem;
+  color: #999;
+  text-decoration: line-through;
+}
+
+/* Installment info - Better text wrapping */
+.installment-info {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 8px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #e9ecef;
+  margin-bottom: 12px;
+}
+
+.installment-text {
+  font-size: 0.7rem;
+  line-height: 1.2;
+  word-wrap: break-word;
+  hyphens: auto;
+  color: #666;
+  text-align: center;
+  width: 100%;
+  padding: 4px 8px;
+}
+
+/* Rating and wishlist */
+.rating {
+  font-size: 0.9rem;
+  color: #ffc107;
+  display: flex;
+  align-items: center;
+}
+
+.rating .fw-bold {
+  color: #333;
+  margin-left: 4px;
+}
+
+.wishlist-btn {
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  border: 1px solid #007bff;
+  background: white;
+  color: #007bff;
+}
+
+.wishlist-btn:hover {
+  background-color: #007bff;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+/* Card body spacing */
+.card-body {
+  padding: 16px !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: white;
+  height: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .img-zoom {
+    height: 200px;
+    padding-top: 25px;
+  }
+  
+  .product-image {
+    height: 175px;
+  }
+  
+  .product-title {
+    font-size: 0.9rem;
+    height: 45px;
+  }
+  
+  .current-price {
+    font-size: 1.1rem !important;
+  }
+}
+
+@media (max-width: 992px) {
+  .col-lg-3 {
+    flex: 0 0 auto;
+    width: 50%;
+  }
+  
+  .img-zoom {
+    height: 180px;
+    padding-top: 20px;
+  }
+  
+  .product-image {
+    height: 160px;
+  }
+  
+  .product-title {
+    font-size: 0.85rem;
+    height: 40px;
+  }
+  
+  .current-price {
+    font-size: 1rem !important;
+  }
+  
+  .wishlist-btn {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+  }
+  
+  .card-body {
+    padding: 12px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .col-lg-3 {
+    flex: 0 0 auto;
+    width: 50%;
+  }
+  
+  .img-zoom {
+    height: 160px;
+    padding-top: 18px;
+  }
+  
+  .product-image {
+    height: 142px;
+  }
+  
+  .product-title {
+    height: 38px;
+    font-size: 0.8rem;
+  }
+  
+  .current-price {
+    font-size: 0.95rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .col-lg-3 {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+  
+  .img-zoom {
+    height: 200px;
+    padding-top: 30px;
+  }
+  
+  .product-image {
+    height: 170px;
+  }
+  
+  .product-title {
+    height: 45px;
+    font-size: 0.9rem;
+  }
+  
+  .current-price {
+    font-size: 1.1rem !important;
+  }
+  
+  .card-body {
+    padding: 16px !important;
+  }
+}
+
+/* Empty state styling */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #6c757d;
+}
+
+.empty-state i {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  margin-bottom: 1rem;
+  color: #495057;
+}
+
+/* Filter bar improvements */
+.filter-bar {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+}

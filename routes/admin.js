@@ -17,15 +17,11 @@ router.get('/products', adminController.getProducts);
 router.get('/products/create', adminController.getCreateProduct);
 router.post('/products/create', 
   upload.array('images', 5), 
-  validateProduct, 
-  handleValidationErrors,
   adminController.postCreateProduct
 );
 router.get('/products/:id/edit', adminController.getEditProduct);
 router.put('/products/:id', 
   upload.array('images', 5), 
-  validateProduct, 
-  handleValidationErrors,
   adminController.putEditProduct
 );
 router.patch('/products/:id/status', adminController.changeStatus);
