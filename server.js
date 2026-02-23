@@ -10,6 +10,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
 const logger = require('./config/logger');
 const { morganMiddleware, errorLogger, requestLogger } = require('./middleware/logger');
+const { sanitizeInput, rateLimitCheck, globalErrorHandler, notFoundHandler } = require('./middleware/validation');
 
 const app = express();
 
@@ -25,6 +26,10 @@ app.set('views', path.join(__dirname, 'views'));
 // Logging middleware
 app.use(morganMiddleware);
 app.use(requestLogger);
+
+// Security & Rate limiting
+app.use(rateLimitCheck);
+app.use(sanitizeInput);
 
 // Middleware
 app.use(express.json());
@@ -64,19 +69,11 @@ app.use('/admin', require('./routes/admin'));
 // Error logging middleware
 app.use(errorLogger);
 
-// Error handling
-app.use((req, res) => {
-  logger.warn(`404 Not Found: ${req.method} ${req.url}`);
-  res.status(404).render('client/404', { title: 'Không tìm thấy trang' });
-});
+// 404 handler
+app.use(notFoundHandler);
 
-app.use((err, req, res, next) => {
-  logger.error(`Unhandled Error: ${err.message}`);
-  res.status(500).render('client/error', { 
-    title: 'Lỗi hệ thống',
-    error: process.env.NODE_ENV === 'development' ? err : {}
-  });
-});
+// Global error handler
+app.use(globalErrorHandler);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
