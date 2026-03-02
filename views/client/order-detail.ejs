@@ -89,9 +89,19 @@
           </div>
           <div class="card-body">
             <p class="mb-1"><strong><%= order.shippingAddress.fullName %></strong></p>
-            <p class="mb-1"><%= order.shippingAddress.phone %></p>
-            <p class="mb-1"><%= order.shippingAddress.address %></p>
-            <p class="mb-0"><%= order.shippingAddress.district %>, <%= order.shippingAddress.city %></p>
+            <p class="mb-1"><i class="bi bi-telephone me-2"></i><%= order.shippingAddress.phone %></p>
+            <p class="mb-1"><i class="bi bi-geo-alt me-2"></i><%= order.shippingAddress.address %></p>
+            <p class="mb-1">
+              <% if (order.shippingAddress.wardName) { %>
+                <%= order.shippingAddress.wardName %>, 
+              <% } %>
+              <% if (order.shippingAddress.districtName) { %>
+                <%= order.shippingAddress.districtName %>, 
+              <% } %>
+              <% if (order.shippingAddress.provinceName) { %>
+                <%= order.shippingAddress.provinceName %>
+              <% } %>
+            </p>
           </div>
         </div>
 

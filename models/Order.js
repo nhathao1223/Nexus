@@ -30,8 +30,12 @@ const orderSchema = new mongoose.Schema({
     fullName: String,
     phone: String,
     address: String,
-    city: String,
-    district: String
+    provinceCode: Number,
+    provinceName: String,
+    districtCode: Number,
+    districtName: String,
+    wardCode: Number,
+    wardName: String
   },
   status: {
     type: String,

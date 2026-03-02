@@ -105,18 +105,29 @@ exports.validateCheckout = [
   
   body('address')
     .trim()
-    .notEmpty().withMessage('Địa chỉ không được để trống')
-    .isLength({ min: 5, max: 255 }).withMessage('Địa chỉ không hợp lệ'),
+    .notEmpty().withMessage('Địa chỉ chi tiết không được để trống')
+    .isLength({ min: 2, max: 255 }).withMessage('Địa chỉ phải từ 2-255 ký tự'),
   
-  body('city')
-    .trim()
-    .notEmpty().withMessage('Thành phố không được để trống')
-    .isLength({ min: 2, max: 100 }).withMessage('Thành phố không hợp lệ'),
+  body('provinceCode')
+    .notEmpty().withMessage('Tỉnh/Thành phố không được để trống'),
   
-  body('district')
+  body('provinceName')
     .trim()
-    .notEmpty().withMessage('Quận/Huyện không được để trống')
-    .isLength({ min: 2, max: 100 }).withMessage('Quận/Huyện không hợp lệ'),
+    .notEmpty().withMessage('Tên tỉnh không được để trống'),
+  
+  body('districtCode')
+    .notEmpty().withMessage('Quận/Huyện không được để trống'),
+  
+  body('districtName')
+    .trim()
+    .notEmpty().withMessage('Tên quận không được để trống'),
+  
+  body('wardCode')
+    .notEmpty().withMessage('Phường/Xã không được để trống'),
+  
+  body('wardName')
+    .trim()
+    .notEmpty().withMessage('Tên phường không được để trống'),
   
   body('paymentMethod')
     .optional()

@@ -65,6 +65,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/', require('./routes/client'));
 app.use('/admin', require('./routes/admin'));
+app.use('/api/address', require('./routes/address'));
 
 // Error logging middleware
 app.use(errorLogger);

@@ -317,8 +317,12 @@ exports.postCheckout = async (req, res) => {
         fullName: req.body.fullName,
         phone: req.body.phone,
         address: req.body.address,
-        city: req.body.city,
-        district: req.body.district
+        provinceCode: parseInt(req.body.provinceCode),
+        provinceName: req.body.provinceName,
+        districtCode: parseInt(req.body.districtCode),
+        districtName: req.body.districtName,
+        wardCode: parseInt(req.body.wardCode),
+        wardName: req.body.wardName
       },
       paymentMethod: req.body.paymentMethod || 'cod',
       status: 'pending'
