@@ -1322,8 +1322,30 @@ a:hover {
   text-decoration: none;
 }
 
+/* 5-Column Grid Layout */
+.col-lg-2-4 {
+  flex: 0 0 auto;
+  width: 20%;
+}
+
 /* Responsive Filter Bar */
+@media (max-width: 1200px) {
+  .col-lg-2-4 {
+    width: 25%;
+  }
+}
+
+@media (max-width: 992px) {
+  .col-lg-2-4 {
+    width: 33.333%;
+  }
+}
+
 @media (max-width: 768px) {
+  .col-lg-2-4 {
+    width: 50%;
+  }
+  
   .filter-bar .row {
     row-gap: 1rem;
   }
@@ -1345,6 +1367,12 @@ a:hover {
   .view-options {
     text-align: center;
     margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .col-lg-2-4 {
+    width: 100%;
   }
 }
 /* List View Styles */

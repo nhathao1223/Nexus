@@ -51,6 +51,20 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  screenSize: {
+    type: String,
+    default: ''
+  },
+  storage: {
+    type: String,
+    default: ''
+  },
+  rating: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 5
+  },
   deleted: {
     type: Boolean,
     default: false

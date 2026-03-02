@@ -119,7 +119,7 @@
 
           <div class="row g-3" id="productsContainer">
             <% products.forEach(product => { %>
-              <div class="col-lg-3 col-md-6 col-sm-6 product-item">
+              <div class="col-lg-2-4 col-md-4 col-sm-6 product-item">
                 <div class="card h-100 product-card">
                   <div class="position-relative img-zoom">
                     <a href="/products/<%= product.slug %>" class="text-decoration-none">
@@ -145,6 +145,24 @@
                       </h6>
                     </a>
                     
+                    <!-- Specs Section -->
+                    <div class="specs-section mb-2">
+                      <% if (product.screenSize || product.storage) { %>
+                        <div class="d-flex gap-2 flex-wrap">
+                          <% if (product.screenSize) { %>
+                            <span class="badge bg-light text-dark border">
+                              <%= product.screenSize %>
+                            </span>
+                          <% } %>
+                          <% if (product.storage) { %>
+                            <span class="badge bg-light text-dark border">
+                              <%= product.storage %>
+                            </span>
+                          <% } %>
+                        </div>
+                      <% } %>
+                    </div>
+                    
                     <!-- Price Section -->
                     <div class="price-section mb-2">
                       <% if (product.discountPercentage > 0) { %>
@@ -161,15 +179,16 @@
                       <% } %>
                     </div>
                     
-                    <!-- Rating and Wishlist -->
-                    <div class="d-flex justify-content-between align-items-center mt-auto">
-                      <div class="rating d-flex align-items-center">
-                        <i class="bi bi-star-fill text-warning me-1"></i>
-                        <span class="fw-bold">5</span>
-                      </div>
-                      <button class="btn btn-outline-primary btn-sm wishlist-btn" data-product-id="<%= product._id %>">
-                        <i class="bi bi-heart me-1"></i>Yêu thích
-                      </button>
+                    <!-- Rating -->
+                    <div class="rating d-flex align-items-center mt-auto">
+                      <% for (let i = 0; i < 5; i++) { %>
+                        <% if (i < Math.floor(product.rating || 0)) { %>
+                          <i class="bi bi-star-fill text-warning"></i>
+                        <% } else { %>
+                          <i class="bi bi-star text-warning"></i>
+                        <% } %>
+                      <% } %>
+                      <span class="ms-2 fw-bold"><%= product.rating || 0 %></span>
                     </div>
                   </div>
                 </div>
@@ -285,6 +304,7 @@
       overflow: hidden;
       display: -webkit-box;
       -webkit-line-clamp: 2;
+      line-clamp: 2;
       -webkit-box-orient: vertical;
       line-height: 1.4;
       font-weight: 500;

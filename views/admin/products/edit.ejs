@@ -48,6 +48,22 @@
                 <input type="number" class="form-control" name="stock" value="<%= product.stock %>" required min="0">
               </div>
 
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Kích thước màn hình</label>
+                  <input type="text" class="form-control" name="screenSize" placeholder="VD: 6.3 inches" value="<%= product.screenSize || '' %>">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Dung lượng</label>
+                  <input type="text" class="form-control" name="storage" placeholder="VD: 256 GB" value="<%= product.storage || '' %>">
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Đánh giá (0-5)</label>
+                <input type="number" class="form-control" name="rating" value="<%= product.rating || 0 %>" min="0" max="5" step="0.1">
+              </div>
+
               <!-- Current Images -->
               <% if (product.images && product.images.length > 0) { %>
                 <div class="mb-3">
