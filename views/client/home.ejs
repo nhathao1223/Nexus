@@ -39,18 +39,67 @@
     </div>
   </section>
 
-  <% if (flashSaleProducts && flashSaleProducts.length > 0) { %>
+  <% if (flashSaleConfig && flashSaleConfig.isActive && flashSaleProducts && flashSaleProducts.length > 0) { %>
   <section class="flashsale-section">
     <div class="container">
       <div class="flashsale-inner position-relative">
         <div class="flashsale-ribbon">
-          <span>FLASH SALE MỖI NGÀY</span>
+          <span><%= flashSaleConfig.title || 'FLASH SALE MỖI NGÀY' %></span>
         </div>
 
         <div class="d-flex justify-content-between align-items-center mb-3">
           <div></div>
-          <div class="flashsale-countdown d-flex align-items-center gap-2">
-            <span class="text-white small fw-semibold text-uppercase">05 Giờ 38 Phút 07 Giây</span>
+          <div class="flashsale-countdown-wrapper">
+            <% 
+              const now = new Date();
+              const startDate = new Date(flashSaleConfig.startDate);
+              const endDate = new Date(flashSaleConfig.endDate);
+            %>
+            <% if (now < startDate) { %>
+              <div class="countdown-label">
+                <i class="bi bi-hourglass-split me-2"></i>SẮP DIỄN RA
+              </div>
+              <div class="countdown-boxes" id="countdown-timer">
+                <div class="countdown-box">
+                  <span class="countdown-number">00</span>
+                  <span class="countdown-unit">Giờ</span>
+                </div>
+                <span class="countdown-separator">:</span>
+                <div class="countdown-box">
+                  <span class="countdown-number">00</span>
+                  <span class="countdown-unit">Phút</span>
+                </div>
+                <span class="countdown-separator">:</span>
+                <div class="countdown-box">
+                  <span class="countdown-number">00</span>
+                  <span class="countdown-unit">Giây</span>
+                </div>
+              </div>
+            <% } else if (now >= startDate && now <= endDate) { %>
+              <div class="countdown-label">
+                KẾT THÚC SAU
+              </div>
+              <div class="countdown-boxes" id="countdown-timer">
+                <div class="countdown-box">
+                  <span class="countdown-number">00</span>
+                  <span class="countdown-unit">Giờ</span>
+                </div>
+                <span class="countdown-separator">:</span>
+                <div class="countdown-box">
+                  <span class="countdown-number">00</span>
+                  <span class="countdown-unit">Phút</span>
+                </div>
+                <span class="countdown-separator">:</span>
+                <div class="countdown-box">
+                  <span class="countdown-number">00</span>
+                  <span class="countdown-unit">Giây</span>
+                </div>
+              </div>
+            <% } else { %>
+              <div class="countdown-ended">
+                <i class="bi bi-x-circle me-2"></i>ĐÃ KẾT THÚC
+              </div>
+            <% } %>
           </div>
         </div>
 
@@ -291,7 +340,7 @@
                           <i class="bi bi-star text-warning"></i>
                         <% } %>
                       <% } %>
-                      <span class="ms-2 fw-bold"><%= product.rating || 0 %></span>
+                      <span class="ms-2 text-muted small">(0 đánh giá)</span>
                     </div>
                   </div>
                 </div>
@@ -342,6 +391,73 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/main.js"></script>
   
+  <% if (flashSaleConfig) { %>
+  <script>
+    // Flash Sale Countdown
+    const startDate = new Date('<%= flashSaleConfig.startDate %>').getTime();
+    const endDate = new Date('<%= flashSaleConfig.endDate %>').getTime();
+    const now = new Date().getTime();
+    
+    const countdownElement = document.getElementById('countdown-timer');
+    
+    if (countdownElement) {
+      function updateCountdown() {
+        const currentTime = new Date().getTime();
+        const boxes = countdownElement.querySelectorAll('.countdown-box');
+        
+        if (!boxes || boxes.length === 0) return;
+        
+        // Sắp diễn ra - countdown đến khi bắt đầu
+        if (currentTime < startDate) {
+          const distance = startDate - currentTime;
+          
+          const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          
+          // Nếu có ngày, hiển thị ngày thay vì giờ
+          if (days > 0) {
+            boxes[0].querySelector('.countdown-number').textContent = days.toString().padStart(2, '0');
+            boxes[0].querySelector('.countdown-unit').textContent = 'Ngày';
+            boxes[1].querySelector('.countdown-number').textContent = hours.toString().padStart(2, '0');
+            boxes[1].querySelector('.countdown-unit').textContent = 'Giờ';
+            boxes[2].querySelector('.countdown-number').textContent = minutes.toString().padStart(2, '0');
+            boxes[2].querySelector('.countdown-unit').textContent = 'Phút';
+          } else {
+            boxes[0].querySelector('.countdown-number').textContent = hours.toString().padStart(2, '0');
+            boxes[0].querySelector('.countdown-unit').textContent = 'Giờ';
+            boxes[1].querySelector('.countdown-number').textContent = minutes.toString().padStart(2, '0');
+            boxes[1].querySelector('.countdown-unit').textContent = 'Phút';
+            boxes[2].querySelector('.countdown-number').textContent = seconds.toString().padStart(2, '0');
+            boxes[2].querySelector('.countdown-unit').textContent = 'Giây';
+          }
+        }
+        // Đang diễn ra - countdown đến khi kết thúc
+        else if (currentTime >= startDate && currentTime <= endDate) {
+          const distance = endDate - currentTime;
+          
+          if (distance < 0) {
+            countdownElement.innerHTML = '<div class="countdown-ended"><i class="bi bi-x-circle me-2"></i>ĐÃ KẾT THÚC</div>';
+            return;
+          }
+          
+          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          
+          boxes[0].querySelector('.countdown-number').textContent = hours.toString().padStart(2, '0');
+          boxes[1].querySelector('.countdown-number').textContent = minutes.toString().padStart(2, '0');
+          boxes[2].querySelector('.countdown-number').textContent = seconds.toString().padStart(2, '0');
+        }
+      }
+      
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    }
+  </script>
+  <% } %>
+  
   <style>
     /* Hero Banner Section */
     .hero-banner-section {
@@ -380,15 +496,86 @@
       position: absolute;
       top: -18px;
       left: 24px;
-      background: linear-gradient(90deg, #ff0040, #ff5b7b);
-      padding: 0.4rem 1.5rem;
+      background: linear-gradient(90deg, #ffd700, #ffed4e);
+      padding: 0.5rem 1.8rem;
       border-radius: 12px 12px 12px 0;
-      color: #fff;
-      font-weight: 700;
-      font-size: 0.9rem;
-      letter-spacing: 0.5px;
+      color: #d70018;
+      font-weight: 900;
+      font-size: 1rem;
+      letter-spacing: 1px;
       text-transform: uppercase;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+      border: 2px solid #fff;
+    }
+
+    /* Countdown Wrapper */
+    .flashsale-countdown-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .countdown-label {
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .countdown-boxes {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .countdown-box {
+      background: #fff;
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      min-width: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .countdown-number {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #ff0040;
+      line-height: 1;
+    }
+
+    .countdown-unit {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      margin-top: 0.25rem;
+      letter-spacing: 0.5px;
+    }
+
+    .countdown-separator {
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .countdown-ended {
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
     }
 
     .flashsale-countdown .time-box {
