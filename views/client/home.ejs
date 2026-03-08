@@ -30,67 +30,14 @@
     </div>
   <% } %>
 
-  <div class="hero-section">
+  <!-- Hero Banner Section -->
+  <section class="hero-banner-section">
     <div class="container">
-      <div class="row align-items-center">
-        <div class="col-lg-6 text-white">
-          <h1 class="hero-title mb-3">
-            Mua sắm thông minh<br>
-            <span class="highlight">Giá tốt mỗi ngày</span>
-          </h1>
-          <p class="hero-subtitle mb-4">
-            Hàng ngàn sản phẩm chính hãng - Giá cạnh tranh - Giao hàng nhanh chóng
-          </p>
-          <div class="d-flex gap-3 flex-wrap">
-            <a href="#products" class="btn btn-light btn-lg px-4">
-              <i class="bi bi-grid me-2"></i>Khám phá ngay
-            </a>
-            <a href="?sort=price-asc" class="btn btn-outline-light btn-lg px-4">
-              <i class="bi bi-lightning-fill me-2"></i>Ưu đãi hot
-            </a>
-          </div>
-          
-          <div class="hero-features mt-4">
-            <div class="row g-3">
-              <div class="col-6 col-md-3">
-                <div class="feature-item">
-                  <i class="bi bi-shield-check fs-4"></i>
-                  <span class="ms-2">Chính hãng 100%</span>
-                </div>
-              </div>
-              <div class="col-6 col-md-3">
-                <div class="feature-item">
-                  <i class="bi bi-truck fs-4"></i>
-                  <span class="ms-2">Giao hàng nhanh</span>
-                </div>
-              </div>
-              <div class="col-6 col-md-3">
-                <div class="feature-item">
-                  <i class="bi bi-arrow-repeat fs-4"></i>
-                  <span class="ms-2">Đổi trả 7 ngày</span>
-                </div>
-              </div>
-              <div class="col-6 col-md-3">
-                <div class="feature-item">
-                  <i class="bi bi-headset fs-4"></i>
-                  <span class="ms-2">Hỗ trợ 24/7</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-lg-6 d-none d-lg-block">
-          <div class="hero-image">
-            <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600&h=400&fit=crop" 
-                 alt="Shopping" 
-                 class="img-fluid rounded-3 shadow-lg"
-                 style="max-height: 400px; object-fit: cover; width: 100%;">
-          </div>
-        </div>
+      <div class="hero-banner-inner">
+        <img src="/images/banner.png" alt="Banner" class="hero-banner-image">
       </div>
     </div>
-  </div>
+  </section>
 
   <% if (flashSaleProducts && flashSaleProducts.length > 0) { %>
   <section class="flashsale-section">
@@ -396,6 +343,25 @@
   <script src="/js/main.js"></script>
   
   <style>
+    /* Hero Banner Section */
+    .hero-banner-section {
+      padding: 1.75rem 0 2.5rem;
+      background: transparent;
+    }
+
+    .hero-banner-inner {
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .hero-banner-image {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+
     /* Flash Sale */
     .flashsale-section {
       padding: 1.75rem 0 1.5rem;
