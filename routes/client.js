@@ -20,7 +20,7 @@ const {
  * @swagger
  * /:
  *   get:
- *     summary: Get home page with featured products
+ *     summary: Get home page with products
  *     tags: [Products]
  *     parameters:
  *       - in: query
@@ -308,6 +308,18 @@ router.post('/cart/update', asyncHandler(clientController.updateCart));
 
 /**
  * @swagger
+ * /cart/clear:
+ *   post:
+ *     summary: Clear all items from cart
+ *     tags: [Cart]
+ *     responses:
+ *       200:
+ *         description: Cart cleared
+ */
+router.post('/cart/clear', asyncHandler(clientController.clearCart));
+
+/**
+ * @swagger
  * /checkout:
  *   get:
  *     summary: Get checkout page
@@ -485,7 +497,7 @@ module.exports = router;
  * @swagger
  * /:
  *   get:
- *     summary: Get home page with featured products
+ *     summary: Get home page with products
  *     tags: [Products]
  *     parameters:
  *       - in: query

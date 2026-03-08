@@ -101,8 +101,6 @@ router.get('/products/create', adminController.getCreateProduct);
  *               status:
  *                 type: string
  *                 enum: [active, inactive]
- *               featured:
- *                 type: boolean
  *               images:
  *                 type: array
  *                 items:
@@ -181,8 +179,6 @@ router.get('/products/:id/edit', adminController.getEditProduct);
  *                 type: string
  *               status:
  *                 type: string
- *               featured:
- *                 type: boolean
  *               images:
  *                 type: array
  *                 items:

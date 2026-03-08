@@ -46,8 +46,7 @@ const seedData = async () => {
         discountPercentage: 10,
         stock: 50,
         category: createdCategories[0]._id,
-        status: 'active',
-        featured: true
+        status: 'active'
       },
       {
         title: 'Samsung Galaxy S24 Ultra',
@@ -57,8 +56,7 @@ const seedData = async () => {
         discountPercentage: 5,
         stock: 30,
         category: createdCategories[0]._id,
-        status: 'active',
-        featured: true
+        status: 'active'
       },
       {
         title: 'MacBook Pro M3',
@@ -68,8 +66,7 @@ const seedData = async () => {
         discountPercentage: 0,
         stock: 20,
         category: createdCategories[1]._id,
-        status: 'active',
-        featured: true
+        status: 'active'
       },
       {
         title: 'Dell XPS 15',
@@ -89,8 +86,7 @@ const seedData = async () => {
         discountPercentage: 8,
         stock: 25,
         category: createdCategories[2]._id,
-        status: 'active',
-        featured: true
+        status: 'active'
       }
     ];
 

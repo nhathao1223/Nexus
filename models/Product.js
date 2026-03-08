@@ -47,13 +47,15 @@ const productSchema = new mongoose.Schema({
     enum: ['active', 'inactive'],
     default: 'active'
   },
-  featured: {
-    type: Boolean,
-    default: false
-  },
   flashSale: {
     type: Boolean,
     default: false
+  },
+  flashSaleStartDate: {
+    type: Date
+  },
+  flashSaleEndDate: {
+    type: Date
   },
   screenSize: {
     type: String,

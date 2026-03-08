@@ -52,7 +52,6 @@ const options = {
             images: { type: 'array', items: { type: 'string' } },
             thumbnail: { type: 'string' },
             status: { type: 'string', enum: ['active', 'inactive'] },
-            featured: { type: 'boolean' },
             finalPrice: { type: 'number', description: 'Calculated price with discount' },
             createdAt: { type: 'string', format: 'date-time' },
             updatedAt: { type: 'string', format: 'date-time' }
