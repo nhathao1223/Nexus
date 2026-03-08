@@ -69,11 +69,7 @@ exports.validateProduct = [
   
   body('status')
     .optional()
-    .isIn(['active', 'inactive']).withMessage('Trạng thái không hợp lệ'),
-  
-  body('featured')
-    .optional()
-    .isBoolean().withMessage('Featured phải là boolean')
+    .isIn(['active', 'inactive']).withMessage('Trạng thái không hợp lệ')
 ];
 
 exports.validateCategory = [
@@ -309,6 +305,15 @@ exports.sanitizeInput = (req, res, next) => {
  * Rate limiting check
  */
 exports.rateLimitCheck = (req, res, next) => {
+  // Skip rate limiting for static files
+  if (req.path.startsWith('/css/') || 
+      req.path.startsWith('/js/') || 
+      req.path.startsWith('/images/') || 
+      req.path.startsWith('/uploads/') ||
+      req.path.match(/\.(css|js|jpg|jpeg|png|gif|webp|svg|ico|woff|woff2|ttf|eot)$/)) {
+    return next();
+  }
+
   const ip = req.ip;
   const now = Date.now();
   
@@ -325,8 +330,8 @@ exports.rateLimitCheck = (req, res, next) => {
     time => now - time < 60000
   );
 
-  // Check if exceeded limit (100 requests per minute)
-  if (req.app.locals.requestLog[ip].length >= 100) {
+  // Check if exceeded limit (500 requests per minute for dynamic content)
+  if (req.app.locals.requestLog[ip].length >= 500) {
     logger.warn(`Rate limit exceeded for IP: ${ip}`);
     return res.status(429).json({
       success: false,
