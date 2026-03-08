@@ -129,12 +129,11 @@
                           Giảm <%= product.discountPercentage %>%
                         </span>
                       <% } %>
-                      <!-- Sale Hot Badge -->
+                      <!-- Installment Badge -->
                       <div class="position-absolute top-0 end-0 m-2">
-                        <div class="sale-hot-badge">
-                          <span class="sale-text">Sale</span>
-                          <span class="hot-text">Hot</span>
-                        </div>
+                        <span class="installment-badge-normal">
+                          Trả góp 0%
+                        </span>
                       </div>
                     </a>
                   </div>
@@ -188,7 +187,7 @@
                           <i class="bi bi-star text-warning"></i>
                         <% } %>
                       <% } %>
-                      <span class="ms-2 fw-bold"><%= product.rating || 0 %></span>
+                      <span class="ms-2 text-muted small">(0 đánh giá)</span>
                     </div>
                   </div>
                 </div>
@@ -272,30 +271,6 @@
       font-size: 0.75rem;
       padding: 4px 8px;
       z-index: 2;
-    }
-    
-    /* Sale Hot Badge */
-    .sale-hot-badge {
-      background: linear-gradient(135deg, #ffc107, #ff8c00);
-      border-radius: 8px;
-      padding: 2px 6px;
-      font-size: 0.7rem;
-      font-weight: bold;
-      color: white;
-      text-align: center;
-      min-width: 40px;
-      z-index: 2;
-    }
-    
-    .sale-text {
-      display: block;
-      line-height: 1;
-    }
-    
-    .hot-text {
-      display: block;
-      line-height: 1;
-      font-size: 0.6rem;
     }
     
     /* Product title - Fixed height to prevent text overflow */
