@@ -2,6 +2,7 @@ const Product = require('../models/Product');
 const Category = require('../models/Category');
 const User = require('../models/User');
 const Order = require('../models/Order');
+const FlashSaleConfig = require('../models/FlashSaleConfig');
 const { createMomoPayment } = require('../services/momoService');
 
 exports.getHome = async (req, res) => {
@@ -66,6 +67,8 @@ exports.getHome = async (req, res) => {
       .sort({ discountPercentage: -1, createdAt: -1 })
       .limit(15);
 
+    const flashSaleConfig = await FlashSaleConfig.getConfig();
+
     res.render('client/home', {
       title: 'Trang chủ',
       products,
@@ -73,7 +76,8 @@ exports.getHome = async (req, res) => {
       currentPage: page,
       totalPages,
       query: req.query,
-      flashSaleProducts
+      flashSaleProducts,
+      flashSaleConfig
     });
   } catch (error) {
     console.error(error);
@@ -201,7 +205,7 @@ exports.getCartCount = (req, res) => {
 
 exports.addToCart = async (req, res) => {
   try {
-    const { productId, quantity } = req.body;
+    const { productId, quantity, warranty } = req.body;
     const product = await Product.findById(productId);
 
     if (!product || product.deleted || product.status !== 'active') {
@@ -212,18 +216,22 @@ exports.addToCart = async (req, res) => {
       req.session.cart = [];
     }
 
-    const existingItem = req.session.cart.find(item => item.productId === productId);
+    // Create unique key for product + warranty combination
+    const cartKey = warranty ? `${productId}_${warranty.price}` : productId;
+    const existingItem = req.session.cart.find(item => item.cartKey === cartKey);
     
     if (existingItem) {
       existingItem.quantity += parseInt(quantity);
     } else {
       req.session.cart.push({
+        cartKey: cartKey,
         productId: product._id.toString(),
         title: product.title,
         price: product.price,
         discountPercentage: product.discountPercentage,
         thumbnail: product.thumbnail,
-        quantity: parseInt(quantity)
+        quantity: parseInt(quantity),
+        warranty: warranty || null
       });
     }
 
@@ -241,10 +249,10 @@ exports.addToCart = async (req, res) => {
 
 exports.removeFromCart = (req, res) => {
   try {
-    const { productId } = req.body;
+    const { cartKey } = req.body;
     
     if (req.session.cart) {
-      req.session.cart = req.session.cart.filter(item => item.productId !== productId);
+      req.session.cart = req.session.cart.filter(item => item.cartKey !== cartKey);
     }
     
     res.json({ success: true, message: 'Đã xóa sản phẩm khỏi giỏ hàng' });
@@ -256,19 +264,29 @@ exports.removeFromCart = (req, res) => {
 
 exports.updateCart = (req, res) => {
   try {
-    const { productId, quantity } = req.body;
+    const { cartKey, quantity } = req.body;
     
     if (req.session.cart) {
-      const item = req.session.cart.find(item => item.productId === productId);
+      const item = req.session.cart.find(item => item.cartKey === cartKey);
       if (item) {
         item.quantity = parseInt(quantity);
         if (item.quantity <= 0) {
-          req.session.cart = req.session.cart.filter(item => item.productId !== productId);
+          req.session.cart = req.session.cart.filter(item => item.cartKey !== cartKey);
         }
       }
     }
     
     res.json({ success: true, message: 'Đã cập nhật giỏ hàng' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Có lỗi xảy ra' });
+  }
+};
+
+exports.clearCart = (req, res) => {
+  try {
+    req.session.cart = [];
+    res.json({ success: true, message: 'Đã xóa toàn bộ giỏ hàng' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Có lỗi xảy ra' });

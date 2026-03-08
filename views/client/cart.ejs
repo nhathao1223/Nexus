@@ -12,7 +12,14 @@
   <%- include('partials/header') %>
   
   <div class="container mt-4">
-    <h1 class="mb-4">Giỏ hàng</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1>Giỏ hàng</h1>
+      <% if (cart && cart.length > 0) { %>
+        <button class="btn btn-outline-danger btn-sm" id="clearCartBtn">
+          <i class="bi bi-trash"></i> Xóa toàn bộ giỏ hàng
+        </button>
+      <% } %>
+    </div>
     
     <% if (!cart || cart.length === 0) { %>
       <div class="text-center py-5">
@@ -38,7 +45,8 @@
               <% cart.forEach(item => { %>
                 <% const itemPrice = item.price * (1 - item.discountPercentage/100); %>
                 <% const itemTotal = itemPrice * item.quantity; %>
-                <% total += itemTotal; %>
+                <% const warrantyTotal = item.warranty ? item.warranty.price * item.quantity : 0; %>
+                <% total += itemTotal + warrantyTotal; %>
                 <tr>
                   <td>
                     <div class="d-flex align-items-center">
@@ -49,26 +57,41 @@
                   <td><%= itemPrice.toLocaleString('vi-VN') %>₫</td>
                   <td>
                     <div class="d-flex align-items-center" style="width: 140px;">
-                      <button class="btn btn-outline-secondary btn-sm decrease-qty" type="button" data-product-id="<%= item.productId %>" style="width: 35px;">
+                      <button class="btn btn-outline-secondary btn-sm decrease-qty" type="button" data-cart-key="<%= item.cartKey %>" style="width: 35px;">
                         <i class="bi bi-dash"></i>
                       </button>
                       <input type="text" class="form-control form-control-sm text-center quantity-input mx-1" 
                              value="<%= item.quantity %>" readonly
-                             data-product-id="<%= item.productId %>" 
+                             data-cart-key="<%= item.cartKey %>" 
                              data-price="<%= itemPrice %>"
+                             data-warranty-price="<%= item.warranty ? item.warranty.price : 0 %>"
                              style="width: 70px; -webkit-appearance: none; -moz-appearance: textfield;">
-                      <button class="btn btn-outline-secondary btn-sm increase-qty" type="button" data-product-id="<%= item.productId %>" style="width: 35px;">
+                      <button class="btn btn-outline-secondary btn-sm increase-qty" type="button" data-cart-key="<%= item.cartKey %>" style="width: 35px;">
                         <i class="bi bi-plus"></i>
                       </button>
                     </div>
                   </td>
-                  <td class="item-total" data-product-id="<%= item.productId %>"><%= itemTotal.toLocaleString('vi-VN') %>₫</td>
+                  <td class="item-total" data-cart-key="<%= item.cartKey %>"><%= itemTotal.toLocaleString('vi-VN') %>₫</td>
                   <td>
-                    <button class="btn btn-sm btn-danger remove-item" data-product-id="<%= item.productId %>" title="Xóa sản phẩm">
+                    <button class="btn btn-sm btn-danger remove-item" data-cart-key="<%= item.cartKey %>" title="Xóa sản phẩm">
                       <i class="bi bi-trash"></i>
                     </button>
                   </td>
                 </tr>
+                <% if (item.warranty) { %>
+                <tr class="warranty-row">
+                  <td colspan="2" style="padding-left: 80px;">
+                    <div class="d-flex align-items-center">
+                      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='%230066cc' stroke-width='2'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3C/svg%3E" width="40" class="me-3">
+                      <span class="text-muted"><%= item.warranty.name %></span>
+                    </div>
+                  </td>
+                  <td><%= item.warranty.price.toLocaleString('vi-VN') %>₫</td>
+                  <td><%= item.quantity %></td>
+                  <td class="warranty-total" data-cart-key="<%= item.cartKey %>"><%= warrantyTotal.toLocaleString('vi-VN') %>₫</td>
+                  <td></td>
+                </tr>
+                <% } %>
               <% }) %>
             </tbody>
           </table>
@@ -138,13 +161,54 @@
       border-top-right-radius: 0.375rem !important;
       border-bottom-right-radius: 0.375rem !important;
     }
+    
+    /* Warranty row styling */
+    .warranty-row {
+      background-color: #f8f9fa;
+      border-top: none !important;
+    }
+    
+    .warranty-row td {
+      padding-top: 0.5rem !important;
+      padding-bottom: 0.75rem !important;
+      font-size: 0.9rem;
+      color: #666;
+    }
   </style>
   
   <script>
+    // Handle clear all cart
+    const clearCartBtn = document.getElementById('clearCartBtn');
+    if (clearCartBtn) {
+      clearCartBtn.addEventListener('click', async function() {
+        if (confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?')) {
+          try {
+            const response = await fetch('/cart/clear', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+              location.reload();
+            } else {
+              alert(result.message || 'Có lỗi xảy ra');
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra. Vui lòng thử lại.');
+          }
+        }
+      });
+    }
+
     // Handle remove item from cart
     document.querySelectorAll('.remove-item').forEach(button => {
       button.addEventListener('click', async function() {
-        const productId = this.getAttribute('data-product-id');
+        const cartKey = this.getAttribute('data-cart-key');
         
         if (confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) {
           try {
@@ -153,7 +217,7 @@
               headers: {
                 'Content-Type': 'application/json'
               },
-              body: JSON.stringify({ productId })
+              body: JSON.stringify({ cartKey })
             });
             
             const result = await response.json();
@@ -171,17 +235,14 @@
       });
     });
 
-    // Handle quantity change (chỉ qua nút +/-)
-    // Xóa event listener cho input vì đã readonly
-
     // Handle increase quantity
     document.querySelectorAll('.increase-qty').forEach(button => {
       button.addEventListener('click', function() {
-        const productId = this.getAttribute('data-product-id');
-        const input = document.querySelector(`input[data-product-id="${productId}"]`);
+        const cartKey = this.getAttribute('data-cart-key');
+        const input = document.querySelector(`input[data-cart-key="${cartKey}"]`);
         const currentQty = parseInt(input.value);
         if (currentQty < 99) {
-          updateQuantity(productId, currentQty + 1);
+          updateQuantity(cartKey, currentQty + 1);
         }
       });
     });
@@ -189,19 +250,20 @@
     // Handle decrease quantity
     document.querySelectorAll('.decrease-qty').forEach(button => {
       button.addEventListener('click', function() {
-        const productId = this.getAttribute('data-product-id');
-        const input = document.querySelector(`input[data-product-id="${productId}"]`);
+        const cartKey = this.getAttribute('data-cart-key');
+        const input = document.querySelector(`input[data-cart-key="${cartKey}"]`);
         const currentQty = parseInt(input.value);
         if (currentQty > 1) {
-          updateQuantity(productId, currentQty - 1);
+          updateQuantity(cartKey, currentQty - 1);
         }
       });
     });
 
     // Update quantity function
-    async function updateQuantity(productId, newQuantity) {
-      const input = document.querySelector(`input[data-product-id="${productId}"]`);
+    async function updateQuantity(cartKey, newQuantity) {
+      const input = document.querySelector(`input[data-cart-key="${cartKey}"]`);
       const price = parseFloat(input.getAttribute('data-price'));
+      const warrantyPrice = parseFloat(input.getAttribute('data-warranty-price'));
       
       if (newQuantity < 1 || newQuantity > 99) {
         alert('Số lượng phải từ 1 đến 99');
@@ -214,7 +276,7 @@
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ productId, quantity: newQuantity })
+          body: JSON.stringify({ cartKey, quantity: newQuantity })
         });
         
         const result = await response.json();
@@ -225,8 +287,17 @@
           
           // Update item total
           const itemTotal = price * newQuantity;
-          const itemTotalElement = document.querySelector(`.item-total[data-product-id="${productId}"]`);
+          const itemTotalElement = document.querySelector(`.item-total[data-cart-key="${cartKey}"]`);
           itemTotalElement.textContent = itemTotal.toLocaleString('vi-VN') + '₫';
+          
+          // Update warranty total if exists
+          if (warrantyPrice > 0) {
+            const warrantyTotal = warrantyPrice * newQuantity;
+            const warrantyTotalElement = document.querySelector(`.warranty-total[data-cart-key="${cartKey}"]`);
+            if (warrantyTotalElement) {
+              warrantyTotalElement.textContent = warrantyTotal.toLocaleString('vi-VN') + '₫';
+            }
+          }
           
           // Update cart total
           updateCartTotal();
@@ -248,7 +319,8 @@
       document.querySelectorAll('.quantity-input').forEach(input => {
         const quantity = parseInt(input.value);
         const price = parseFloat(input.getAttribute('data-price'));
-        total += quantity * price;
+        const warrantyPrice = parseFloat(input.getAttribute('data-warranty-price'));
+        total += quantity * (price + warrantyPrice);
       });
       
       document.getElementById('subtotal').textContent = total.toLocaleString('vi-VN') + '₫';
