@@ -131,7 +131,8 @@ exports.validateCheckout = [
   
   body('paymentMethod')
     .optional()
-    .isIn(['cod', 'bank_transfer']).withMessage('Phương thức thanh toán không hợp lệ')
+    .trim()
+    .isIn(['cod', 'bank_transfer', 'momo']).withMessage('Phương thức thanh toán không hợp lệ')
 ];
 
 exports.validateProfile = [

@@ -99,7 +99,7 @@ exports.getCreateProduct = async (req, res) => {
 
 exports.postCreateProduct = async (req, res) => {
   try {
-    const { title, description, price, discountPercentage, stock, category, status, featured, screenSize, storage, rating } = req.body;
+    const { title, description, price, discountPercentage, stock, category, status, featured, flashSale, screenSize, storage, rating } = req.body;
     
     // Validate required fields manually for better error handling
     const errors = [];
@@ -137,6 +137,7 @@ exports.postCreateProduct = async (req, res) => {
       thumbnail,
       status: status || 'active',
       featured: featured === 'on',
+      flashSale: flashSale === 'on',
       screenSize: screenSize ? screenSize.trim() : '',
       storage: storage ? storage.trim() : '',
       rating: rating ? parseFloat(rating) : 0
@@ -188,7 +189,7 @@ exports.getEditProduct = async (req, res) => {
 exports.putEditProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, price, discountPercentage, stock, category, status, featured, screenSize, storage, rating } = req.body;
+    const { title, description, price, discountPercentage, stock, category, status, featured, flashSale, screenSize, storage, rating } = req.body;
     
     // Validate required fields manually for better error handling
     const errors = [];
@@ -219,6 +220,7 @@ exports.putEditProduct = async (req, res) => {
       category,
       status: status || 'active',
       featured: featured === 'on',
+      flashSale: flashSale === 'on',
       screenSize: screenSize ? screenSize.trim() : '',
       storage: storage ? storage.trim() : '',
       rating: rating ? parseFloat(rating) : 0

@@ -88,6 +88,19 @@
   font-size: 0.55rem;
 }
 
+/* Installment Badge for normal products */
+.installment-badge-normal {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  color: #666;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 /* Product title - Fixed height to prevent text overflow */
 .product-title {
   height: 50px;

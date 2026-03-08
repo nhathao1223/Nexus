@@ -70,6 +70,7 @@
               <th>Tên sản phẩm</th>
               <th>Danh mục</th>
               <th>Giá</th>
+              <th>Flash Sale</th>
               <th>Kho</th>
               <th>Trạng thái</th>
               <th>Thao tác</th>
@@ -82,6 +83,11 @@
                 <td><%= product.title %></td>
                 <td><%= product.category.name %></td>
                 <td><%= product.price.toLocaleString('vi-VN') %>₫</td>
+                <td>
+                  <% if (product.flashSale) { %>
+                    <span class="badge bg-danger">Flash Sale</span>
+                  <% } %>
+                </td>
                 <td><%= product.stock %></td>
                 <td>
                   <select class="form-select form-select-sm status-select" data-id="<%= product._id %>">

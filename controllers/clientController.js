@@ -2,6 +2,7 @@ const Product = require('../models/Product');
 const Category = require('../models/Category');
 const User = require('../models/User');
 const Order = require('../models/Order');
+const { createMomoPayment } = require('../services/momoService');
 
 exports.getHome = async (req, res) => {
   try {
@@ -57,13 +58,22 @@ exports.getHome = async (req, res) => {
 
     const categories = await Category.find({ deleted: false, status: 'active' });
 
+    const flashSaleProducts = await Product.find({
+      deleted: false,
+      status: 'active',
+      flashSale: true
+    })
+      .sort({ discountPercentage: -1, createdAt: -1 })
+      .limit(15);
+
     res.render('client/home', {
       title: 'Trang chủ',
       products,
       categories,
       currentPage: page,
       totalPages,
-      query: req.query
+      query: req.query,
+      flashSaleProducts
     });
   } catch (error) {
     console.error(error);
@@ -293,13 +303,10 @@ exports.postCheckout = async (req, res) => {
     if (cart.length === 0) {
       return res.redirect('/cart');
     }
-    
-    // Tạo đơn hàng mới
-    const Order = require('../models/Order');
-    
+
     let total = 0;
     const orderItems = cart.map(item => {
-      const itemPrice = item.price * (1 - item.discountPercentage/100);
+      const itemPrice = item.price * (1 - item.discountPercentage / 100);
       total += itemPrice * item.quantity;
       return {
         product: item.productId,
@@ -308,7 +315,9 @@ exports.postCheckout = async (req, res) => {
         quantity: item.quantity
       };
     });
-    
+
+    const paymentMethod = req.body.paymentMethod || 'cod';
+
     const order = new Order({
       user: req.user._id,
       items: orderItems,
@@ -324,15 +333,38 @@ exports.postCheckout = async (req, res) => {
         wardCode: parseInt(req.body.wardCode),
         wardName: req.body.wardName
       },
-      paymentMethod: req.body.paymentMethod || 'cod',
+      paymentMethod,
       status: 'pending'
     });
-    
+
     await order.save();
-    
-    // Xóa giỏ hàng
+
+    if (paymentMethod === 'momo') {
+      try {
+        const momoResponse = await createMomoPayment({
+          amount: total,
+          orderId: order._id.toString(),
+          orderInfo: `Thanh toán đơn hàng #${order._id}`,
+          extraData: order._id.toString()
+        });
+
+        if (momoResponse && momoResponse.payUrl) {
+          // Xóa giỏ hàng sau khi tạo đơn và có link thanh toán
+          req.session.cart = [];
+          return res.redirect(momoResponse.payUrl);
+        }
+
+        req.flash('error_msg', 'Không tạo được thanh toán MoMo. Vui lòng thử lại hoặc chọn phương thức khác.');
+        return res.redirect('/checkout');
+      } catch (err) {
+        console.error('MoMo payment error:', err);
+        req.flash('error_msg', 'Có lỗi khi kết nối MoMo. Vui lòng thử lại sau.');
+        return res.redirect('/checkout');
+      }
+    }
+
+    // Thanh toán COD hoặc chuyển khoản ngân hàng: điều hướng về chi tiết đơn hàng
     req.session.cart = [];
-    
     res.redirect('/orders/' + order._id);
   } catch (error) {
     console.error(error);

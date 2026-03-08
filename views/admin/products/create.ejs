@@ -103,6 +103,15 @@
               </div>
 
               <div class="mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="flashSale" id="flashSale" <%= formData.flashSale ? 'checked' : '' %>>
+                  <label class="form-check-label" for="flashSale">
+                    Hiển thị trong Flash Sale
+                  </label>
+                </div>
+              </div>
+
+              <div class="mb-3">
                 <label class="form-label">Hình ảnh</label>
                 <input type="file" class="form-control" name="images" multiple accept="image/*">
                 <small class="text-muted">Có thể chọn nhiều ảnh (tối đa 5)</small>

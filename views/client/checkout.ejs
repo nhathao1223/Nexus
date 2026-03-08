@@ -11,125 +11,205 @@
 <body>
   <%- include('partials/header') %>
   
-  <div class="container mt-4">
-    <h1 class="mb-4">Thanh toán</h1>
-    
-    <div class="row">
-      <div class="col-md-8">
-        <form action="/checkout" method="POST">
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">Thông tin giao hàng</h5>
+  <div class="container checkout-page mt-4 mb-5">
+    <div class="row mb-3">
+      <div class="col-12">
+        <h1 class="checkout-title h3 mb-1">Thanh toán đơn hàng</h1>
+        <p class="checkout-subtitle mb-0">Vui lòng điền thông tin để hoàn tất đặt hàng</p>
+      </div>
+    </div>
+
+    <form action="/checkout" method="POST" class="checkout-form">
+      <div class="row g-4">
+        <div class="col-lg-8">
+          <div class="card checkout-card mb-4">
+            <div class="card-header bg-light d-flex align-items-center">
+              <i class="bi bi-person-circle text-warning fs-4 me-2"></i>
+              <h5 class="mb-0 text-uppercase small fw-bold">Thông tin người nhận</h5>
             </div>
             <div class="card-body">
+              <div class="mb-3">
+                <label for="fullName" class="form-label">Họ và tên *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="fullName"
+                  name="fullName"
+                  value="<%= user.fullName || '' %>"
+                  required
+                >
+              </div>
+
               <div class="row">
                 <div class="col-md-6 mb-3">
-                  <label for="fullName" class="form-label">Họ và tên *</label>
-                  <input type="text" class="form-control" id="fullName" name="fullName" value="<%= user.fullName || '' %>" required>
-                </div>
-                <div class="col-md-6 mb-3">
                   <label for="phone" class="form-label">Số điện thoại *</label>
-                  <input type="tel" class="form-control" id="phone" name="phone" value="<%= user.phone || '' %>" required>
+                  <input
+                    type="tel"
+                    class="form-control"
+                    id="phone"
+                    name="phone"
+                    value="<%= user.phone || '' %>"
+                    required
+                  >
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="email" class="form-label">Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    name="email"
+                    value="<%= user.email || '' %>"
+                    placeholder="Email nhận hóa đơn (không bắt buộc)"
+                  >
                 </div>
               </div>
+
               <div class="mb-3">
-                <label for="address" class="form-label">Địa chỉ *</label>
-                <input type="text" class="form-control" id="address" name="address" placeholder="Số nhà, tên đường" required>
+                <label for="address" class="form-label">Địa chỉ giao hàng *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="address"
+                  name="address"
+                  placeholder="Số nhà, tên đường"
+                  required
+                >
               </div>
-            <div class="row">
-                <div class="col-md-6 mb-3">
+
+              <div class="row">
+                <div class="col-md-4 mb-3">
                   <label for="provinceCode" class="form-label">Tỉnh/Thành phố *</label>
                   <select class="form-select" id="provinceCode" name="provinceCode" required>
                     <option value="">Chọn tỉnh/thành phố</option>
                   </select>
                 </div>
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
                   <label for="districtCode" class="form-label">Quận/Huyện *</label>
                   <select class="form-select" id="districtCode" name="districtCode" required disabled>
                     <option value="">Chọn quận/huyện</option>
                   </select>
                 </div>
+                <div class="col-md-4 mb-3">
+                  <label for="wardCode" class="form-label">Phường/Xã *</label>
+                  <select class="form-select" id="wardCode" name="wardCode" required disabled>
+                    <option value="">Chọn phường/xã</option>
+                  </select>
+                </div>
               </div>
-              <div class="mb-3">
-                <label for="wardCode" class="form-label">Phường/Xã *</label>
-                <select class="form-select" id="wardCode" name="wardCode" required disabled>
-                  <option value="">Chọn phường/xã</option>
-                </select>
-              </div>
-              
+
               <!-- Hidden fields to store names -->
               <input type="hidden" id="provinceName" name="provinceName" value="">
               <input type="hidden" id="districtName" name="districtName" value="">
               <input type="hidden" id="wardName" name="wardName" value="">
+
+              <div class="mt-2">
+                <button type="button" class="btn btn-outline-warning checkout-loyalty-btn">
+                  <i class="bi bi-star-fill me-1 text-warning"></i>
+                  Kiểm tra điểm tích lũy
+                </button>
+              </div>
             </div>
           </div>
 
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">Phương thức thanh toán</h5>
+          <div class="card checkout-card mb-4">
+            <div class="card-header bg-light d-flex align-items-center">
+              <i class="bi bi-credit-card-2-front text-warning fs-4 me-2"></i>
+              <h5 class="mb-0 text-uppercase small fw-bold">Phương thức thanh toán</h5>
             </div>
             <div class="card-body">
               <div class="form-check mb-2">
                 <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="cod" checked>
                 <label class="form-check-label" for="cod">
-                  <i class="bi bi-cash me-2"></i>Thanh toán khi nhận hàng (COD)
+                  <span class="fw-semibold"><i class="bi bi-cash me-2"></i>Thanh toán khi nhận hàng (COD)</span><br>
+                  <small class="text-muted">Kiểm tra sản phẩm rồi mới thanh toán.</small>
                 </label>
               </div>
               <div class="form-check mb-2">
                 <input class="form-check-input" type="radio" name="paymentMethod" id="bank" value="bank">
                 <label class="form-check-label" for="bank">
-                  <i class="bi bi-credit-card me-2"></i>Chuyển khoản ngân hàng
+                  <span class="fw-semibold"><i class="bi bi-bank me-2"></i>Chuyển khoản ngân hàng</span><br>
+                  <small class="text-muted">Thanh toán nhanh qua Internet Banking.</small>
                 </label>
               </div>
               <div class="form-check">
                 <input class="form-check-input" type="radio" name="paymentMethod" id="momo" value="momo">
                 <label class="form-check-label" for="momo">
-                  <i class="bi bi-phone me-2"></i>Ví MoMo
+                  <span class="fw-semibold"><i class="bi bi-phone me-2"></i>Ví MoMo</span><br>
+                  <small class="text-muted">Liên kết ví MoMo để thanh toán.</small>
                 </label>
               </div>
             </div>
           </div>
+        </div>
 
-          <button type="submit" class="btn btn-primary btn-lg">
-            <i class="bi bi-check-circle me-2"></i>Đặt hàng
-          </button>
-        </form>
-      </div>
-      
-      <div class="col-md-4">
-        <div class="card">
-          <div class="card-header">
-            <h5 class="mb-0">Đơn hàng của bạn</h5>
-          </div>
-          <div class="card-body">
-            <% cart.forEach(item => { %>
-              <% const itemPrice = item.price * (1 - item.discountPercentage/100); %>
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="d-flex align-items-center">
-                  <img src="<%= item.thumbnail || '/images/no-image.png' %>" width="50" class="me-2">
-                  <div>
-                    <div class="fw-bold"><%= item.title %></div>
-                    <small class="text-muted">x<%= item.quantity %></small>
+        <div class="col-lg-4">
+          <div class="card checkout-summary sticky-top">
+            <div class="card-header bg-light">
+              <h5 class="mb-0 text-uppercase small fw-bold">Đơn hàng của bạn</h5>
+            </div>
+            <div class="card-body">
+              <% cart.forEach(item => { %>
+                <% const itemPrice = item.price * (1 - item.discountPercentage/100); %>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div class="d-flex align-items-center">
+                    <img src="<%= item.thumbnail || '/images/no-image.png' %>" width="50" class="me-2 rounded">
+                    <div>
+                      <div class="fw-bold small"><%= item.title %></div>
+                      <small class="text-muted">Số lượng: x<%= item.quantity %></small>
+                    </div>
                   </div>
+                  <span class="fw-bold text-danger">
+                    <%= (itemPrice * item.quantity).toLocaleString('vi-VN') %>₫
+                  </span>
                 </div>
-                <span class="fw-bold"><%= (itemPrice * item.quantity).toLocaleString('vi-VN') %>₫</span>
+              <% }) %>
+
+              <hr>
+              <div class="d-flex justify-content-between mb-2 small">
+                <span>Tạm tính:</span>
+                <span><%= total.toLocaleString('vi-VN') %>₫</span>
               </div>
-            <% }) %>
-            
-            <hr>
-            <div class="d-flex justify-content-between mb-2">
-              <span>Tạm tính:</span>
-              <span><%= total.toLocaleString('vi-VN') %>₫</span>
+              <div class="d-flex justify-content-between mb-2 small">
+                <span>Phí vận chuyển:</span>
+                <span class="text-success">Miễn phí</span>
+              </div>
+
+              <% const estimatedPoints = Math.max(1, Math.round(total / 100000)); %>
+              <div class="d-flex justify-content-between align-items-center mb-2 small text-warning">
+                <span>Điểm tích lũy dự kiến:</span>
+                <span>+<%= estimatedPoints.toLocaleString('vi-VN') %> điểm</span>
+              </div>
+
+              <hr>
+              <div class="d-flex justify-content-between mb-3">
+                <strong>Tổng cộng:</strong>
+                <strong class="text-danger fs-5"><%= total.toLocaleString('vi-VN') %>₫</strong>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-lg w-100 checkout-submit-btn">
+                <span class="fw-semibold">Hoàn tất đặt hàng</span>
+              </button>
+              <p class="checkout-safe-note text-center mt-2 mb-0 small text-muted">
+                <i class="bi bi-shield-check text-success me-1"></i>Thông tin của bạn được bảo mật an toàn.
+              </p>
             </div>
-            <div class="d-flex justify-content-between mb-2">
-              <span>Phí vận chuyển:</span>
-              <span>Miễn phí</span>
-            </div>
-            <hr>
-            <div class="d-flex justify-content-between mb-3">
-              <strong>Tổng cộng:</strong>
-              <strong class="text-danger"><%= total.toLocaleString('vi-VN') %>₫</strong>
-            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div class="checkout-loyalty-summary mt-4">
+      <div class="card border-0">
+        <div class="card-body d-flex align-items-center">
+          <div class="me-3">
+            <i class="bi bi-star-fill text-warning fs-2"></i>
+          </div>
+          <div>
+            <h6 class="mb-1 fw-bold">Điểm tích lũy của bạn</h6>
+            <p class="mb-0 small text-muted">
+              Đăng nhập và mua hàng để được tích điểm, đổi quà và nhận nhiều ưu đãi dành riêng cho bạn.
+            </p>
           </div>
         </div>
       </div>

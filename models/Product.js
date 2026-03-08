@@ -51,6 +51,10 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  flashSale: {
+    type: Boolean,
+    default: false
+  },
   screenSize: {
     type: String,
     default: ''

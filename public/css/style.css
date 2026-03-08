@@ -1222,6 +1222,81 @@ a:hover {
   color: var(--border-color);
 }
 
+/* Checkout Page */
+.checkout-page {
+  background-color: #fff;
+  padding: 1.5rem 1.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.checkout-title {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.checkout-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.checkout-card {
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.5rem;
+}
+
+.checkout-card .card-header {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.checkout-card .card-header h5 {
+  letter-spacing: 0.5px;
+}
+
+.checkout-summary {
+  box-shadow: var(--shadow-md);
+}
+
+.checkout-summary .card-body {
+  font-size: 0.9rem;
+}
+
+.checkout-submit-btn {
+  background: var(--red-gradient);
+  border: none;
+  font-weight: 600;
+}
+
+.checkout-submit-btn:hover {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, #8b0012 100%);
+}
+
+.checkout-loyalty-btn {
+  border-color: #fbbf24;
+  color: #92400e;
+  background-color: #fffbeb;
+  font-size: 0.9rem;
+}
+
+.checkout-loyalty-btn:hover {
+  background-color: #fef3c7;
+  border-color: #f59e0b;
+  color: #92400e;
+}
+
+.checkout-loyalty-summary .card {
+  background-color: #fffbeb;
+  box-shadow: none;
+}
+
+.checkout-loyalty-summary h6 {
+  color: var(--text-primary);
+}
+
+.checkout-safe-note i {
+  vertical-align: -1px;
+}
+
 /* Card Title Link */
 .card-title a {
   color: var(--text-primary);

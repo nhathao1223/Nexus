@@ -87,6 +87,73 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
+
+  // Flash sale slider arrows
+  const flashSaleTrack = document.querySelector('.flash-sale-track');
+  if (flashSaleTrack) {
+    const prevBtn = document.querySelector('.flash-sale-prev');
+    const nextBtn = document.querySelector('.flash-sale-next');
+    const scrollAmount = 260;
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        flashSaleTrack.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        flashSaleTrack.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      });
+    }
+
+    // Auto scroll flashsale
+    let autoScrollInterval;
+    let isUserInteracting = false;
+
+    const startAutoScroll = () => {
+      autoScrollInterval = setInterval(() => {
+        if (!isUserInteracting) {
+          const maxScroll = flashSaleTrack.scrollWidth - flashSaleTrack.clientWidth;
+          
+          // If reached the end, scroll back to start
+          if (flashSaleTrack.scrollLeft >= maxScroll - 10) {
+            flashSaleTrack.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            flashSaleTrack.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+          }
+        }
+      }, 3000); // Auto scroll every 3 seconds
+    };
+
+    const stopAutoScroll = () => {
+      clearInterval(autoScrollInterval);
+    };
+
+    // Pause auto scroll when user interacts
+    flashSaleTrack.addEventListener('mouseenter', () => {
+      isUserInteracting = true;
+    });
+
+    flashSaleTrack.addEventListener('mouseleave', () => {
+      isUserInteracting = false;
+    });
+
+    flashSaleTrack.addEventListener('touchstart', () => {
+      isUserInteracting = true;
+      stopAutoScroll();
+    });
+
+    flashSaleTrack.addEventListener('touchend', () => {
+      setTimeout(() => {
+        isUserInteracting = false;
+        startAutoScroll();
+      }, 2000);
+    });
+
+    // Start auto scroll
+    startAutoScroll();
+  }
 });
 
 // Toast notification function
