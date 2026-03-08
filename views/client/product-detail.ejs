@@ -7,312 +7,402 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/product-detail.css">
 </head>
 <body>
   <%- include('partials/header') %>
   
-  <div class="container mt-4">
+  <div class="container mt-3">
+    <!-- Product Title & Basic Info -->
     <div class="row">
-      <!-- Product Images -->
-      <div class="col-lg-6">
-        <div class="product-gallery">
-          <div class="main-image mb-3">
-            <img id="mainImage" src="<%= product.thumbnail || '/images/no-image.png' %>" class="img-fluid rounded" alt="<%= product.title %>">
+      <div class="col-12">
+        <h1 class="product-main-title"><%= product.title %></h1>
+        <div class="product-meta">
+          <span class="rating-badge">
+            <i class="bi bi-star-fill text-warning"></i> 4.9
+          </span>
+          <span class="review-count">(326 đánh giá)</span>
+          <span class="sold-count">Đã bán 326,7k</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <!-- Left Column: Images & Specs -->
+      <div class="col-lg-7">
+        <!-- Product Gallery -->
+        <div class="product-gallery-box">
+          <div class="main-image-wrapper">
+            <img id="mainImage" src="<%= product.thumbnail || '/images/no-image.png' %>" class="main-product-img" alt="<%= product.title %>">
           </div>
           
-          <!-- Thumbnail Images -->
-          <div class="row g-2">
-            <div class="col-2">
-              <img src="<%= product.thumbnail || '/images/no-image.png' %>" class="img-thumbnail thumbnail-img active" onclick="changeImage(this.src)" alt="<%= product.title %>">
+          <!-- Thumbnail Gallery -->
+          <div class="thumbnail-gallery-grid">
+            <div class="thumbnail-item active" onclick="changeImage('<%= product.thumbnail || '/images/no-image.png' %>')">
+              <img src="<%= product.thumbnail || '/images/no-image.png' %>" alt="<%= product.title %>">
             </div>
             <% if (product.images && product.images.length > 0) { %>
-              <% product.images.slice(0, 5).forEach(function(img) { %>
-                <div class="col-2">
-                  <img src="<%= img %>" class="img-thumbnail thumbnail-img" onclick="changeImage(this.src)" alt="<%= product.title %>">
+              <% product.images.slice(0, 7).forEach(function(img) { %>
+                <div class="thumbnail-item" onclick="changeImage('<%= img %>')">
+                  <img src="<%= img %>" alt="<%= product.title %>">
                 </div>
               <% }); %>
             <% } %>
           </div>
         </div>
 
-        <!-- Product Commitment -->
-        <div class="commitment-section mt-4">
-          <h6 class="fw-bold mb-3">Cam kết sản phẩm</h6>
-          <div class="row g-3">
+        <!-- Commitment Section -->
+        <div class="commitment-box mt-3">
+          <h6 class="commitment-title">Thế Giới Di Động cam kết</h6>
+          <div class="row g-2">
             <div class="col-6">
-              <div class="commitment-item">
-                <i class="bi bi-shield-check text-success me-2"></i>
-                <small>Mới, đầy đủ phụ kiện từ nhà sản xuất</small>
+              <div class="commitment-item-small">
+                <i class="bi bi-clock-history text-primary"></i>
+                <span>Hư gì đổi nấy 12 tháng tại 2949 siêu thị toàn quốc</span>
               </div>
             </div>
             <div class="col-6">
-              <div class="commitment-item">
-                <i class="bi bi-arrow-repeat text-primary me-2"></i>
-                <small>Bảo hành chính hãng toàn quốc. Bảo hành 12 tháng tại trung tâm bảo hành Ủy quyền Apple</small>
+              <div class="commitment-item-small">
+                <i class="bi bi-box-seam text-success"></i>
+                <span>Sản phẩm mới (Cẩn thành toàn trước khi mở hộp)</span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="commitment-item-small">
+                <i class="bi bi-shield-check text-info"></i>
+                <span>Bảo hành chính hãng điện thoại 1 năm tại các trung tâm bảo hành Ủy quyền Apple</span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="commitment-item-small">
+                <i class="bi bi-arrow-repeat text-warning"></i>
+                <span>Bộ sản phẩm gồm: Hộp, Sách hướng dẫn, Cáp, Cây lấy sim</span>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Product Info -->
-      <div class="col-lg-6">
-        <div class="product-info">
-          <h1 class="product-title"><%= product.title %></h1>
-          
-          <!-- Rating -->
-          <div class="rating-section mb-3">
-            <div class="d-flex align-items-center">
-              <div class="stars me-2">
-                <i class="bi bi-star-fill text-warning"></i>
-                <span class="fw-bold">5</span>
-                <span class="text-muted">(8 đánh giá)</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Price Section -->
-          <div class="price-section mb-4">
-            <div class="current-price">
-              <% if (product.discountPercentage > 0) { %>
-                <h3 class="text-danger mb-1"><%= (product.price * (1 - product.discountPercentage/100)).toLocaleString('vi-VN') %>₫</h3>
-                <div class="original-price">
-                  <span class="text-decoration-line-through text-muted"><%= product.price.toLocaleString('vi-VN') %>₫</span>
-                  <span class="discount-badge ms-2">Trả góp 0%</span>
-                </div>
-              <% } else { %>
-                <h3 class="text-danger mb-1"><%= product.price.toLocaleString('vi-VN') %>₫</h3>
-                <div class="discount-badge">Trả góp 0%</div>
-              <% } %>
-            </div>
-          </div>
-
-          <!-- Storage Options -->
-          <div class="options-section mb-4">
-            <h6 class="fw-bold mb-3">Phiên bản</h6>
-            <div class="storage-options">
-              <div class="row g-2">
-                <div class="col-4">
-                  <div class="option-item">
-                    <input type="radio" name="storage" id="storage1" class="d-none">
-                    <label for="storage1" class="option-label">
-                      <div class="storage-size">1TB</div>
-                    </label>
-                  </div>
-                </div>
-                <div class="col-4">
-                  <div class="option-item">
-                    <input type="radio" name="storage" id="storage2" class="d-none">
-                    <label for="storage2" class="option-label">
-                      <div class="storage-size">512GB</div>
-                    </label>
-                  </div>
-                </div>
-                <div class="col-4">
-                  <div class="option-item">
-                    <input type="radio" name="storage" id="storage3" class="d-none" checked>
-                    <label for="storage3" class="option-label active">
-                      <div class="storage-size">256GB</div>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Color Options -->
-          <div class="options-section mb-4">
-            <h6 class="fw-bold mb-3">Màu sắc</h6>
-            <div class="color-options">
-              <div class="row g-2">
-                <div class="col-4">
-                  <div class="color-item">
-                    <input type="radio" name="color" id="color1" class="d-none" checked>
-                    <label for="color1" class="color-label active">
-                      <div class="color-preview" style="background: linear-gradient(135deg, #D4A574, #B8956A)"></div>
-                      <div class="color-name">Cam Vũ Trụ</div>
-                      <div class="color-price"><%= (product.price * (1 - (product.discountPercentage || 0)/100)).toLocaleString('vi-VN') %>₫</div>
-                    </label>
-                  </div>
-                </div>
-                <div class="col-4">
-                  <div class="color-item">
-                    <input type="radio" name="color" id="color2" class="d-none">
-                    <label for="color2" class="color-label">
-                      <div class="color-preview" style="background: #2C3E50"></div>
-                      <div class="color-name">Xanh Đậm</div>
-                      <div class="color-price"><%= (product.price * (1 - (product.discountPercentage || 0)/100)).toLocaleString('vi-VN') %>₫</div>
-                    </label>
-                  </div>
-                </div>
-                <div class="col-4">
-                  <div class="color-item">
-                    <input type="radio" name="color" id="color3" class="d-none">
-                    <label for="color3" class="color-label">
-                      <div class="color-preview" style="background: #34495E"></div>
-                      <div class="color-name">Bạc</div>
-                      <div class="color-price"><%= (product.price * (1 - (product.discountPercentage || 0)/100)).toLocaleString('vi-VN') %>₫</div>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Shipping Info -->
-          <div class="shipping-section mb-4">
-            <h6 class="fw-bold mb-3">Thông tin vận chuyển</h6>
-            <div class="shipping-info">
-              <div class="d-flex align-items-center mb-2">
-                <i class="bi bi-geo-alt text-primary me-2"></i>
-                <span>Chọn địa chỉ nhận hàng để biết thời gian giao hàng</span>
-              </div>
-              <div class="location-selects">
-                <div class="row g-2">
-                  <div class="col-6">
-                    <select class="form-select form-select-sm">
-                      <option>Hồ Chí Minh</option>
-                      <option>Hà Nội</option>
-                      <option>Đà Nẵng</option>
-                    </select>
-                  </div>
-                  <div class="col-6">
-                    <select class="form-select form-select-sm">
-                      <option>Quận/Huyện</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Action Buttons -->
-          <div class="action-buttons">
-            <div class="row g-2">
-              <div class="col-8">
-                <button id="buyNowBtn" class="btn btn-danger btn-lg w-100 fw-bold" data-product-id="<%= product._id %>">
-                  <i class="bi bi-cart-plus me-2"></i>Mua Ngay
-                </button>
-              </div>
-              <div class="col-4">
-                <button id="addToCartBtn" class="btn btn-outline-primary btn-lg w-100" data-product-id="<%= product._id %>">
-                  <i class="bi bi-cart-plus"></i>
-                </button>
-              </div>
-            </div>
-            <div class="row g-2 mt-2">
-              <div class="col-6">
-                <button class="btn btn-outline-primary w-100">
-                  <i class="bi bi-credit-card me-1"></i>Trả góp 0%
-                </button>
-              </div>
-              <div class="col-6">
-                <button class="btn btn-outline-danger w-100">
-                  <i class="bi bi-telephone me-1"></i>Liên hệ
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Product Description & Specs -->
-    <div class="row mt-5">
-      <div class="col-12">
-        <div class="product-tabs">
-          <ul class="nav nav-tabs" id="productTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button" role="tab">
+        <!-- Technical Specs Tabs -->
+        <div class="specs-tabs-section mt-3">
+          <ul class="nav nav-tabs specs-nav" role="tablist">
+            <li class="nav-item">
+              <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#specs-tab">
                 Thông số kỹ thuật
               </button>
             </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">
-                Mô tả sản phẩm
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">
-                Đánh giá (8)
+            <li class="nav-item">
+              <button class="nav-link" data-bs-toggle="tab" data-bs-target="#info-tab">
+                Thông tin sản phẩm
               </button>
             </li>
           </ul>
           
-          <div class="tab-content" id="productTabsContent">
-            <!-- Specifications Tab -->
-            <div class="tab-pane fade show active" id="specs" role="tabpanel">
-              <div class="specs-content p-4">
-                <div class="row">
-                  <div class="col-md-6">
-                    <h6 class="fw-bold mb-3">Thông tin chung</h6>
-                    <table class="table table-borderless specs-table">
-                      <tr>
-                        <td class="spec-label">Thương hiệu:</td>
-                        <td class="spec-value">Apple</td>
-                      </tr>
-                      <tr>
-                        <td class="spec-label">Model:</td>
-                        <td class="spec-value"><%= product.title %></td>
-                      </tr>
-                      <tr>
-                        <td class="spec-label">Màn hình:</td>
-                        <td class="spec-value">6.7 inch, Super Retina XDR OLED</td>
-                      </tr>
-                      <tr>
-                        <td class="spec-label">Độ phân giải:</td>
-                        <td class="spec-value">2796 x 1290 pixels</td>
-                      </tr>
-                      <tr>
-                        <td class="spec-label">Chip xử lý:</td>
-                        <td class="spec-value">Apple A17 Pro</td>
-                      </tr>
-                    </table>
+          <div class="tab-content specs-tab-content">
+            <!-- Specs Tab -->
+            <div class="tab-pane fade show active" id="specs-tab">
+              <!-- General Specs -->
+              <div class="spec-section">
+                <button class="spec-section-header" type="button" data-bs-toggle="collapse" data-bs-target="#generalSpecs">
+                  <span>Cấu hình & Bộ nhớ</span>
+                  <i class="bi bi-chevron-down"></i>
+                </button>
+                <div class="collapse show" id="generalSpecs">
+                  <div class="specs-grid">
+                    <div class="spec-row">
+                      <span class="spec-label">Hệ điều hành:</span>
+                      <span class="spec-value">iOS 18</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">Chip xử lý (CPU):</span>
+                      <span class="spec-value">Apple A18 Pro 6 nhân</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">Tốc độ CPU:</span>
+                      <span class="spec-value">Hãng không công bố</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">Chip đồ họa (GPU):</span>
+                      <span class="spec-value">Apple GPU 6 nhân</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">RAM:</span>
+                      <span class="spec-value">8 GB</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">Dung lượng lưu trữ:</span>
+                      <span class="spec-value">256 GB</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">Dung lượng còn lại (khả dụng) khoảng:</span>
+                      <span class="spec-value">241 GB</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">Danh bạ:</span>
+                      <span class="spec-value">Không giới hạn</span>
+                    </div>
                   </div>
-                  <div class="col-md-6">
-                    <h6 class="fw-bold mb-3">Camera & Pin</h6>
-                    <table class="table table-borderless specs-table">
-                      <tr>
-                        <td class="spec-label">Camera sau:</td>
-                        <td class="spec-value">48MP + 12MP + 12MP</td>
-                      </tr>
-                      <tr>
-                        <td class="spec-label">Camera trước:</td>
-                        <td class="spec-value">12MP</td>
-                      </tr>
-                      <tr>
-                        <td class="spec-label">Dung lượng pin:</td>
-                        <td class="spec-value">4422 mAh</td>
-                      </tr>
-                      <tr>
-                        <td class="spec-label">Sạc nhanh:</td>
-                        <td class="spec-value">27W</td>
-                      </tr>
-                      <tr>
-                        <td class="spec-label">Hệ điều hành:</td>
-                        <td class="spec-value">iOS 17</td>
-                      </tr>
-                    </table>
+                </div>
+              </div>
+              
+              <!-- Camera & Screen -->
+              <div class="spec-section">
+                <button class="spec-section-header" type="button" data-bs-toggle="collapse" data-bs-target="#cameraSpecs">
+                  <span>Camera & Màn hình</span>
+                  <i class="bi bi-chevron-down"></i>
+                </button>
+                <div class="collapse" id="cameraSpecs">
+                  <div class="specs-grid">
+                    <div class="spec-row">
+                      <span class="spec-label">Độ phân giải camera sau:</span>
+                      <span class="spec-value">Chính 48 MP & Phụ 48 MP, 12 MP</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">Quay phim:</span>
+                      <span class="spec-value">4K@60fps, 1080p@240fps</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">Độ phân giải camera trước:</span>
+                      <span class="spec-value">12 MP</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">Công nghệ màn hình:</span>
+                      <span class="spec-value">Super Retina XDR OLED</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">Độ phân giải:</span>
+                      <span class="spec-value">2796 x 1290 pixels</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">Màn hình rộng:</span>
+                      <span class="spec-value">6.9 inch</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Battery & Charging -->
+              <div class="spec-section">
+                <button class="spec-section-header" type="button" data-bs-toggle="collapse" data-bs-target="#batterySpecs">
+                  <span>Pin & Sạc</span>
+                  <i class="bi bi-chevron-down"></i>
+                </button>
+                <div class="collapse" id="batterySpecs">
+                  <div class="specs-grid">
+                    <div class="spec-row">
+                      <span class="spec-label">Dung lượng pin:</span>
+                      <span class="spec-value">4685 mAh</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">Loại pin:</span>
+                      <span class="spec-value">Li-Ion</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">Hỗ trợ sạc tối đa:</span>
+                      <span class="spec-value">45W</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">Công nghệ sạc:</span>
+                      <span class="spec-value">Sạc không dây MagSafe 25W, Sạc không dây Qi 15W</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Connectivity -->
+              <div class="spec-section">
+                <button class="spec-section-header" type="button" data-bs-toggle="collapse" data-bs-target="#connectivitySpecs">
+                  <span>Tiện ích</span>
+                  <i class="bi bi-chevron-down"></i>
+                </button>
+                <div class="collapse" id="connectivitySpecs">
+                  <div class="specs-grid">
+                    <div class="spec-row">
+                      <span class="spec-label">Mạng di động:</span>
+                      <span class="spec-value">5G</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">SIM:</span>
+                      <span class="spec-value">1 Nano SIM & 1 eSIM</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">Wifi:</span>
+                      <span class="spec-value">Wi-Fi 7 (802.11be)</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">Bluetooth:</span>
+                      <span class="spec-value">v5.3</span>
+                    </div>
+                    <div class="spec-row">
+                      <span class="spec-label">Cổng kết nối/sạc:</span>
+                      <span class="spec-value">Type-C</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             
-            <!-- Description Tab -->
-            <div class="tab-pane fade" id="description" role="tabpanel">
-              <div class="description-content p-4">
+            <!-- Info Tab -->
+            <div class="tab-pane fade" id="info-tab">
+              <div class="product-description">
                 <p><%= product.description || 'Chưa có mô tả chi tiết cho sản phẩm này.' %></p>
               </div>
             </div>
-            
-            <!-- Reviews Tab -->
-            <div class="tab-pane fade" id="reviews" role="tabpanel">
-              <div class="reviews-content p-4">
-                <div class="text-center text-muted">
-                  <i class="bi bi-chat-dots fs-1"></i>
-                  <p class="mt-3">Chưa có đánh giá nào cho sản phẩm này</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Purchase Box -->
+      <div class="col-lg-5">
+        <div class="purchase-box">
+          <!-- Storage Options -->
+          <div class="storage-selector">
+            <div class="storage-label">Dung lượng</div>
+            <div class="storage-options-grid">
+              <button class="storage-option">
+                <span class="storage-size">256GB</span>
+              </button>
+              <button class="storage-option active">
+                <span class="storage-size">512GB</span>
+              </button>
+              <button class="storage-option">
+                <span class="storage-size">1TB</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Color Options -->
+          <div class="color-selector mt-3">
+            <div class="color-label">Màu sắc</div>
+            <div class="color-options-grid">
+              <button class="color-option active">
+                <div class="color-preview" style="background: linear-gradient(135deg, #D4A574, #B8956A)"></div>
+                <span class="color-name">Titan Sa Mạc</span>
+              </button>
+              <button class="color-option">
+                <div class="color-preview" style="background: #E8E8E8"></div>
+                <span class="color-name">Titan Tự Nhiên</span>
+              </button>
+              <button class="color-option">
+                <div class="color-preview" style="background: #2C3E50"></div>
+                <span class="color-name">Titan Xanh</span>
+              </button>
+              <button class="color-option">
+                <div class="color-preview" style="background: #1a1a1a"></div>
+                <span class="color-name">Titan Đen</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Promotions Box -->
+          <div class="promotions-highlight mt-3">
+            <button class="promo-header-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#promoContent">
+              <i class="bi bi-gift-fill me-2"></i>Khuyến mãi
+              <i class="bi bi-chevron-down ms-auto"></i>
+            </button>
+            <div class="collapse show" id="promoContent">
+              <div class="promo-content">
+                <div class="promo-item-highlight">
+                  <i class="bi bi-check-circle-fill text-success"></i>
+                  <span>Giảm thêm 500.000₫ khi thanh toán qua VNPAY-QR</span>
+                </div>
+                <div class="promo-item-highlight">
+                  <i class="bi bi-check-circle-fill text-success"></i>
+                  <span>Thu cũ đổi mới: Giảm đến 2.000.000₫</span>
+                </div>
+                <div class="promo-item-highlight">
+                  <i class="bi bi-check-circle-fill text-success"></i>
+                  <span>Phiếu mua hàng Airpods trị giá 800.000₫</span>
+                </div>
+                <div class="promo-item-highlight">
+                  <i class="bi bi-check-circle-fill text-success"></i>
+                  <span>Phiếu mua hàng sim Vina Bưm Data 12T trị giá 500.000₫</span>
+                </div>
+                <div class="promo-item-highlight">
+                  <i class="bi bi-check-circle-fill text-success"></i>
+                  <span>Trả góp 0% qua thẻ tín dụng</span>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <!-- Warranty Options -->
+          <div class="warranty-section mt-3">
+            <button class="warranty-header-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#warrantyContent">
+              <i class="bi bi-shield-check me-2"></i>Chọn gói bảo hành (tùy chọn)
+              <i class="bi bi-chevron-down ms-auto"></i>
+            </button>
+            <div class="collapse show" id="warrantyContent">
+              <div class="warranty-options">
+                <div class="warranty-item">
+                  <input type="radio" name="warranty" id="warranty1" value="0" checked>
+                  <label for="warranty1" class="warranty-label">
+                    <div class="warranty-info">
+                      <div class="warranty-title">Không mua bảo hành mở rộng</div>
+                      <div class="warranty-subtitle">Bảo hành theo nhà sản xuất - 12 tháng</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="warranty-item">
+                  <input type="radio" name="warranty" id="warranty2" value="700000">
+                  <label for="warranty2" class="warranty-label">
+                    <div class="warranty-info">
+                      <div class="warranty-title">Gói bảo hiểm 1 đổi 1 - 11 tháng</div>
+                      <div class="warranty-subtitle">- Bảo hành TGDĐ và 11 tháng bảo hiểm<br>- ĐỔI NGAY MÁY MỚI nếu có lỗi nhà sản xuất</div>
+                      <div class="warranty-price-tag">+ 700.000₫</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="warranty-item">
+                  <input type="radio" name="warranty" id="warranty3" value="650000">
+                  <label for="warranty3" class="warranty-label">
+                    <div class="warranty-info">
+                      <div class="warranty-title">Gói bảo hiểm mở rộng - 12 tháng</div>
+                      <div class="warranty-subtitle">- Thêm 12 tháng bảo hành chính hãng<br>- MIỄN PHÍ sửa chữa nếu lỗi Nhà sản xuất</div>
+                      <div class="warranty-price-tag">+ 650.000₫</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Display -->
+          <div class="final-price-box mt-3">
+            <% 
+              const basePrice = product.discountPercentage > 0 
+                ? product.price * (1 - product.discountPercentage/100) 
+                : product.price;
+            %>
+            <div class="final-price" id="finalPrice" data-base-price="<%= basePrice %>">
+              <%= basePrice.toLocaleString('vi-VN') %>₫
+            </div>
+            <div class="vip-points">+<span id="vipPoints"><%= Math.floor(basePrice/1000) %></span> điểm tích lũy Quà Tặng VIP</div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons-group mt-3">
+            <button class="btn-buy-main" id="buyNowBtn" data-product-id="<%= product._id %>">
+              Mua ngay
+            </button>
+            <div class="btn-secondary-group">
+              <button class="btn-installment-main">
+                <i class="bi bi-credit-card me-1"></i>Trả góp 0%
+              </button>
+              <button class="btn-add-to-cart" id="addToCartBtn" data-product-id="<%= product._id %>">
+                <i class="bi bi-cart-plus"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Additional Info -->
+          <div class="additional-info mt-3">
+            <div class="info-item">
+              <i class="bi bi-telephone-fill text-danger"></i>
+              <span>Gọi đặt mua: <strong>1900 232 460</strong> (8:00 - 21:30)</span>
+            </div>
+            <div class="info-item">
+              <i class="bi bi-geo-alt-fill text-primary"></i>
+              <span>Chọn địa chỉ nhận hàng để biết thời gian giao hàng</span>
             </div>
           </div>
         </div>
@@ -321,24 +411,31 @@
 
     <!-- Related Products -->
     <% if (relatedProducts && relatedProducts.length > 0) { %>
-      <div class="row mt-5">
-        <div class="col-12">
-          <h4 class="mb-4">Sản phẩm liên quan</h4>
-          <div class="row g-4">
-            <% relatedProducts.forEach(function(product) { %>
-              <div class="col-lg-3 col-md-6">
-                <a href="/products/<%= product.slug %>" class="text-decoration-none">
-                  <div class="card h-100 product-card">
-                    <img src="<%= product.thumbnail || '/images/no-image.png' %>" class="card-img-top" alt="<%= product.title %>">
-                    <div class="card-body">
-                      <h6 class="card-title text-dark"><%= product.title %></h6>
-                      <p class="text-danger fw-bold mb-0"><%= product.price.toLocaleString('vi-VN') %>₫</p>
+      <div class="related-section mt-5">
+        <h4 class="section-heading">Sản phẩm tương tự</h4>
+        <div class="row g-3">
+          <% relatedProducts.forEach(function(prod) { %>
+            <div class="col-lg-3 col-md-4 col-6">
+              <a href="/products/<%= prod.slug %>" class="text-decoration-none">
+                <div class="related-product-card">
+                  <div class="related-product-image">
+                    <img src="<%= prod.thumbnail || '/images/no-image.png' %>" alt="<%= prod.title %>">
+                  </div>
+                  <div class="related-product-info">
+                    <h6 class="related-product-name"><%= prod.title %></h6>
+                    <div class="related-product-price">
+                      <% if (prod.discountPercentage > 0) { %>
+                        <span class="price-now"><%= (prod.price * (1 - prod.discountPercentage/100)).toLocaleString('vi-VN') %>₫</span>
+                        <span class="price-before"><%= prod.price.toLocaleString('vi-VN') %>₫</span>
+                      <% } else { %>
+                        <span class="price-now"><%= prod.price.toLocaleString('vi-VN') %>₫</span>
+                      <% } %>
                     </div>
                   </div>
-                </a>
-              </div>
-            <% }); %>
-          </div>
+                </div>
+              </a>
+            </div>
+          <% }); %>
         </div>
       </div>
     <% } %>
@@ -348,167 +445,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/main.js"></script>
-  
-  <script>
-    // Change main image when clicking thumbnails
-    function changeImage(src) {
-      document.getElementById('mainImage').src = src;
-      
-      // Update active thumbnail
-      document.querySelectorAll('.thumbnail-img').forEach(function(img) {
-        img.classList.remove('active');
-      });
-      event.target.classList.add('active');
-    }
-    
-    // Handle storage selection
-    document.querySelectorAll('input[name="storage"]').forEach(function(input) {
-      input.addEventListener('change', function() {
-        document.querySelectorAll('.option-label').forEach(function(label) {
-          label.classList.remove('active');
-        });
-        this.nextElementSibling.classList.add('active');
-      });
-    });
-    
-    // Handle color selection
-    document.querySelectorAll('input[name="color"]').forEach(function(input) {
-      input.addEventListener('change', function() {
-        document.querySelectorAll('.color-label').forEach(function(label) {
-          label.classList.remove('active');
-        });
-        this.nextElementSibling.classList.add('active');
-      });
-    });
-
-    // Handle Buy Now button
-    document.getElementById('buyNowBtn').addEventListener('click', async function() {
-      const productId = this.getAttribute('data-product-id');
-      const quantity = 1; // Default quantity for buy now
-      
-      try {
-        // Add to cart first
-        const response = await fetch('/cart/add', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            productId: productId,
-            quantity: quantity
-          })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-          // Redirect to cart page immediately
-          window.location.href = '/cart';
-        } else {
-          alert(result.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Có lỗi xảy ra. Vui lòng thử lại.');
-      }
-    });
-
-    // Handle Add to Cart button
-    document.getElementById('addToCartBtn').addEventListener('click', async function() {
-      const productId = this.getAttribute('data-product-id');
-      const quantity = 1; // Default quantity
-      
-      try {
-        const response = await fetch('/cart/add', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            productId: productId,
-            quantity: quantity
-          })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-          // Show success message with product name
-          showToast(`Đã thêm "${result.productTitle}" vào giỏ hàng!`, 'success');
-          
-          // Update cart counter in header
-          updateCartCounter(result.cartCount);
-          
-          // Change button appearance temporarily
-          const originalHTML = this.innerHTML;
-          this.innerHTML = '<i class="bi bi-check-circle"></i>';
-          this.classList.remove('btn-outline-primary');
-          this.classList.add('btn-success');
-          
-          // Reset button after 2 seconds
-          setTimeout(() => {
-            this.innerHTML = originalHTML;
-            this.classList.remove('btn-success');
-            this.classList.add('btn-outline-primary');
-          }, 2000);
-        } else {
-          showToast(result.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng', 'error');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        showToast('Có lỗi xảy ra. Vui lòng thử lại.', 'error');
-      }
-    });
-
-    // Toast notification function
-    function showToast(message, type = 'success') {
-      // Remove existing toast
-      const existingToast = document.querySelector('.toast-notification');
-      if (existingToast) {
-        existingToast.remove();
-      }
-
-      // Create toast
-      const toast = document.createElement('div');
-      toast.className = `toast-notification alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
-      toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-      toast.innerHTML = `
-        <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      `;
-
-      document.body.appendChild(toast);
-
-      // Auto remove after 3 seconds
-      setTimeout(() => {
-        if (toast.parentNode) {
-          toast.remove();
-        }
-      }, 3000);
-    }
-
-    // Update cart counter in header
-    function updateCartCounter(count) {
-      const counter = document.getElementById('cart-counter');
-      if (count > 0) {
-        if (counter) {
-          counter.textContent = count;
-        } else {
-          // Create counter if it doesn't exist
-          const cartLink = document.querySelector('a[href="/cart"]');
-          const newCounter = document.createElement('span');
-          newCounter.id = 'cart-counter';
-          newCounter.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger';
-          newCounter.textContent = count;
-          cartLink.appendChild(newCounter);
-        }
-      } else {
-        if (counter) {
-          counter.remove();
-        }
-      }
-    }
-  </script>
+  <script src="/js/product-detail.js"></script>
 </body>
 </html>
