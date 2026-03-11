@@ -29,10 +29,11 @@
 
 /* Product Gallery */
 .product-gallery-box {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  background: #fafafa;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #e5e5e5;
+  box-shadow: none;
 }
 
 .main-image-wrapper {
@@ -83,10 +84,11 @@
 
 /* Commitment Box */
 .commitment-box {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  background: #fafafa;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #e5e5e5;
+  box-shadow: none;
 }
 
 .commitment-title {
@@ -113,9 +115,10 @@
 
 /* Specs Tabs */
 .specs-tabs-section {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  background: #fafafa;
+  border-radius: 10px;
+  border: 1px solid #e5e5e5;
+  box-shadow: none;
   overflow: hidden;
 }
 
@@ -224,10 +227,11 @@
 
 /* Purchase Box */
 .purchase-box {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  background: #fafafa;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #e5e5e5;
+  box-shadow: none;
 }
 
 /* Storage Selector */
@@ -275,6 +279,13 @@
 }
 
 .color-label {
+  /* Override global `.color-label` (style.css) used for option buttons */
+  border: none;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  text-align: left;
+  cursor: default;
   font-weight: 600;
   color: #333;
   margin-bottom: 0.75rem;
@@ -598,6 +609,127 @@
   margin-bottom: 3rem;
 }
 
+/* Reviews */
+.reviews-section {
+  margin-bottom: 2rem;
+}
+
+.reviews-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.reviews-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.reviews-count {
+  font-size: 0.9375rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+.review-form {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 1rem;
+  background: #fafafa;
+}
+
+.review-form-row {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 1rem;
+}
+
+.review-user,
+.review-item-user {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.review-user i,
+.review-item-user i {
+  font-size: 1.5rem;
+  color: #666;
+}
+
+.review-user-name {
+  font-weight: 700;
+  color: #333;
+  line-height: 1.2;
+}
+
+.review-user-sub {
+  font-size: 0.8125rem;
+  color: #666;
+}
+
+.review-submit-btn {
+  font-weight: 700;
+  padding: 0.6rem 1.25rem;
+  border-radius: 10px;
+}
+
+.login-to-review {
+  border: 1px dashed #d0d0d0;
+  border-radius: 10px;
+  padding: 1rem;
+  background: #fff;
+}
+
+.reviews-list .review-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 1rem;
+  background: #fff;
+  margin-bottom: 0.75rem;
+}
+
+.review-item-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.review-item-name {
+  font-weight: 700;
+  color: #333;
+  line-height: 1.2;
+}
+
+.review-item-meta {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  font-size: 0.8125rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+.review-stars i {
+  color: #f4b400;
+}
+
+.review-item-body {
+  font-size: 0.9375rem;
+  color: #333;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.reviews-empty {
+  padding: 0.75rem 0;
+}
+
 .section-heading {
   font-size: 1.25rem;
   font-weight: 700;
@@ -703,5 +835,9 @@
 
   .final-price {
     font-size: 1.5rem;
+  }
+
+  .review-form-row {
+    grid-template-columns: 1fr;
   }
 }
