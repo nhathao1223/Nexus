@@ -3,6 +3,7 @@ const Category = require('../models/Category');
 const User = require('../models/User');
 const Order = require('../models/Order');
 const FlashSaleConfig = require('../models/FlashSaleConfig');
+const Review = require('../models/Review');
 const { createMomoPayment } = require('../services/momoService');
 
 exports.getHome = async (req, res) => {
@@ -71,6 +72,7 @@ exports.getHome = async (req, res) => {
 
     res.render('client/home', {
       title: 'Trang chủ',
+      isHome: true,
       products,
       categories,
       currentPage: page,
@@ -179,14 +181,84 @@ exports.getProductDetail = async (req, res) => {
       status: 'active'
     }).limit(4);
 
+    const reviews = await Review.find({
+      product: product._id,
+      isHidden: false
+    })
+      .sort({ createdAt: -1 })
+      .limit(20)
+      .lean();
+
+    const reviewsCount = await Review.countDocuments({
+      product: product._id,
+      isHidden: false
+    });
+
     res.render('client/product-detail', {
       title: product.title,
       product,
-      relatedProducts
+      relatedProducts,
+      reviews,
+      reviewsCount
     });
   } catch (error) {
     console.error(error);
     res.status(500).render('client/error', { title: 'Lỗi', error });
+  }
+};
+
+exports.postProductReview = async (req, res) => {
+  try {
+    const product = await Product.findOne({
+      slug: req.params.slug,
+      deleted: false,
+      status: 'active'
+    });
+
+    if (!product) {
+      return res.status(404).render('client/404', { title: 'Không tìm thấy sản phẩm' });
+    }
+
+    const rating = parseInt(req.body.rating, 10);
+    const comment = (req.body.comment || '').trim();
+
+    // Basic anti-spam: 1 comment / 60s per product per user
+    const recent = await Review.findOne({
+      product: product._id,
+      user: req.user._id,
+      createdAt: { $gte: new Date(Date.now() - 60 * 1000) }
+    }).lean();
+
+    if (recent) {
+      req.flash('error_msg', 'Bạn đang bình luận quá nhanh. Vui lòng thử lại sau.');
+      return res.redirect(`/products/${product.slug}#reviews`);
+    }
+
+    await Review.create({
+      product: product._id,
+      user: req.user._id,
+      userName: req.user.fullName,
+      rating,
+      comment
+    });
+
+    // Update cached average rating + count on product
+    const agg = await Review.aggregate([
+      { $match: { product: product._id, isHidden: false } },
+      { $group: { _id: '$product', avg: { $avg: '$rating' }, count: { $sum: 1 } } }
+    ]);
+    const avg = agg?.[0]?.avg || 0;
+    const count = agg?.[0]?.count || 0;
+    product.rating = Math.round(avg * 10) / 10;
+    product.reviewsCount = count;
+    await product.save();
+
+    req.flash('success_msg', 'Cảm ơn bạn đã đánh giá sản phẩm.');
+    return res.redirect(`/products/${product.slug}#reviews`);
+  } catch (error) {
+    console.error(error);
+    req.flash('error_msg', 'Có lỗi xảy ra khi gửi đánh giá.');
+    return res.redirect(req.get('Referrer') || '/');
   }
 };
 

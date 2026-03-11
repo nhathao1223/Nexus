@@ -10,6 +10,7 @@ const {
   validateProfile,
   validateChangePassword,
   validateAddToCart,
+  validateReview,
   validatePagination,
   validateMongoId,
   handleValidationErrors,
@@ -103,6 +104,14 @@ router.get('/products', validatePagination, asyncHandler(clientController.getPro
  *         description: Product not found
  */
 router.get('/products/:slug', asyncHandler(clientController.getProductDetail));
+
+router.post(
+  '/products/:slug/reviews',
+  requireAuth,
+  validateReview,
+  handleValidationErrors,
+  asyncHandler(clientController.postProductReview)
+);
 
 /**
  * @swagger
