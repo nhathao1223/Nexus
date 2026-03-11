@@ -1,156 +1,334 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<!-- Header với logo ở trên -->
+<div class="top-header">
   <div class="container">
-    <a class="navbar-brand d-flex align-items-center" href="/">
-      <span class="logo-simple"><span class="n-highlight">N</span>E<span class="x-highlight">X</span>US</span>
-    </a>
+    <div class="row align-items-center py-3">
+      <div class="col-md-2">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+          <span class="logo-simple"><span class="n-highlight">N</span>E<span class="x-highlight">X</span>US</span>
+        </a>
+      </div>
+      <div class="col-md-7">
+        <form class="d-flex" action="/products" method="GET">
+          <div class="input-group search-group">
+            <input class="form-control search-input" type="search" name="search" placeholder="Tìm kiếm sản phẩm..." aria-label="Search" value="<%= typeof query !== 'undefined' && query.search ? query.search : '' %>">
+            <button class="btn search-btn" type="submit">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="col-md-3">
+        <div class="d-flex justify-content-end align-items-center">
+          <a class="header-link position-relative text-white me-3" href="/cart">
+            <i class="bi bi-cart3"></i>
+            <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
+              <span class="cart-badge" id="cart-counter">
+                <%= cartCount %>
+              </span>
+            <% } %>
+          </a>
+          <% if (user) { %>
+            <div class="dropdown">
+              <a class="header-link dropdown-toggle d-flex align-items-center text-white" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="bi bi-person-circle me-1"></i>
+                <span class="user-name">Đăng nhập</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <% if (user.role === 'admin') { %>
+                  <li><a class="dropdown-item" href="/admin/dashboard">
+                    <i class="bi bi-speedometer2 me-2"></i>Quản trị
+                  </a></li>
+                  <li><hr class="dropdown-divider"></li>
+                <% } %>
+                <li><a class="dropdown-item" href="/profile">
+                  <i class="bi bi-person me-2"></i>Tài khoản
+                </a></li>
+                <li><a class="dropdown-item" href="/orders">
+                  <i class="bi bi-bag me-2"></i>Đơn hàng
+                </a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="/logout">
+                  <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
+                </a></li>
+              </ul>
+            </div>
+          <% } else { %>
+            <a class="header-link text-white" href="/login">
+              <i class="bi bi-box-arrow-in-right me-1"></i>
+              <span class="user-name">Đăng nhập</span>
+            </a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Navigation với danh mục -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto ms-4">
-        <li class="nav-item dropdown position-static">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-            <i class="bi bi-grid me-1"></i>Danh mục
-          </a>
-          <div class="dropdown-menu mega-menu w-100 mt-0 border-0 shadow-lg">
-            <div class="container">
-              <div class="row g-4 p-4">
-                <!-- THƯƠNG HIỆU -->
-                <div class="col-md-4">
-                  <h6 class="dropdown-header d-flex align-items-center mb-3">
-                    <i class="bi bi-phone me-2 text-primary"></i>
-                    <span class="fw-bold text-dark">THƯƠNG HIỆU</span>
-                  </h6>
-                  <div class="brand-list">
-                    <a class="dropdown-item py-2" href="/products?brand=apple">
-                      <i class="bi bi-apple me-2"></i>Apple
-                    </a>
-                    <a class="dropdown-item py-2" href="/products?brand=samsung">
-                      <i class="bi bi-phone me-2"></i>Samsung
-                    </a>
-                    <a class="dropdown-item py-2" href="/products?brand=xiaomi">
-                      <i class="bi bi-phone me-2"></i>Xiaomi
-                    </a>
-                    <a class="dropdown-item py-2" href="/products?brand=oppo">
-                      <i class="bi bi-phone me-2"></i>OPPO
-                    </a>
-                    <a class="dropdown-item py-2" href="/products?brand=vivo">
-                      <i class="bi bi-phone me-2"></i>Vivo
-                    </a>
-                    <div class="mt-3">
-                      <span class="text-muted small">Đang tải...</span>
-                    </div>
+      <ul class="navbar-nav">
+        <% const onHome = typeof isHome !== 'undefined' && isHome; %>
+        <li class="nav-item d-none d-lg-block <%= onHome ? '' : 'dropdown position-static' %>">
+          <% if (onHome) { %>
+            <!-- Trang Home: nút chỉ scroll xuống khu vực danh mục, menu luôn hiển thị bên cạnh banner -->
+            <a class="nav-link navbar-category-toggle d-flex align-items-center" href="#homeCategories">
+              <i class="bi bi-list me-2 fs-5"></i>
+              <span class="fw-semibold text-uppercase small">DANH MỤC SẢN PHẨM</span>
+            </a>
+          <% } else { %>
+            <!-- Các trang khác: hover vào nút sẽ xổ mega menu danh mục -->
+            <a class="nav-link navbar-category-toggle d-flex align-items-center dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-list me-2 fs-5"></i>
+              <span class="fw-semibold text-uppercase small">DANH MỤC SẢN PHẨM</span>
+            </a>
+            <div class="dropdown-menu mega-menu mega-menu-categories p-0 border-0">
+              <div class="container">
+                <div class="row g-0">
+                  <!-- Category sidebar -->
+                  <div class="col-lg-3 category-sidebar d-none d-lg-block">
+                    <%- include('category-menu') %>
                   </div>
-                </div>
-
-                <!-- MỨC GIÁ -->
-                <div class="col-md-4">
-                  <h6 class="dropdown-header d-flex align-items-center mb-3">
-                    <i class="bi bi-currency-dollar me-2 text-success"></i>
-                    <span class="fw-bold text-dark">MỨC GIÁ</span>
-                  </h6>
-                  <div class="price-list">
-                    <a class="dropdown-item py-2" href="/products?priceRange=0-5">
-                      <i class="bi bi-tag me-2"></i>Dưới 5 triệu
-                    </a>
-                    <a class="dropdown-item py-2" href="/products?priceRange=5-10">
-                      <i class="bi bi-tag me-2"></i>Từ 5 - 10 triệu
-                    </a>
-                    <a class="dropdown-item py-2" href="/products?priceRange=10-20">
-                      <i class="bi bi-tag me-2"></i>Từ 10 - 20 triệu
-                    </a>
-                    <a class="dropdown-item py-2" href="/products?priceRange=20+">
-                      <i class="bi bi-tag me-2"></i>Trên 20 triệu
-                    </a>
-                    <div class="mt-3">
-                      <a href="/products" class="text-primary small text-decoration-none">
-                        <i class="bi bi-arrow-right me-1"></i>Xem tất cả điện thoại
-                      </a>
+                  
+                  <!-- Submenu panels area -->
+                  <div class="col-lg-9 submenu-panels-area d-none d-lg-block">
+                    <!-- Panel danh mục con Điện thoại -->
+                    <div class="mega-submenu-panel" id="megaPhonePanel">
+                      <div class="row g-4">
+                        <div class="col-md-4">
+                          <h6 class="mega-submenu-title">Thương hiệu</h6>
+                          <ul class="mega-submenu-list">
+                            <li><a href="/products?brand=apple">Apple</a></li>
+                            <li><a href="/products?brand=samsung">Samsung</a></li>
+                            <li><a href="/products?brand=xiaomi">Xiaomi</a></li>
+                            <li><a href="/products?brand=oppo">OPPO</a></li>
+                            <li><a href="/products?brand=vivo">Vivo</a></li>
+                            <li><a href="/products?brand=realme">Realme</a></li>
+                            <li><a href="/products?brand=oneplus">OnePlus</a></li>
+                          </ul>
+                        </div>
+                        <div class="col-md-4">
+                          <h6 class="mega-submenu-title">Theo giá sản phẩm</h6>
+                          <ul class="mega-submenu-list">
+                            <li><a href="/products?priceRange=0-2">Dưới 2 triệu</a></li>
+                            <li><a href="/products?priceRange=2-4">Từ 2 - 4 triệu</a></li>
+                            <li><a href="/products?priceRange=4-7">Từ 4 - 7 triệu</a></li>
+                            <li><a href="/products?priceRange=7-13">Từ 7 - 13 triệu</a></li>
+                            <li><a href="/products?priceRange=13-20">Trên 13 triệu</a></li>
+                            <li><a href="/products?priceRange=20+">Trên 20 triệu</a></li>
+                          </ul>
+                        </div>
+                        <div class="col-md-4">
+                          <h6 class="mega-submenu-title">Điện thoại HOT</h6>
+                          <ul class="mega-submenu-list">
+                            <li><a href="/products?search=Galaxy%20S26%20Ultra">Galaxy S26 Ultra</a></li>
+                            <li><a href="/products?search=iPhone%2017%20Pro%20Max">iPhone 17 Pro Max</a></li>
+                            <li><a href="/products?search=Oppo%20Find%20X9">OPPO Find X9</a></li>
+                            <li><a href="/products?search=Xiaomi%2015T">Xiaomi 15T</a></li>
+                            <li><a href="/products?search=Z%20Fold7">Galaxy Z Fold7</a></li>
+                            <li><a href="/products?search=Z%20Flip7">Galaxy Z Flip7</a></li>
+                          </ul>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
 
-                <!-- DANH MỤC -->
-                <div class="col-md-4">
-                  <h6 class="dropdown-header d-flex align-items-center mb-3">
-                    <i class="bi bi-funnel me-2 text-danger"></i>
-                    <span class="fw-bold text-dark">DANH MỤC</span>
-                  </h6>
-                  <div class="category-list">
-                    <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
-                      <% categories.forEach(cat => { %>
-                        <a class="dropdown-item py-2" href="/products?category=<%= cat._id %>">
-                          <i class="bi bi-tag me-2"></i><%= cat.name %>
-                        </a>
-                      <% }) %>
-                    <% } %>
-                    <div class="mt-3">
-                      <span class="text-muted small">Đang tải...</span>
+                    <!-- Panel danh mục con iPhone -->
+                    <div class="mega-submenu-panel" id="megaiPhonePanel">
+                      <div class="row g-4">
+                        <div class="col-md-4">
+                          <h6 class="mega-submenu-title">Dòng iPhone</h6>
+                          <ul class="mega-submenu-list">
+                            <li><a href="/products?search=iPhone%2017">iPhone 17 Series</a></li>
+                            <li><a href="/products?search=iPhone%2016">iPhone 16 Series</a></li>
+                            <li><a href="/products?search=iPhone%2015">iPhone 15 Series</a></li>
+                            <li><a href="/products?search=iPhone%2014">iPhone 14 Series</a></li>
+                            <li><a href="/products?search=iPhone%2013">iPhone 13 Series</a></li>
+                          </ul>
+                        </div>
+                        <div class="col-md-4">
+                          <h6 class="mega-submenu-title">Theo giá iPhone</h6>
+                          <ul class="mega-submenu-list">
+                            <li><a href="/products?brand=apple&priceRange=10-15">10 - 15 triệu</a></li>
+                            <li><a href="/products?brand=apple&priceRange=15-20">15 - 20 triệu</a></li>
+                            <li><a href="/products?brand=apple&priceRange=20-25">20 - 25 triệu</a></li>
+                            <li><a href="/products?brand=apple&priceRange=25-30">25 - 30 triệu</a></li>
+                            <li><a href="/products?brand=apple&priceRange=30+">Trên 30 triệu</a></li>
+                          </ul>
+                        </div>
+                        <div class="col-md-4">
+                          <h6 class="mega-submenu-title">iPhone HOT</h6>
+                          <ul class="mega-submenu-list">
+                            <li><a href="/products?search=iPhone%2016%20Pro%20Max">iPhone 16 Pro Max</a></li>
+                            <li><a href="/products?search=iPhone%2016%20Pro">iPhone 16 Pro</a></li>
+                            <li><a href="/products?search=iPhone%2015%20Pro%20Max">iPhone 15 Pro Max</a></li>
+                            <li><a href="/products?search=iPhone%2015">iPhone 15</a></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Panel danh mục con Tablet -->
+                    <div class="mega-submenu-panel" id="megaTabletPanel">
+                      <div class="row g-4">
+                        <div class="col-md-4">
+                          <h6 class="mega-submenu-title">Thương hiệu Tablet</h6>
+                          <ul class="mega-submenu-list">
+                            <li><a href="/products?category=tablet&brand=apple">iPad</a></li>
+                            <li><a href="/products?category=tablet&brand=samsung">Samsung Galaxy Tab</a></li>
+                            <li><a href="/products?category=tablet&brand=xiaomi">Xiaomi Pad</a></li>
+                            <li><a href="/products?category=tablet&brand=lenovo">Lenovo Tab</a></li>
+                          </ul>
+                        </div>
+                        <div class="col-md-4">
+                          <h6 class="mega-submenu-title">Theo giá Tablet</h6>
+                          <ul class="mega-submenu-list">
+                            <li><a href="/products?category=tablet&priceRange=2-5">2 - 5 triệu</a></li>
+                            <li><a href="/products?category=tablet&priceRange=5-10">5 - 10 triệu</a></li>
+                            <li><a href="/products?category=tablet&priceRange=10-20">10 - 20 triệu</a></li>
+                            <li><a href="/products?category=tablet&priceRange=20+">Trên 20 triệu</a></li>
+                          </ul>
+                        </div>
+                        <div class="col-md-4">
+                          <h6 class="mega-submenu-title">Tablet HOT</h6>
+                          <ul class="mega-submenu-list">
+                            <li><a href="/products?search=iPad%20Pro%20M4">iPad Pro M4</a></li>
+                            <li><a href="/products?search=iPad%20Air">iPad Air</a></li>
+                            <li><a href="/products?search=Galaxy%20Tab%20S10">Galaxy Tab S10</a></li>
+                            <li><a href="/products?search=Xiaomi%20Pad%206">Xiaomi Pad 6</a></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Panel danh mục con Apple -->
+                    <div class="mega-submenu-panel" id="megaApplePanel">
+                      <div class="row g-4">
+                        <div class="col-md-4">
+                          <h6 class="mega-submenu-title">Sản phẩm Apple</h6>
+                          <ul class="mega-submenu-list">
+                            <li><a href="/products?brand=apple&category=phone">iPhone</a></li>
+                            <li><a href="/products?brand=apple&category=tablet">iPad</a></li>
+                            <li><a href="/products?brand=apple&category=laptop">MacBook</a></li>
+                            <li><a href="/products?brand=apple&category=watch">Apple Watch</a></li>
+                          </ul>
+                        </div>
+                        <div class="col-md-4">
+                          <h6 class="mega-submenu-title">Theo giá Apple</h6>
+                          <ul class="mega-submenu-list">
+                            <li><a href="/products?brand=apple&priceRange=5-10">5 - 10 triệu</a></li>
+                            <li><a href="/products?brand=apple&priceRange=10-20">10 - 20 triệu</a></li>
+                            <li><a href="/products?brand=apple&priceRange=20-30">20 - 30 triệu</a></li>
+                            <li><a href="/products?brand=apple&priceRange=30+">Trên 30 triệu</a></li>
+                          </ul>
+                        </div>
+                        <div class="col-md-4">
+                          <h6 class="mega-submenu-title">Apple HOT</h6>
+                          <ul class="mega-submenu-list">
+                            <li><a href="/products?search=iPhone%2016%20Pro">iPhone 16 Pro</a></li>
+                            <li><a href="/products?search=MacBook%20Air%20M3">MacBook Air M3</a></li>
+                            <li><a href="/products?search=iPad%20Pro%20M4">iPad Pro M4</a></li>
+                            <li><a href="/products?search=Apple%20Watch%20Series%2010">Apple Watch Series 10</a></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Panel danh mục con Máy cũ -->
+                    <div class="mega-submenu-panel" id="megaUsedPanel">
+                      <div class="row g-4">
+                        <div class="col-md-4">
+                          <h6 class="mega-submenu-title">Thương hiệu máy cũ</h6>
+                          <ul class="mega-submenu-list">
+                            <li><a href="/products?category=used&brand=apple">iPhone cũ</a></li>
+                            <li><a href="/products?category=used&brand=samsung">Samsung cũ</a></li>
+                            <li><a href="/products?category=used&brand=xiaomi">Xiaomi cũ</a></li>
+                            <li><a href="/products?category=used&brand=oppo">OPPO cũ</a></li>
+                          </ul>
+                        </div>
+                        <div class="col-md-4">
+                          <h6 class="mega-submenu-title">Theo giá máy cũ</h6>
+                          <ul class="mega-submenu-list">
+                            <li><a href="/products?category=used&priceRange=1-3">1 - 3 triệu</a></li>
+                            <li><a href="/products?category=used&priceRange=3-5">3 - 5 triệu</a></li>
+                            <li><a href="/products?category=used&priceRange=5-8">5 - 8 triệu</a></li>
+                            <li><a href="/products?category=used&priceRange=8+">Trên 8 triệu</a></li>
+                          </ul>
+                        </div>
+                        <div class="col-md-4">
+                          <h6 class="mega-submenu-title">Máy cũ HOT</h6>
+                          <ul class="mega-submenu-list">
+                            <li><a href="/products?search=iPhone%2014%20cũ">iPhone 14 cũ</a></li>
+                            <li><a href="/products?search=iPhone%2013%20cũ">iPhone 13 cũ</a></li>
+                            <li><a href="/products?search=Galaxy%20S23%20cũ">Galaxy S23 cũ</a></li>
+                            <li><a href="/products?search=Xiaomi%2013%20cũ">Xiaomi 13 cũ</a></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Panel danh mục con Smart Watch -->
+                    <div class="mega-submenu-panel" id="megaWatchPanel">
+                      <div class="row g-4">
+                        <div class="col-md-4">
+                          <h6 class="mega-submenu-title">Thương hiệu đồng hồ</h6>
+                          <ul class="mega-submenu-list">
+                            <li><a href="/products?category=smartwatch&brand=apple">Apple Watch</a></li>
+                            <li><a href="/products?category=smartwatch&brand=samsung">Galaxy Watch</a></li>
+                            <li><a href="/products?category=smartwatch&brand=xiaomi">Xiaomi Watch</a></li>
+                            <li><a href="/products?category=smartwatch&brand=garmin">Garmin</a></li>
+                          </ul>
+                        </div>
+                        <div class="col-md-4">
+                          <h6 class="mega-submenu-title">Theo giá đồng hồ</h6>
+                          <ul class="mega-submenu-list">
+                            <li><a href="/products?category=smartwatch&priceRange=1-3">1 - 3 triệu</a></li>
+                            <li><a href="/products?category=smartwatch&priceRange=3-5">3 - 5 triệu</a></li>
+                            <li><a href="/products?category=smartwatch&priceRange=5-10">5 - 10 triệu</a></li>
+                            <li><a href="/products?category=smartwatch&priceRange=10+">Trên 10 triệu</a></li>
+                          </ul>
+                        </div>
+                        <div class="col-md-4">
+                          <h6 class="mega-submenu-title">Đồng hồ HOT</h6>
+                          <ul class="mega-submenu-list">
+                            <li><a href="/products?search=Apple%20Watch%20Series%2010">Apple Watch Series 10</a></li>
+                            <li><a href="/products?search=Galaxy%20Watch%207">Galaxy Watch 7</a></li>
+                            <li><a href="/products?search=Xiaomi%20Watch%202%20Pro">Xiaomi Watch 2 Pro</a></li>
+                            <li><a href="/products?search=Garmin%20Fenix%208">Garmin Fenix 8</a></li>
+                          </ul>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+          <% } %>
+        </li>
+      </ul>
+      
+      <!-- Hot Products ở giữa -->
+      <div class="hot-products-center d-none d-lg-flex align-items-center mx-auto">
+        <span class="hot-products-label fw-bold me-3">
+          <i class="bi bi-fire me-1"></i>Sản phẩm HOT:
+        </span>
+        <div class="hot-products-scroll">
+          <div class="hot-products-list d-flex">
+            <a href="/products?search=S26 Ultra" class="hot-product-item">S26 Ultra</a>
+            <a href="/products?search=S25 Ultra" class="hot-product-item">S25 Ultra</a>
+            <a href="/products?search=iPhone" class="hot-product-item">iPhone</a>
           </div>
-        </li>
-      </ul>
-      <form class="d-flex me-3" action="/products" method="GET" style="min-width: 300px;">
-        <div class="input-group">
-          <input class="form-control" type="search" name="search" placeholder="Tìm kiếm sản phẩm..." aria-label="Search">
-          <button class="btn btn-outline-light" type="submit">
-            <i class="bi bi-search"></i>
-          </button>
         </div>
-      </form>
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link position-relative" href="/cart">
-            <i class="bi bi-cart3" style="font-size: 1.2rem;"></i>
-            <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
-              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-counter">
-                <%= cartCount %>
-              </span>
-            <% } %>
-          </a>
-        </li>
-        <% if (user) { %>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-              <i class="bi bi-person-circle me-1" style="font-size: 1.2rem;"></i>
-              <span><%= user.fullName %></span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <% if (user.role === 'admin') { %>
-                <li><a class="dropdown-item" href="/admin/dashboard">
-                  <i class="bi bi-speedometer2 me-2"></i>Quản trị
-                </a></li>
-                <li><hr class="dropdown-divider"></li>
-              <% } %>
-              <li><a class="dropdown-item" href="/profile">
-                <i class="bi bi-person me-2"></i>Tài khoản
-              </a></li>
-              <li><a class="dropdown-item" href="/orders">
-                <i class="bi bi-bag me-2"></i>Đơn hàng
-              </a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href="/logout">
-                <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
-              </a></li>
-            </ul>
-          </li>
-        <% } else { %>
-          <li class="nav-item">
-            <a class="nav-link" href="/login">
-              <i class="bi bi-box-arrow-in-right me-1"></i>Đăng nhập
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link btn btn-outline-light ms-2" href="/register" style="padding: 0.4rem 1rem;">
-              Đăng ký
-            </a>
-          </li>
-        <% } %>
-      </ul>
+      </div>
+      
+      <div class="navbar-nav ms-auto">
+        <!-- Placeholder để cân bằng layout -->
+      </div>
     </div>
   </div>
 </nav>
+
+

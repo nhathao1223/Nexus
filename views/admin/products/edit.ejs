@@ -15,8 +15,11 @@
       <%- include('../partials/sidebar') %>
 
       <main class="col-md-10 ms-sm-auto px-md-4">
-        <div class="pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 class="h2">Chỉnh sửa sản phẩm</h1>
+          <a href="/admin/products" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Quay lại
+          </a>
         </div>
 
         <form action="/admin/products/<%= product._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
@@ -43,25 +46,15 @@
                 </div>
               </div>
 
-              <div class="mb-3">
-                <label class="form-label">Số lượng</label>
-                <input type="number" class="form-control" name="stock" value="<%= product.stock %>" required min="0">
-              </div>
-
               <div class="row">
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">Kích thước màn hình</label>
-                  <input type="text" class="form-control" name="screenSize" placeholder="VD: 6.3 inches" value="<%= product.screenSize || '' %>">
+                  <label class="form-label">Số lượng</label>
+                  <input type="number" class="form-control" name="stock" value="<%= product.stock %>" required min="0">
                 </div>
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">Dung lượng</label>
-                  <input type="text" class="form-control" name="storage" placeholder="VD: 256 GB" value="<%= product.storage || '' %>">
+                  <label class="form-label">Đánh giá (0-5)</label>
+                  <input type="number" class="form-control" name="rating" value="<%= product.rating || 0 %>" min="0" max="5" step="0.1">
                 </div>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label">Đánh giá (0-5)</label>
-                <input type="number" class="form-control" name="rating" value="<%= product.rating || 0 %>" min="0" max="5" step="0.1">
               </div>
 
               <!-- Current Images -->
@@ -101,31 +94,17 @@
               </div>
 
               <div class="mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" name="featured" id="featured" <%= product.featured ? 'checked' : '' %>>
-                  <label class="form-check-label" for="featured">
-                    Sản phẩm nổi bật
-                  </label>
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" name="flashSale" id="flashSale" <%= product.flashSale ? 'checked' : '' %>>
-                  <label class="form-check-label" for="flashSale">
-                    Hiển thị trong Flash Sale
-                  </label>
-                </div>
-              </div>
-
-              <div class="mb-3">
                 <label class="form-label">Thay đổi hình ảnh</label>
                 <input type="file" class="form-control" name="images" multiple accept="image/*">
                 <small class="text-muted">Có thể chọn nhiều ảnh (tối đa 5). Để trống nếu không muốn thay đổi.</small>
               </div>
 
-              <button type="submit" class="btn btn-primary w-100">Cập nhật sản phẩm</button>
-              <a href="/admin/products" class="btn btn-secondary w-100 mt-2">Hủy</a>
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-check-circle me-2"></i>Cập nhật sản phẩm
+              </button>
+              <a href="/admin/products" class="btn btn-secondary w-100 mt-2">
+                <i class="bi bi-x-circle me-2"></i>Hủy
+              </a>
             </div>
           </div>
         </form>

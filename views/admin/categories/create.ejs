@@ -15,8 +15,11 @@
       <%- include('../partials/sidebar') %>
 
       <main class="col-md-10 ms-sm-auto px-md-4">
-        <div class="pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 class="h2">Thêm danh mục mới</h1>
+          <a href="/admin/categories" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Quay lại
+          </a>
         </div>
 
         <form action="/admin/categories/create" method="POST">
@@ -40,8 +43,12 @@
                 </select>
               </div>
 
-              <button type="submit" class="btn btn-primary">Thêm danh mục</button>
-              <a href="/admin/categories" class="btn btn-secondary">Hủy</a>
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Thêm danh mục
+              </button>
+              <a href="/admin/categories" class="btn btn-secondary ms-2">
+                <i class="bi bi-x-circle me-2"></i>Hủy
+              </a>
             </div>
           </div>
         </form>

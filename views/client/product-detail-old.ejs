@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> - NEXUS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+  
+  <div class="container mt-4">
+    <div class="row">
+      <!-- Product Images -->
+      <div class="col-lg-6">
+        <div class="product-gallery">
+          <div class="main-image mb-3">
+            <img id="mainImage" src="<%= product.thumbnail || '/images/no-image.png' %>" class="img-fluid rounded" alt="<%= product.title %>">
+          </div>
+          
+          <!-- Thumbnail Images -->
+          <div class="row g-2">
+            <div class="col-2">
+              <img src="<%= product.thumbnail || '/images/no-image.png' %>" class="img-thumbnail thumbnail-img active" onclick="changeImage(this.src)" alt="<%= product.title %>">
+            </div>
+            <% if (product.images && product.images.length > 0) { %>
+              <% product.images.slice(0, 5).forEach(function(img) { %>
+                <div class="col-2">
+                  <img src="<%= img %>" class="img-thumbnail thumbnail-img" onclick="changeImage(this.src)" alt="<%= product.title %>">
+                </div>
+              <% }); %>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Product Commitment -->
+        <div class="commitment-section mt-4">
+          <h6 class="fw-bold mb-3">Cam kết sản phẩm</h6>
+          <div class="row g-3">
+            <div class="col-6">
+              <div class="commitment-item">
+                <i class="bi bi-shield-check text-success me-2"></i>
+                <small>Mới, đầy đủ phụ kiện từ nhà sản xuất</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="commitment-item">
+                <i class="bi bi-arrow-repeat text-primary me-2"></i>
+                <small>Bảo hành chính hãng toàn quốc. Bảo hành 12 tháng tại trung tâm bảo hành Ủy quyền Apple</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Info -->
+      <div class="col-lg-6">
+        <div class="product-info">
+          <h1 class="product-title"><%= product.title %></h1>
+          
+          <!-- Rating -->
+          <div class="rating-section mb-3">
+            <div class="d-flex align-items-center">
+              <div class="stars me-2">
+                <i class="bi bi-star-fill text-warning"></i>
+                <span class="fw-bold">5</span>
+                <span class="text-muted">(8 đánh giá)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Section -->
+          <div class="price-section mb-4">
+            <div class="current-price">
+              <% if (product.discountPercentage > 0) { %>
+                <h3 class="text-danger mb-1"><%= (product.price * (1 - product.discountPercentage/100)).toLocaleString('vi-VN') %>₫</h3>
+                <div class="original-price">
+                  <span class="text-decoration-line-through text-muted"><%= product.price.toLocaleString('vi-VN') %>₫</span>
+                  <span class="discount-badge ms-2">Trả góp 0%</span>
+                </div>
+              <% } else { %>
+                <h3 class="text-danger mb-1"><%= product.price.toLocaleString('vi-VN') %>₫</h3>
+                <div class="discount-badge">Trả góp 0%</div>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Storage Options -->
+          <div class="options-section mb-4">
+            <h6 class="fw-bold mb-3">Phiên bản</h6>
+            <div class="storage-options">
+              <div class="row g-2">
+                <div class="col-4">
+                  <div class="option-item">
+                    <input type="radio" name="storage" id="storage1" class="d-none">
+                    <label for="storage1" class="option-label">
+                      <div class="storage-size">1TB</div>
+                    </label>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="option-item">
+                    <input type="radio" name="storage" id="storage2" class="d-none">
+                    <label for="storage2" class="option-label">
+                      <div class="storage-size">512GB</div>
+                    </label>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="option-item">
+                    <input type="radio" name="storage" id="storage3" class="d-none" checked>
+                    <label for="storage3" class="option-label active">
+                      <div class="storage-size">256GB</div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Color Options -->
+          <div class="options-section mb-4">
+            <h6 class="fw-bold mb-3">Màu sắc</h6>
+            <div class="color-options">
+              <div class="row g-2">
+                <div class="col-4">
+                  <div class="color-item">
+                    <input type="radio" name="color" id="color1" class="d-none" checked>
+                    <label for="color1" class="color-label active">
+                      <div class="color-preview" style="background: linear-gradient(135deg, #D4A574, #B8956A)"></div>
+                      <div class="color-name">Cam Vũ Trụ</div>
+                      <div class="color-price"><%= (product.price * (1 - (product.discountPercentage || 0)/100)).toLocaleString('vi-VN') %>₫</div>
+                    </label>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="color-item">
+                    <input type="radio" name="color" id="color2" class="d-none">
+                    <label for="color2" class="color-label">
+                      <div class="color-preview" style="background: #2C3E50"></div>
+                      <div class="color-name">Xanh Đậm</div>
+                      <div class="color-price"><%= (product.price * (1 - (product.discountPercentage || 0)/100)).toLocaleString('vi-VN') %>₫</div>
+                    </label>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="color-item">
+                    <input type="radio" name="color" id="color3" class="d-none">
+                    <label for="color3" class="color-label">
+                      <div class="color-preview" style="background: #34495E"></div>
+                      <div class="color-name">Bạc</div>
+                      <div class="color-price"><%= (product.price * (1 - (product.discountPercentage || 0)/100)).toLocaleString('vi-VN') %>₫</div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Shipping Info -->
+          <div class="shipping-section mb-4">
+            <h6 class="fw-bold mb-3">Thông tin vận chuyển</h6>
+            <div class="shipping-info">
+              <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-geo-alt text-primary me-2"></i>
+                <span>Chọn địa chỉ nhận hàng để biết thời gian giao hàng</span>
+              </div>
+              <div class="location-selects">
+                <div class="row g-2">
+                  <div class="col-6">
+                    <select class="form-select form-select-sm">
+                      <option>Hồ Chí Minh</option>
+                      <option>Hà Nội</option>
+                      <option>Đà Nẵng</option>
+                    </select>
+                  </div>
+                  <div class="col-6">
+                    <select class="form-select form-select-sm">
+                      <option>Quận/Huyện</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <div class="row g-2">
+              <div class="col-8">
+                <button id="buyNowBtn" class="btn btn-danger btn-lg w-100 fw-bold" data-product-id="<%= product._id %>">
+                  <i class="bi bi-cart-plus me-2"></i>Mua Ngay
+                </button>
+              </div>
+              <div class="col-4">
+                <button id="addToCartBtn" class="btn btn-outline-primary btn-lg w-100" data-product-id="<%= product._id %>">
+                  <i class="bi bi-cart-plus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="row g-2 mt-2">
+              <div class="col-6">
+                <button class="btn btn-outline-primary w-100">
+                  <i class="bi bi-credit-card me-1"></i>Trả góp 0%
+                </button>
+              </div>
+              <div class="col-6">
+                <button class="btn btn-outline-danger w-100">
+                  <i class="bi bi-telephone me-1"></i>Liên hệ
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Description & Specs -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <div class="product-tabs">
+          <ul class="nav nav-tabs" id="productTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button" role="tab">
+                Thông số kỹ thuật
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">
+                Mô tả sản phẩm
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">
+                Đánh giá (8)
+              </button>
+            </li>
+          </ul>
+          
+          <div class="tab-content" id="productTabsContent">
+            <!-- Specifications Tab -->
+            <div class="tab-pane fade show active" id="specs" role="tabpanel">
+              <div class="specs-content p-4">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h6 class="fw-bold mb-3">Thông tin chung</h6>
+                    <table class="table table-borderless specs-table">
+                      <tr>
+                        <td class="spec-label">Thương hiệu:</td>
+                        <td class="spec-value">Apple</td>
+                      </tr>
+                      <tr>
+                        <td class="spec-label">Model:</td>
+                        <td class="spec-value"><%= product.title %></td>
+                      </tr>
+                      <tr>
+                        <td class="spec-label">Màn hình:</td>
+                        <td class="spec-value">6.7 inch, Super Retina XDR OLED</td>
+                      </tr>
+                      <tr>
+                        <td class="spec-label">Độ phân giải:</td>
+                        <td class="spec-value">2796 x 1290 pixels</td>
+                      </tr>
+                      <tr>
+                        <td class="spec-label">Chip xử lý:</td>
+                        <td class="spec-value">Apple A17 Pro</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="col-md-6">
+                    <h6 class="fw-bold mb-3">Camera & Pin</h6>
+                    <table class="table table-borderless specs-table">
+                      <tr>
+                        <td class="spec-label">Camera sau:</td>
+                        <td class="spec-value">48MP + 12MP + 12MP</td>
+                      </tr>
+                      <tr>
+                        <td class="spec-label">Camera trước:</td>
+                        <td class="spec-value">12MP</td>
+                      </tr>
+                      <tr>
+                        <td class="spec-label">Dung lượng pin:</td>
+                        <td class="spec-value">4422 mAh</td>
+                      </tr>
+                      <tr>
+                        <td class="spec-label">Sạc nhanh:</td>
+                        <td class="spec-value">27W</td>
+                      </tr>
+                      <tr>
+                        <td class="spec-label">Hệ điều hành:</td>
+                        <td class="spec-value">iOS 17</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Description Tab -->
+            <div class="tab-pane fade" id="description" role="tabpanel">
+              <div class="description-content p-4">
+                <p><%= product.description || 'Chưa có mô tả chi tiết cho sản phẩm này.' %></p>
+              </div>
+            </div>
+            
+            <!-- Reviews Tab -->
+            <div class="tab-pane fade" id="reviews" role="tabpanel">
+              <div class="reviews-content p-4">
+                <div class="text-center text-muted">
+                  <i class="bi bi-chat-dots fs-1"></i>
+                  <p class="mt-3">Chưa có đánh giá nào cho sản phẩm này</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Products -->
+    <% if (relatedProducts && relatedProducts.length > 0) { %>
+      <div class="row mt-5">
+        <div class="col-12">
+          <h4 class="mb-4">Sản phẩm liên quan</h4>
+          <div class="row g-4">
+            <% relatedProducts.forEach(function(product) { %>
+              <div class="col-lg-3 col-md-6">
+                <a href="/products/<%= product.slug %>" class="text-decoration-none">
+                  <div class="card h-100 product-card">
+                    <img src="<%= product.thumbnail || '/images/no-image.png' %>" class="card-img-top" alt="<%= product.title %>">
+                    <div class="card-body">
+                      <h6 class="card-title text-dark"><%= product.title %></h6>
+                      <p class="text-danger fw-bold mb-0"><%= product.price.toLocaleString('vi-VN') %>₫</p>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            <% }); %>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+
+  <%- include('partials/footer') %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/main.js"></script>
+  
+  <script>
+    // Change main image when clicking thumbnails
+    function changeImage(src) {
+      document.getElementById('mainImage').src = src;
+      
+      // Update active thumbnail
+      document.querySelectorAll('.thumbnail-img').forEach(function(img) {
+        img.classList.remove('active');
+      });
+      event.target.classList.add('active');
+    }
+    
+    // Handle storage selection
+    document.querySelectorAll('input[name="storage"]').forEach(function(input) {
+      input.addEventListener('change', function() {
+        document.querySelectorAll('.option-label').forEach(function(label) {
+          label.classList.remove('active');
+        });
+        this.nextElementSibling.classList.add('active');
+      });
+    });
+    
+    // Handle color selection
+    document.querySelectorAll('input[name="color"]').forEach(function(input) {
+      input.addEventListener('change', function() {
+        document.querySelectorAll('.color-label').forEach(function(label) {
+          label.classList.remove('active');
+        });
+        this.nextElementSibling.classList.add('active');
+      });
+    });
+
+    // Handle Buy Now button
+    document.getElementById('buyNowBtn').addEventListener('click', async function() {
+      const productId = this.getAttribute('data-product-id');
+      const quantity = 1; // Default quantity for buy now
+      
+      try {
+        // Add to cart first
+        const response = await fetch('/cart/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            productId: productId,
+            quantity: quantity
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Redirect to cart page immediately
+          window.location.href = '/cart';
+        } else {
+          alert(result.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra. Vui lòng thử lại.');
+      }
+    });
+
+    // Handle Add to Cart button
+    document.getElementById('addToCartBtn').addEventListener('click', async function() {
+      const productId = this.getAttribute('data-product-id');
+      const quantity = 1; // Default quantity
+      
+      try {
+        const response = await fetch('/cart/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            productId: productId,
+            quantity: quantity
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Show success message with product name
+          showToast(`Đã thêm "${result.productTitle}" vào giỏ hàng!`, 'success');
+          
+          // Update cart counter in header
+          updateCartCounter(result.cartCount);
+          
+          // Change button appearance temporarily
+          const originalHTML = this.innerHTML;
+          this.innerHTML = '<i class="bi bi-check-circle"></i>';
+          this.classList.remove('btn-outline-primary');
+          this.classList.add('btn-success');
+          
+          // Reset button after 2 seconds
+          setTimeout(() => {
+            this.innerHTML = originalHTML;
+            this.classList.remove('btn-success');
+            this.classList.add('btn-outline-primary');
+          }, 2000);
+        } else {
+          showToast(result.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('Có lỗi xảy ra. Vui lòng thử lại.', 'error');
+      }
+    });
+
+    // Toast notification function
+    function showToast(message, type = 'success') {
+      // Remove existing toast
+      const existingToast = document.querySelector('.toast-notification');
+      if (existingToast) {
+        existingToast.remove();
+      }
+
+      // Create toast
+      const toast = document.createElement('div');
+      toast.className = `toast-notification alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+      toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+      toast.innerHTML = `
+        <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      `;
+
+      document.body.appendChild(toast);
+
+      // Auto remove after 3 seconds
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.remove();
+        }
+      }, 3000);
+    }
+
+    // Update cart counter in header
+    function updateCartCounter(count) {
+      const counter = document.getElementById('cart-counter');
+      if (count > 0) {
+        if (counter) {
+          counter.textContent = count;
+        } else {
+          // Create counter if it doesn't exist
+          const cartLink = document.querySelector('a[href="/cart"]');
+          const newCounter = document.createElement('span');
+          newCounter.id = 'cart-counter';
+          newCounter.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger';
+          newCounter.textContent = count;
+          cartLink.appendChild(newCounter);
+        }
+      } else {
+        if (counter) {
+          counter.remove();
+        }
+      }
+    }
+  </script>
+</body>
+</html>

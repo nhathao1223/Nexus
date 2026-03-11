@@ -170,6 +170,17 @@ exports.validateAddToCart = [
     .isInt({ min: 1, max: 1000 }).withMessage('Số lượng phải từ 1-1000')
 ];
 
+exports.validateReview = [
+  body('rating')
+    .notEmpty().withMessage('Vui lòng chọn số sao')
+    .isInt({ min: 1, max: 5 }).withMessage('Số sao phải từ 1 đến 5'),
+
+  body('comment')
+    .trim()
+    .notEmpty().withMessage('Vui lòng nhập bình luận')
+    .isLength({ min: 2, max: 1000 }).withMessage('Bình luận phải từ 2-1000 ký tự')
+];
+
 exports.validateUpdateOrderStatus = [
   body('status')
     .notEmpty().withMessage('Trạng thái không được để trống')
