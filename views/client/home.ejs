@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title %> - NEXUS</title>
+  <title><%= title %> - viettablet</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
   <link rel="stylesheet" href="/css/style.css">
@@ -30,11 +30,250 @@
     </div>
   <% } %>
 
-  <!-- Hero Banner Section -->
-  <section class="hero-banner-section">
+  <!-- Hero + Category Section -->
+  <section class="hero-banner-section" id="homeCategories">
     <div class="container">
-      <div class="hero-banner-inner">
-        <img src="/images/banner.png" alt="Banner" class="hero-banner-image">
+      <div class="row g-3 align-items-stretch">
+        <!-- Left: Category sidebar luôn hiển thị (Home) -->
+        <div class="col-lg-3 d-none d-lg-block">
+          <%- include('partials/category-menu') %>
+        </div>
+
+        <!-- Right: Hero banner chỉ hiển thị hình ảnh -->
+        <div class="col-lg-9 col-12">
+          <div class="hero-banner-wrapper">
+            <div class="hero-banner-inner">
+              <img src="/images/banner.png" alt="Banner" class="hero-banner-image">
+            </div>
+
+            <!-- Panel danh mục con Điện thoại, đè lên banner -->
+            <div class="hero-submenu-panel" id="heroPhonePanel">
+              <div class="row g-4">
+                <!-- Thương hiệu -->
+                <div class="col-md-4">
+                  <h6 class="hero-submenu-title">Thương hiệu</h6>
+                  <ul class="hero-submenu-list">
+                    <li><a href="/products?brand=apple">Apple</a></li>
+                    <li><a href="/products?brand=samsung">Samsung</a></li>
+                    <li><a href="/products?brand=xiaomi">Xiaomi</a></li>
+                    <li><a href="/products?brand=oppo">OPPO</a></li>
+                    <li><a href="/products?brand=vivo">Vivo</a></li>
+                    <li><a href="/products?brand=realme">Realme</a></li>
+                    <li><a href="/products?brand=oneplus">OnePlus</a></li>
+                  </ul>
+                </div>
+
+                <!-- Theo giá sản phẩm -->
+                <div class="col-md-4">
+                  <h6 class="hero-submenu-title">Theo giá sản phẩm</h6>
+                  <ul class="hero-submenu-list">
+                    <li><a href="/products?priceRange=0-2">Dưới 2 triệu</a></li>
+                    <li><a href="/products?priceRange=2-4">Từ 2 - 4 triệu</a></li>
+                    <li><a href="/products?priceRange=4-7">Từ 4 - 7 triệu</a></li>
+                    <li><a href="/products?priceRange=7-13">Từ 7 - 13 triệu</a></li>
+                    <li><a href="/products?priceRange=13-20">Trên 13 triệu</a></li>
+                    <li><a href="/products?priceRange=20+">Trên 20 triệu</a></li>
+                  </ul>
+                </div>
+
+                <!-- Điện thoại HOT -->
+                <div class="col-md-4">
+                  <h6 class="hero-submenu-title">Điện thoại HOT</h6>
+                  <ul class="hero-submenu-list">
+                    <li><a href="/products?search=Galaxy%20S26%20Ultra">Galaxy S26 Ultra</a></li>
+                    <li><a href="/products?search=iPhone%2017%20Pro%20Max">iPhone 17 Pro Max</a></li>
+                    <li><a href="/products?search=Oppo%20Find%20X9">OPPO Find X9</a></li>
+                    <li><a href="/products?search=Xiaomi%2015T">Xiaomi 15T</a></li>
+                    <li><a href="/products?search=Z%20Fold7">Galaxy Z Fold7</a></li>
+                    <li><a href="/products?search=Z%20Flip7">Galaxy Z Flip7</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel danh mục con iPhone -->
+            <div class="hero-submenu-panel" id="heroiPhonePanel">
+              <div class="row g-4">
+                <div class="col-md-4">
+                  <h6 class="hero-submenu-title">Dòng iPhone</h6>
+                  <ul class="hero-submenu-list">
+                    <li><a href="/products?search=iPhone%2017">iPhone 17 Series</a></li>
+                    <li><a href="/products?search=iPhone%2016">iPhone 16 Series</a></li>
+                    <li><a href="/products?search=iPhone%2015">iPhone 15 Series</a></li>
+                    <li><a href="/products?search=iPhone%2014">iPhone 14 Series</a></li>
+                    <li><a href="/products?search=iPhone%2013">iPhone 13 Series</a></li>
+                    <li><a href="/products?search=iPhone%20SE">iPhone SE</a></li>
+                  </ul>
+                </div>
+                <div class="col-md-4">
+                  <h6 class="hero-submenu-title">Theo giá iPhone</h6>
+                  <ul class="hero-submenu-list">
+                    <li><a href="/products?brand=apple&priceRange=10-15">10 - 15 triệu</a></li>
+                    <li><a href="/products?brand=apple&priceRange=15-20">15 - 20 triệu</a></li>
+                    <li><a href="/products?brand=apple&priceRange=20-25">20 - 25 triệu</a></li>
+                    <li><a href="/products?brand=apple&priceRange=25-30">25 - 30 triệu</a></li>
+                    <li><a href="/products?brand=apple&priceRange=30+">Trên 30 triệu</a></li>
+                  </ul>
+                </div>
+                <div class="col-md-4">
+                  <h6 class="hero-submenu-title">iPhone HOT</h6>
+                  <ul class="hero-submenu-list">
+                    <li><a href="/products?search=iPhone%2016%20Pro%20Max">iPhone 16 Pro Max</a></li>
+                    <li><a href="/products?search=iPhone%2016%20Pro">iPhone 16 Pro</a></li>
+                    <li><a href="/products?search=iPhone%2015%20Pro%20Max">iPhone 15 Pro Max</a></li>
+                    <li><a href="/products?search=iPhone%2015">iPhone 15</a></li>
+                    <li><a href="/products?search=iPhone%2014%20Pro">iPhone 14 Pro</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel danh mục con Tablet -->
+            <div class="hero-submenu-panel" id="heroTabletPanel">
+              <div class="row g-4">
+                <div class="col-md-4">
+                  <h6 class="hero-submenu-title">Thương hiệu Tablet</h6>
+                  <ul class="hero-submenu-list">
+                    <li><a href="/products?category=tablet&brand=apple">iPad</a></li>
+                    <li><a href="/products?category=tablet&brand=samsung">Samsung Galaxy Tab</a></li>
+                    <li><a href="/products?category=tablet&brand=xiaomi">Xiaomi Pad</a></li>
+                    <li><a href="/products?category=tablet&brand=lenovo">Lenovo Tab</a></li>
+                    <li><a href="/products?category=tablet&brand=huawei">Huawei MatePad</a></li>
+                  </ul>
+                </div>
+                <div class="col-md-4">
+                  <h6 class="hero-submenu-title">Theo giá Tablet</h6>
+                  <ul class="hero-submenu-list">
+                    <li><a href="/products?category=tablet&priceRange=2-5">2 - 5 triệu</a></li>
+                    <li><a href="/products?category=tablet&priceRange=5-10">5 - 10 triệu</a></li>
+                    <li><a href="/products?category=tablet&priceRange=10-20">10 - 20 triệu</a></li>
+                    <li><a href="/products?category=tablet&priceRange=20-30">20 - 30 triệu</a></li>
+                    <li><a href="/products?category=tablet&priceRange=30+">Trên 30 triệu</a></li>
+                  </ul>
+                </div>
+                <div class="col-md-4">
+                  <h6 class="hero-submenu-title">Tablet HOT</h6>
+                  <ul class="hero-submenu-list">
+                    <li><a href="/products?search=iPad%20Pro%20M4">iPad Pro M4</a></li>
+                    <li><a href="/products?search=iPad%20Air">iPad Air</a></li>
+                    <li><a href="/products?search=Galaxy%20Tab%20S10">Galaxy Tab S10</a></li>
+                    <li><a href="/products?search=Xiaomi%20Pad%206">Xiaomi Pad 6</a></li>
+                    <li><a href="/products?search=MatePad%20Pro">MatePad Pro</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel danh mục con Apple Chính Hãng -->
+            <div class="hero-submenu-panel" id="heroApplePanel">
+              <div class="row g-4">
+                <div class="col-md-4">
+                  <h6 class="hero-submenu-title">Sản phẩm Apple</h6>
+                  <ul class="hero-submenu-list">
+                    <li><a href="/products?brand=apple&category=phone">iPhone</a></li>
+                    <li><a href="/products?brand=apple&category=tablet">iPad</a></li>
+                    <li><a href="/products?brand=apple&category=laptop">MacBook</a></li>
+                    <li><a href="/products?brand=apple&category=watch">Apple Watch</a></li>
+                    <li><a href="/products?brand=apple&category=airpods">AirPods</a></li>
+                    <li><a href="/products?brand=apple&category=accessories">Phụ kiện Apple</a></li>
+                  </ul>
+                </div>
+                <div class="col-md-4">
+                  <h6 class="hero-submenu-title">Theo giá Apple</h6>
+                  <ul class="hero-submenu-list">
+                    <li><a href="/products?brand=apple&priceRange=5-10">5 - 10 triệu</a></li>
+                    <li><a href="/products?brand=apple&priceRange=10-20">10 - 20 triệu</a></li>
+                    <li><a href="/products?brand=apple&priceRange=20-30">20 - 30 triệu</a></li>
+                    <li><a href="/products?brand=apple&priceRange=30-50">30 - 50 triệu</a></li>
+                    <li><a href="/products?brand=apple&priceRange=50+">Trên 50 triệu</a></li>
+                  </ul>
+                </div>
+                <div class="col-md-4">
+                  <h6 class="hero-submenu-title">Apple HOT</h6>
+                  <ul class="hero-submenu-list">
+                    <li><a href="/products?search=iPhone%2016%20Pro">iPhone 16 Pro</a></li>
+                    <li><a href="/products?search=MacBook%20Air%20M3">MacBook Air M3</a></li>
+                    <li><a href="/products?search=iPad%20Pro%20M4">iPad Pro M4</a></li>
+                    <li><a href="/products?search=Apple%20Watch%20Series%2010">Apple Watch Series 10</a></li>
+                    <li><a href="/products?search=AirPods%20Pro%203">AirPods Pro 3</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel danh mục con Máy cũ -->
+            <div class="hero-submenu-panel" id="heroUsedPanel">
+              <div class="row g-4">
+                <div class="col-md-4">
+                  <h6 class="hero-submenu-title">Thương hiệu máy cũ</h6>
+                  <ul class="hero-submenu-list">
+                    <li><a href="/products?category=used&brand=apple">iPhone cũ</a></li>
+                    <li><a href="/products?category=used&brand=samsung">Samsung cũ</a></li>
+                    <li><a href="/products?category=used&brand=xiaomi">Xiaomi cũ</a></li>
+                    <li><a href="/products?category=used&brand=oppo">OPPO cũ</a></li>
+                    <li><a href="/products?category=used&brand=vivo">Vivo cũ</a></li>
+                  </ul>
+                </div>
+                <div class="col-md-4">
+                  <h6 class="hero-submenu-title">Theo giá máy cũ</h6>
+                  <ul class="hero-submenu-list">
+                    <li><a href="/products?category=used&priceRange=1-3">1 - 3 triệu</a></li>
+                    <li><a href="/products?category=used&priceRange=3-5">3 - 5 triệu</a></li>
+                    <li><a href="/products?category=used&priceRange=5-8">5 - 8 triệu</a></li>
+                    <li><a href="/products?category=used&priceRange=8-15">8 - 15 triệu</a></li>
+                    <li><a href="/products?category=used&priceRange=15+">Trên 15 triệu</a></li>
+                  </ul>
+                </div>
+                <div class="col-md-4">
+                  <h6 class="hero-submenu-title">Máy cũ HOT</h6>
+                  <ul class="hero-submenu-list">
+                    <li><a href="/products?search=iPhone%2014%20cũ">iPhone 14 cũ</a></li>
+                    <li><a href="/products?search=iPhone%2013%20cũ">iPhone 13 cũ</a></li>
+                    <li><a href="/products?search=Galaxy%20S23%20cũ">Galaxy S23 cũ</a></li>
+                    <li><a href="/products?search=Xiaomi%2013%20cũ">Xiaomi 13 cũ</a></li>
+                    <li><a href="/products?search=OPPO%20Find%20X5%20cũ">OPPO Find X5 cũ</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel danh mục con Smart Watch -->
+            <div class="hero-submenu-panel" id="heroWatchPanel">
+              <div class="row g-4">
+                <div class="col-md-4">
+                  <h6 class="hero-submenu-title">Thương hiệu đồng hồ</h6>
+                  <ul class="hero-submenu-list">
+                    <li><a href="/products?category=smartwatch&brand=apple">Apple Watch</a></li>
+                    <li><a href="/products?category=smartwatch&brand=samsung">Galaxy Watch</a></li>
+                    <li><a href="/products?category=smartwatch&brand=xiaomi">Xiaomi Watch</a></li>
+                    <li><a href="/products?category=smartwatch&brand=garmin">Garmin</a></li>
+                    <li><a href="/products?category=smartwatch&brand=amazfit">Amazfit</a></li>
+                  </ul>
+                </div>
+                <div class="col-md-4">
+                  <h6 class="hero-submenu-title">Theo giá đồng hồ</h6>
+                  <ul class="hero-submenu-list">
+                    <li><a href="/products?category=smartwatch&priceRange=1-3">1 - 3 triệu</a></li>
+                    <li><a href="/products?category=smartwatch&priceRange=3-5">3 - 5 triệu</a></li>
+                    <li><a href="/products?category=smartwatch&priceRange=5-10">5 - 10 triệu</a></li>
+                    <li><a href="/products?category=smartwatch&priceRange=10-15">10 - 15 triệu</a></li>
+                    <li><a href="/products?category=smartwatch&priceRange=15+">Trên 15 triệu</a></li>
+                  </ul>
+                </div>
+                <div class="col-md-4">
+                  <h6 class="hero-submenu-title">Đồng hồ HOT</h6>
+                  <ul class="hero-submenu-list">
+                    <li><a href="/products?search=Apple%20Watch%20Series%2010">Apple Watch Series 10</a></li>
+                    <li><a href="/products?search=Galaxy%20Watch%207">Galaxy Watch 7</a></li>
+                    <li><a href="/products?search=Xiaomi%20Watch%202%20Pro">Xiaomi Watch 2 Pro</a></li>
+                    <li><a href="/products?search=Garmin%20Fenix%208">Garmin Fenix 8</a></li>
+                    <li><a href="/products?search=Amazfit%20GTR%204">Amazfit GTR 4</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -149,7 +388,7 @@
                         <i class="bi bi-star text-warning"></i>
                       <% } %>
                     <% } %>
-                    <span class="ms-2 text-muted small">(0 đánh giá)</span>
+                    <span class="ms-2 text-muted small">(<%= product.reviewsCount || 0 %> đánh giá)</span>
                   </div>
                 </div>
               </div>
@@ -340,7 +579,7 @@
                           <i class="bi bi-star text-warning"></i>
                         <% } %>
                       <% } %>
-                      <span class="ms-2 text-muted small">(0 đánh giá)</span>
+                      <span class="ms-2 text-muted small">(<%= product.reviewsCount || 0 %> đánh giá)</span>
                     </div>
                   </div>
                 </div>
@@ -455,27 +694,132 @@
       updateCountdown();
       setInterval(updateCountdown, 1000);
     }
+
+    // Hiển thị panel danh mục con khi hover
+    document.addEventListener('DOMContentLoaded', function () {
+      // Mapping các danh mục với panel tương ứng
+      const categoryMappings = [
+        { itemId: 'homeCatPhone', panelId: 'heroPhonePanel' },
+        { itemId: 'homeCatiPhone', panelId: 'heroiPhonePanel' },
+        { itemId: 'homeCatTablet', panelId: 'heroTabletPanel' },
+        { itemId: 'homeCatApple', panelId: 'heroApplePanel' },
+        { itemId: 'homeCatUsed', panelId: 'heroUsedPanel' },
+        { itemId: 'homeCatWatch', panelId: 'heroWatchPanel' }
+      ];
+
+      categoryMappings.forEach(function(mapping) {
+        var categoryItem = document.getElementById(mapping.itemId);
+        var panel = document.getElementById(mapping.panelId);
+        
+        if (!categoryItem || !panel) return;
+
+        var hideTimeout;
+
+        function showPanel() {
+          // Ẩn tất cả panel khác
+          categoryMappings.forEach(function(otherMapping) {
+            var otherPanel = document.getElementById(otherMapping.panelId);
+            var otherItem = document.getElementById(otherMapping.itemId);
+            if (otherPanel && otherMapping.panelId !== mapping.panelId) {
+              otherPanel.classList.remove('show');
+            }
+            if (otherItem && otherMapping.itemId !== mapping.itemId) {
+              otherItem.classList.remove('active');
+            }
+          });
+
+          if (hideTimeout) clearTimeout(hideTimeout);
+          panel.classList.add('show');
+          categoryItem.classList.add('active');
+        }
+
+        function scheduleHide() {
+          hideTimeout = setTimeout(function () {
+            panel.classList.remove('show');
+            categoryItem.classList.remove('active');
+          }, 120);
+        }
+
+        categoryItem.addEventListener('mouseenter', showPanel);
+        categoryItem.addEventListener('mouseleave', scheduleHide);
+        panel.addEventListener('mouseenter', showPanel);
+        panel.addEventListener('mouseleave', scheduleHide);
+      });
+    });
   </script>
   <% } %>
   
   <style>
     /* Hero Banner Section */
     .hero-banner-section {
-      padding: 1.75rem 0 2.5rem;
+      padding: 1.2rem 0 1.8rem;
       background: transparent;
     }
 
+    .hero-banner-wrapper {
+      position: relative;
+      height: 100%;
+    }
+
     .hero-banner-inner {
-      border-radius: 16px;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+      height: 100%;
+      display: block;
     }
 
     .hero-banner-image {
       width: 100%;
-      height: auto;
+      height: 100%;
       display: block;
-      object-fit: contain;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    /* Panel danh mục con trên banner */
+    .hero-submenu-panel {
+      position: absolute;
+      inset: 0;
+      background: #ffffff;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      border-radius: 12px;
+      display: none;
+      z-index: 2;
+    }
+
+    .hero-submenu-panel.show {
+      display: block;
+    }
+
+    .hero-submenu-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #d70018;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-submenu-list {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+      font-size: 0.9rem;
+    }
+
+    .hero-submenu-list li + li {
+      margin-top: 0.25rem;
+    }
+
+    .hero-submenu-list a {
+      color: #333;
+      text-decoration: none;
+    }
+
+    .hero-submenu-list a:hover {
+      color: #d70018;
+      text-decoration: underline;
     }
 
     /* Flash Sale */
