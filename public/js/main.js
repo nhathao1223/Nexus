@@ -154,6 +154,57 @@ document.addEventListener('DOMContentLoaded', function() {
     // Start auto scroll
     startAutoScroll();
   }
+
+  // Dropdown hover functionality for navbar
+  const dropdownElements = document.querySelectorAll('.navbar .dropdown');
+  
+  dropdownElements.forEach(dropdown => {
+    const dropdownToggle = dropdown.querySelector('.dropdown-toggle');
+    const dropdownMenu = dropdown.querySelector('.dropdown-menu');
+    
+    if (dropdownToggle && dropdownMenu) {
+      let hideTimeout;
+      
+      // Show dropdown on hover
+      dropdown.addEventListener('mouseenter', () => {
+        clearTimeout(hideTimeout);
+        dropdownMenu.classList.add('show');
+        dropdownToggle.setAttribute('aria-expanded', 'true');
+      });
+      
+      // Hide dropdown when mouse leaves
+      dropdown.addEventListener('mouseleave', () => {
+        hideTimeout = setTimeout(() => {
+          dropdownMenu.classList.remove('show');
+          dropdownToggle.setAttribute('aria-expanded', 'false');
+        }, 200); // Small delay to prevent flickering
+      });
+      
+      // Keep click functionality for mobile
+      dropdownToggle.addEventListener('click', (e) => {
+        if (window.innerWidth <= 992) {
+          e.preventDefault();
+          const isShown = dropdownMenu.classList.contains('show');
+          
+          // Close all other dropdowns
+          document.querySelectorAll('.navbar .dropdown-menu.show').forEach(menu => {
+            if (menu !== dropdownMenu) {
+              menu.classList.remove('show');
+            }
+          });
+          
+          // Toggle current dropdown
+          if (isShown) {
+            dropdownMenu.classList.remove('show');
+            dropdownToggle.setAttribute('aria-expanded', 'false');
+          } else {
+            dropdownMenu.classList.add('show');
+            dropdownToggle.setAttribute('aria-expanded', 'true');
+          }
+        }
+      });
+    }
+  });
 });
 
 // Toast notification function
@@ -223,3 +274,93 @@ async function updateCartCounter() {
     console.error('Error updating cart counter:', error);
   }
 }
+// Mega Menu Submenu functionality
+document.addEventListener('DOMContentLoaded', function() {
+  // Mapping các danh mục với panel tương ứng trong mega menu
+  const megaCategoryMappings = [
+    { itemId: 'homeCatPhone', panelId: 'megaPhonePanel' },
+    { itemId: 'homeCatiPhone', panelId: 'megaiPhonePanel' },
+    { itemId: 'homeCatTablet', panelId: 'megaTabletPanel' },
+    { itemId: 'homeCatApple', panelId: 'megaApplePanel' },
+    { itemId: 'homeCatUsed', panelId: 'megaUsedPanel' },
+    { itemId: 'homeCatWatch', panelId: 'megaWatchPanel' }
+  ];
+
+  // Chỉ áp dụng cho mega menu (không phải trang home)
+  const megaMenu = document.querySelector('.mega-menu-categories');
+  if (megaMenu) {
+    megaCategoryMappings.forEach(function(mapping) {
+      var categoryItem = megaMenu.querySelector('#' + mapping.itemId);
+      var panel = megaMenu.querySelector('#' + mapping.panelId);
+      
+      if (!categoryItem || !panel) return;
+
+      var hideTimeout;
+
+      function showPanel() {
+        // Ẩn tất cả panel khác
+        megaCategoryMappings.forEach(function(otherMapping) {
+          var otherPanel = megaMenu.querySelector('#' + otherMapping.panelId);
+          var otherItem = megaMenu.querySelector('#' + otherMapping.itemId);
+          if (otherPanel && otherMapping.panelId !== mapping.panelId) {
+            otherPanel.classList.remove('show');
+          }
+          if (otherItem && otherMapping.itemId !== mapping.itemId) {
+            otherItem.classList.remove('active');
+          }
+        });
+
+        if (hideTimeout) clearTimeout(hideTimeout);
+        panel.classList.add('show');
+        categoryItem.classList.add('active');
+      }
+
+      function scheduleHide() {
+        hideTimeout = setTimeout(function () {
+          panel.classList.remove('show');
+          categoryItem.classList.remove('active');
+        }, 120);
+      }
+
+      // Sử dụng logic giống trang home
+      categoryItem.addEventListener('mouseenter', showPanel);
+      categoryItem.addEventListener('mouseleave', scheduleHide);
+      panel.addEventListener('mouseenter', function() {
+        if (hideTimeout) clearTimeout(hideTimeout);
+        panel.classList.add('show');
+        categoryItem.classList.add('active');
+      });
+      panel.addEventListener('mouseleave', scheduleHide);
+    });
+
+    // Hiển thị panel đầu tiên mặc định khi hover vào mega menu
+    megaMenu.addEventListener('mouseenter', function() {
+      const firstPanel = megaMenu.querySelector('#megaPhonePanel');
+      const firstItem = megaMenu.querySelector('#homeCatPhone');
+      
+      if (firstPanel && firstItem) {
+        // Ẩn tất cả panels khác trước
+        megaCategoryMappings.forEach(function(mapping) {
+          var panel = megaMenu.querySelector('#' + mapping.panelId);
+          var item = megaMenu.querySelector('#' + mapping.itemId);
+          if (panel) panel.classList.remove('show');
+          if (item) item.classList.remove('active');
+        });
+        
+        // Hiển thị panel đầu tiên
+        firstPanel.classList.add('show');
+        firstItem.classList.add('active');
+      }
+    });
+
+    megaMenu.addEventListener('mouseleave', function() {
+      // Ẩn tất cả panels khi rời khỏi mega menu
+      megaCategoryMappings.forEach(function(mapping) {
+        var panel = megaMenu.querySelector('#' + mapping.panelId);
+        var item = megaMenu.querySelector('#' + mapping.itemId);
+        if (panel) panel.classList.remove('show');
+        if (item) item.classList.remove('active');
+      });
+    });
+  }
+});
