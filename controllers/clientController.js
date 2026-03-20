@@ -168,7 +168,10 @@ exports.getProductDetail = async (req, res) => {
       slug: req.params.slug, 
       deleted: false,
       status: 'active'
-    }).populate('category');
+    }).populate({
+      path: 'category',
+      select: 'name slug specificationFields'
+    });
 
     if (!product) {
       return res.status(404).render('client/404', { title: 'Không tìm thấy sản phẩm' });

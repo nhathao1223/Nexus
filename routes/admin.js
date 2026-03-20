@@ -374,6 +374,9 @@ router.put('/categories/:id', categoryController.putEditCategory);
  */
 router.delete('/categories/:id', categoryController.deleteCategory);
 
+// API endpoint for getting category specifications
+router.get('/categories/:categoryId/specifications', adminController.getCategorySpecifications);
+
 /**
  * @swagger
  * /admin/orders:

@@ -334,20 +334,6 @@ SESSION_SECRET      # Secret key for session encryption
 NODE_ENV            # Environment (development/production)
 ```
 
-## 🚀 Deployment
-
-### Prepare for production:
-1. Set `NODE_ENV=production` in `.env`
-2. Use a production MongoDB instance
-3. Set a strong `SESSION_SECRET`
-4. Configure proper CORS if needed
-5. Use environment-specific configurations
-
-### Deploy to hosting:
-- Heroku, Railway, Render, or any Node.js hosting platform
-- Ensure MongoDB is accessible from your hosting provider
-- Set environment variables on the hosting platform
-
 ## 📚 Additional Resources
 
 - [Express.js Documentation](https://expressjs.com/)

@@ -99,7 +99,7 @@ exports.getCreateProduct = async (req, res) => {
 
 exports.postCreateProduct = async (req, res) => {
   try {
-    const { title, description, price, discountPercentage, stock, category, status, screenSize, storage, rating } = req.body;
+    const { title, description, price, discountPercentage, stock, category, status, screenSize, storage, rating, specifications, videos, primaryImageIndex } = req.body;
     
     // Validate required fields manually for better error handling
     const errors = [];
@@ -123,7 +123,43 @@ exports.postCreateProduct = async (req, res) => {
       .replace(/\s+/g, '-');
 
     const images = req.files ? req.files.map(file => `/uploads/products/${file.filename}`) : [];
-    const thumbnail = images[0] || '';
+    
+    // Determine primary image index and thumbnail
+    const primaryIndex = parseInt(primaryImageIndex) || 0;
+    const thumbnail = images[primaryIndex] || images[0] || '';
+
+    // Process dynamic specifications
+    const processedSpecs = new Map();
+    if (specifications && typeof specifications === 'object') {
+      Object.keys(specifications).forEach(key => {
+        if (specifications[key] && specifications[key].trim() !== '') {
+          processedSpecs.set(key, specifications[key].trim());
+        }
+      });
+    }
+
+    // Process videos
+    const processedVideos = [];
+    if (videos && Array.isArray(videos)) {
+      videos.forEach(video => {
+        if (video.type && (video.url || video.file)) {
+          const videoData = {
+            type: video.type,
+            title: video.title || '',
+            url: video.url || '',
+            videoId: video.videoId || '',
+            thumbnail: video.thumbnail || ''
+          };
+          
+          // For YouTube videos, auto-generate thumbnail if not provided
+          if (video.type === 'youtube' && video.videoId && !video.thumbnail) {
+            videoData.thumbnail = `https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg`;
+          }
+          
+          processedVideos.push(videoData);
+        }
+      });
+    }
 
     const product = new Product({
       title: title.trim(),
@@ -135,10 +171,13 @@ exports.postCreateProduct = async (req, res) => {
       category,
       images,
       thumbnail,
+      primaryImageIndex: primaryIndex,
       status: status || 'active',
       screenSize: screenSize ? screenSize.trim() : '',
       storage: storage ? storage.trim() : '',
-      rating: rating ? parseFloat(rating) : 0
+      rating: rating ? parseFloat(rating) : 0,
+      specifications: processedSpecs,
+      videos: processedVideos
     });
 
     await product.save();
@@ -187,7 +226,7 @@ exports.getEditProduct = async (req, res) => {
 exports.putEditProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, price, discountPercentage, stock, category, status, screenSize, storage, rating } = req.body;
+    const { title, description, price, discountPercentage, stock, category, status, screenSize, storage, rating, specifications, videos, primaryImageIndex, currentPrimaryIndex } = req.body;
     
     // Validate required fields manually for better error handling
     const errors = [];
@@ -208,6 +247,39 @@ exports.putEditProduct = async (req, res) => {
       .replace(/[^a-z0-9\s-]/g, '')
       .replace(/\s+/g, '-');
 
+    // Process dynamic specifications
+    const processedSpecs = new Map();
+    if (specifications && typeof specifications === 'object') {
+      Object.keys(specifications).forEach(key => {
+        if (specifications[key] && specifications[key].trim() !== '') {
+          processedSpecs.set(key, specifications[key].trim());
+        }
+      });
+    }
+
+    // Process videos
+    const processedVideos = [];
+    if (videos && Array.isArray(videos)) {
+      videos.forEach(video => {
+        if (video.type && (video.url || video.file)) {
+          const videoData = {
+            type: video.type,
+            title: video.title || '',
+            url: video.url || '',
+            videoId: video.videoId || '',
+            thumbnail: video.thumbnail || ''
+          };
+          
+          // For YouTube videos, auto-generate thumbnail if not provided
+          if (video.type === 'youtube' && video.videoId && !video.thumbnail) {
+            videoData.thumbnail = `https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg`;
+          }
+          
+          processedVideos.push(videoData);
+        }
+      });
+    }
+
     const updateData = {
       title: title.trim(),
       slug,
@@ -219,14 +291,31 @@ exports.putEditProduct = async (req, res) => {
       status: status || 'active',
       screenSize: screenSize ? screenSize.trim() : '',
       storage: storage ? storage.trim() : '',
-      rating: rating ? parseFloat(rating) : 0
+      rating: rating ? parseFloat(rating) : 0,
+      specifications: processedSpecs,
+      videos: processedVideos
     };
 
-    // Nếu có upload ảnh mới
+    // Get current product to access existing images
+    const currentProduct = await Product.findById(id);
+
+    // Handle image updates
     if (req.files && req.files.length > 0) {
-      const images = req.files.map(file => `/uploads/products/${file.filename}`);
-      updateData.images = images;
-      updateData.thumbnail = images[0];
+      // New images uploaded
+      const newImages = req.files.map(file => `/uploads/products/${file.filename}`);
+      const newPrimaryIndex = parseInt(primaryImageIndex) || 0;
+      
+      updateData.images = newImages;
+      updateData.thumbnail = newImages[newPrimaryIndex] || newImages[0];
+      updateData.primaryImageIndex = newPrimaryIndex;
+    } else {
+      // No new images, just update primary index for existing images
+      const updatedPrimaryIndex = parseInt(currentPrimaryIndex) || 0;
+      
+      if (currentProduct.images && currentProduct.images.length > 0) {
+        updateData.thumbnail = currentProduct.images[updatedPrimaryIndex] || currentProduct.images[0];
+        updateData.primaryImageIndex = updatedPrimaryIndex;
+      }
     }
 
     await Product.findByIdAndUpdate(id, updateData);
@@ -439,5 +528,25 @@ exports.updateUserStatus = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Có lỗi xảy ra' });
+  }
+};
+
+// API to get category specifications
+exports.getCategorySpecifications = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+    const category = await Category.findById(categoryId);
+    
+    if (!category) {
+      return res.json({ success: false, message: 'Category not found' });
+    }
+
+    res.json({ 
+      success: true, 
+      specificationFields: category.specificationFields || [] 
+    });
+  } catch (error) {
+    console.error('Error getting category specifications:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 };

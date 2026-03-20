@@ -41,6 +41,21 @@ const productSchema = new mongoose.Schema({
   images: [{
     type: String
   }],
+  primaryImageIndex: {
+    type: Number,
+    default: 0
+  }, // Index của ảnh chính trong mảng images
+  videos: [{
+    type: {
+      type: String,
+      enum: ['video', 'youtube'],
+      default: 'video'
+    },
+    url: String,
+    videoId: String, // For YouTube videos
+    thumbnail: String,
+    title: String
+  }],
   thumbnail: String,
   status: {
     type: String,
@@ -64,6 +79,11 @@ const productSchema = new mongoose.Schema({
   storage: {
     type: String,
     default: ''
+  },
+  specifications: {
+    type: Map,
+    of: mongoose.Schema.Types.Mixed,
+    default: new Map()
   },
   rating: {
     type: Number,

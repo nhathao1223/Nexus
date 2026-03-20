@@ -2,8 +2,9 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Tạo thư mục uploads nếu chưa tồn tại
-const uploadDir = 'uploads/products';
+// Tạo thư mục uploads nếu chưa tồn tại (chỉ cho local development)
+const uploadDir = process.env.NODE_ENV === 'production' ? '/tmp/uploads/products' : 'uploads/products';
+
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }

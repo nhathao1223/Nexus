@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo Product Gallery</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/css/product-detail.css">
+</head>
+<body>
+  <div class="container mt-4">
+    <h2>Demo Product Gallery</h2>
+    
+    <!-- Product Gallery -->
+    <div class="product-gallery-box">
+      <!-- Main Image/Video Container -->
+      <div class="main-image-wrapper">
+        <div class="main-image-container">
+          <!-- Loading Spinner -->
+          <div class="gallery-loading" id="galleryLoading">
+            <div class="spinner"></div>
+          </div>
+          
+          <!-- Main Image -->
+          <img id="mainImage" 
+               src="https://via.placeholder.com/600x400/007bff/ffffff?text=Laptop+Image+1" 
+               class="main-product-img active" 
+               alt="Demo Laptop"
+               onload="hideGalleryLoading()">
+          
+          <!-- Main Video (hidden by default) -->
+          <div id="mainVideo" class="main-video-container" style="display: none;">
+            <video id="videoPlayer" class="main-product-video" controls>
+              <source src="" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <div id="youtubePlayer" class="youtube-player"></div>
+          </div>
+          
+          <!-- Navigation Arrows -->
+          <button class="gallery-nav gallery-nav-prev" id="prevBtn" onclick="navigateGallery(-1)">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <button class="gallery-nav gallery-nav-next" id="nextBtn" onclick="navigateGallery(1)">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+          
+          <!-- Media Counter -->
+          <div class="media-counter">
+            <span id="currentIndex">1</span> / <span id="totalMedia">6</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Thumbnail Gallery -->
+      <div class="thumbnail-gallery-container">
+        <div class="thumbnail-gallery-grid" id="thumbnailGallery">
+          <!-- Image thumbnails -->
+          <div class="thumbnail-item active" 
+               data-type="image" 
+               data-src="https://via.placeholder.com/600x400/007bff/ffffff?text=Laptop+Image+1"
+               onclick="selectMedia(0, 'image', 'https://via.placeholder.com/600x400/007bff/ffffff?text=Laptop+Image+1')">
+            <img src="https://via.placeholder.com/80x80/007bff/ffffff?text=1" alt="Image 1">
+            <div class="thumbnail-overlay"></div>
+          </div>
+          
+          <div class="thumbnail-item" 
+               data-type="image" 
+               data-src="https://via.placeholder.com/600x400/28a745/ffffff?text=Laptop+Image+2"
+               onclick="selectMedia(1, 'image', 'https://via.placeholder.com/600x400/28a745/ffffff?text=Laptop+Image+2')">
+            <img src="https://via.placeholder.com/80x80/28a745/ffffff?text=2" alt="Image 2">
+            <div class="thumbnail-overlay"></div>
+          </div>
+          
+          <div class="thumbnail-item" 
+               data-type="image" 
+               data-src="https://via.placeholder.com/600x400/dc3545/ffffff?text=Laptop+Image+3"
+               onclick="selectMedia(2, 'image', 'https://via.placeholder.com/600x400/dc3545/ffffff?text=Laptop+Image+3')">
+            <img src="https://via.placeholder.com/80x80/dc3545/ffffff?text=3" alt="Image 3">
+            <div class="thumbnail-overlay"></div>
+          </div>
+          
+          <div class="thumbnail-item" 
+               data-type="image" 
+               data-src="https://via.placeholder.com/600x400/ffc107/000000?text=Laptop+Image+4"
+               onclick="selectMedia(3, 'image', 'https://via.placeholder.com/600x400/ffc107/000000?text=Laptop+Image+4')">
+            <img src="https://via.placeholder.com/80x80/ffc107/000000?text=4" alt="Image 4">
+            <div class="thumbnail-overlay"></div>
+          </div>
+          
+          <!-- Video thumbnail -->
+          <div class="thumbnail-item video-thumbnail" 
+               data-type="video" 
+               data-src="https://www.w3schools.com/html/mov_bbb.mp4"
+               onclick="selectMedia(4, 'video', 'https://www.w3schools.com/html/mov_bbb.mp4')">
+            <img src="https://via.placeholder.com/80x80/6f42c1/ffffff?text=MP4" alt="Demo Video">
+            <div class="thumbnail-overlay">
+              <div class="play-icon">
+                <i class="bi bi-play-fill"></i>
+              </div>
+            </div>
+          </div>
+          
+          <!-- YouTube video thumbnail -->
+          <div class="thumbnail-item video-thumbnail" 
+               data-type="youtube" 
+               data-src="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+               data-video-id="dQw4w9WgXcQ"
+               onclick="selectMedia(5, 'youtube', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'dQw4w9WgXcQ')">
+            <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg" alt="YouTube Video">
+            <div class="thumbnail-overlay">
+              <div class="play-icon">
+                <i class="bi bi-play-fill"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-4">
+      <h4>Hướng dẫn sử dụng:</h4>
+      <ul>
+        <li>Click vào thumbnail để chuyển ảnh/video</li>
+        <li>Sử dụng mũi tên trái/phải để điều hướng</li>
+        <li>Sử dụng phím mũi tên trên bàn phím</li>
+        <li>Vuốt trái/phải trên mobile</li>
+        <li>Video có thể là MP4 hoặc YouTube embed</li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/product-detail.js"></script>
+</body>
+</html>

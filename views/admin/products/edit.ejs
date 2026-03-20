@@ -35,6 +35,16 @@
                 <textarea class="form-control" name="description" rows="10" placeholder="Nhập mô tả chi tiết sản phẩm..."><%= product.description || '' %></textarea>
               </div>
 
+              <!-- Dynamic Specifications -->
+              <div class="card mb-3" id="specificationsCard">
+                <div class="card-header">
+                  <h5 class="mb-0">Thông số kỹ thuật</h5>
+                </div>
+                <div class="card-body" id="specificationsContainer">
+                  <!-- Dynamic fields will be loaded here -->
+                </div>
+              </div>
+
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Giá (VNĐ)</label>
@@ -60,16 +70,39 @@
               <!-- Current Images -->
               <% if (product.images && product.images.length > 0) { %>
                 <div class="mb-3">
-                  <label class="form-label">Hình ảnh hiện tại</label>
-                  <div class="row">
-                    <% product.images.forEach(img => { %>
-                      <div class="col-md-3 mb-2">
-                        <img src="<%= img %>" class="img-thumbnail" alt="Product Image">
+                  <label class="form-label">Ảnh hiện tại</label>
+                  <div class="row g-2">
+                    <% product.images.forEach((img, index) => { %>
+                      <div class="col-md-3 col-sm-4 col-6">
+                        <div class="current-image-item <%= index === (product.primaryImageIndex || 0) ? 'primary' : '' %>" onclick="selectCurrentPrimary(<%= index %>)">
+                          <img src="<%= img %>" class="img-thumbnail" style="width: 100%; height: 120px; object-fit: cover;">
+                          <div class="primary-badge <%= index === (product.primaryImageIndex || 0) ? 'show' : '' %>">
+                            <i class="bi bi-star-fill"></i> Ảnh chính
+                          </div>
+                          <div class="image-index"><%= index + 1 %></div>
+                        </div>
                       </div>
-                    <% }) %>
+                    <% }); %>
                   </div>
+                  <input type="hidden" name="currentPrimaryIndex" id="currentPrimaryIndex" value="<%= product.primaryImageIndex || 0 %>">
+                  <small class="text-muted mt-2 d-block">Click vào ảnh để chọn làm ảnh chính</small>
                 </div>
               <% } %>
+
+              <div class="mb-3">
+                <label class="form-label">Thay đổi hình ảnh</label>
+                <input type="file" class="form-control" name="images" multiple accept="image/*" id="imageInput" onchange="previewImages(this)">
+                <small class="text-muted">Có thể chọn nhiều ảnh (tối đa 8). Để trống nếu không muốn thay đổi.</small>
+                
+                <!-- New Image Preview Container -->
+                <div id="imagePreviewContainer" class="mt-3" style="display: none;">
+                  <label class="form-label">Ảnh mới - Chọn ảnh chính:</label>
+                  <div id="imagePreviewGrid" class="row g-2">
+                    <!-- Preview images will be inserted here -->
+                  </div>
+                  <input type="hidden" name="primaryImageIndex" id="primaryImageIndex" value="0">
+                </div>
+              </div>
             </div>
 
             <div class="col-md-4">
@@ -99,6 +132,81 @@
                 <small class="text-muted">Có thể chọn nhiều ảnh (tối đa 5). Để trống nếu không muốn thay đổi.</small>
               </div>
 
+              <!-- Video Management -->
+              <div class="card mb-3">
+                <div class="card-header">
+                  <h6 class="mb-0">Quản lý Video</h6>
+                </div>
+                <div class="card-body">
+                  <div id="videoContainer">
+                    <!-- Existing videos -->
+                    <% if (product.videos && product.videos.length > 0) { %>
+                      <% product.videos.forEach(function(video, index) { %>
+                        <div class="video-item border rounded p-3 mb-3">
+                          <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0">Video <%= index + 1 %> - <%= video.title || 'Không có tiêu đề' %></h6>
+                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeVideoField(this)">
+                              <i class="bi bi-trash"></i>
+                            </button>
+                          </div>
+                          
+                          <div class="row">
+                            <div class="col-md-6 mb-2">
+                              <label class="form-label">Loại Video</label>
+                              <select class="form-select" name="videos[<%= index %>][type]" onchange="toggleVideoFields(this, <%= index %>)">
+                                <option value="">Chọn loại video</option>
+                                <option value="video" <%= video.type === 'video' ? 'selected' : '' %>>Video File (MP4)</option>
+                                <option value="youtube" <%= video.type === 'youtube' ? 'selected' : '' %>>YouTube Video</option>
+                              </select>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                              <label class="form-label">Tiêu đề Video</label>
+                              <input type="text" class="form-control" name="videos[<%= index %>][title]" value="<%= video.title || '' %>" placeholder="Nhập tiêu đề video">
+                            </div>
+                          </div>
+
+                          <div class="video-file-fields" id="videoFile_<%= index %>" style="display: <%= video.type === 'video' ? 'block' : 'none' %>;">
+                            <div class="row">
+                              <div class="col-md-6 mb-2">
+                                <label class="form-label">File Video</label>
+                                <input type="file" class="form-control" name="videos[<%= index %>][file]" accept="video/*">
+                                <% if (video.url && video.type === 'video') { %>
+                                  <small class="text-muted">Hiện tại: <%= video.url %></small>
+                                <% } %>
+                              </div>
+                              <div class="col-md-6 mb-2">
+                                <label class="form-label">Thumbnail Video</label>
+                                <input type="file" class="form-control" name="videos[<%= index %>][thumbnail]" accept="image/*">
+                                <% if (video.thumbnail) { %>
+                                  <small class="text-muted">Hiện tại: <%= video.thumbnail %></small>
+                                <% } %>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="youtube-fields" id="youtube_<%= index %>" style="display: <%= video.type === 'youtube' ? 'block' : 'none' %>;">
+                            <div class="row">
+                              <div class="col-md-6 mb-2">
+                                <label class="form-label">YouTube URL</label>
+                                <input type="url" class="form-control" name="videos[<%= index %>][url]" value="<%= video.url || '' %>" placeholder="https://www.youtube.com/watch?v=...">
+                              </div>
+                              <div class="col-md-6 mb-2">
+                                <label class="form-label">Video ID</label>
+                                <input type="text" class="form-control" name="videos[<%= index %>][videoId]" value="<%= video.videoId || '' %>" placeholder="dQw4w9WgXcQ">
+                                <small class="text-muted">ID từ URL YouTube (phần sau v=)</small>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      <% }); %>
+                    <% } %>
+                  </div>
+                  <button type="button" class="btn btn-outline-primary btn-sm" onclick="addVideoField()">
+                    <i class="bi bi-plus-circle me-1"></i>Thêm Video
+                  </button>
+                </div>
+              </div>
+
               <button type="submit" class="btn btn-primary w-100">
                 <i class="bi bi-check-circle me-2"></i>Cập nhật sản phẩm
               </button>
@@ -116,3 +224,323 @@
   <script src="/js/admin.js"></script>
 </body>
 </html>
+  <script>
+    // Dynamic specifications handling
+    const categorySelect = document.querySelector('select[name="category"]');
+    const specificationsCard = document.getElementById('specificationsCard');
+    const specificationsContainer = document.getElementById('specificationsContainer');
+    const currentSpecs = <%- JSON.stringify(product.specifications || {}) %>;
+
+    categorySelect.addEventListener('change', async function() {
+      const categoryId = this.value;
+      
+      if (!categoryId) {
+        specificationsCard.style.display = 'none';
+        return;
+      }
+
+      try {
+        const response = await fetch(`/admin/categories/${categoryId}/specifications`);
+        const data = await response.json();
+        
+        if (data.success && data.specificationFields.length > 0) {
+          renderSpecificationFields(data.specificationFields);
+          specificationsCard.style.display = 'block';
+        } else {
+          specificationsCard.style.display = 'none';
+        }
+      } catch (error) {
+        console.error('Error loading specifications:', error);
+        specificationsCard.style.display = 'none';
+      }
+    });
+
+    function renderSpecificationFields(fields) {
+      // Group fields by group
+      const groupedFields = {};
+      fields.forEach(field => {
+        if (!groupedFields[field.group]) {
+          groupedFields[field.group] = [];
+        }
+        groupedFields[field.group].push(field);
+      });
+
+      let html = '';
+      
+      // Group names mapping
+      const groupNames = {
+        'general': 'Cấu hình chung',
+        'display': 'Màn hình',
+        'camera': 'Camera',
+        'battery': 'Pin & Sạc',
+        'connectivity': 'Kết nối'
+      };
+
+      Object.keys(groupedFields).forEach((groupKey, index) => {
+        if (index > 0) html += '<hr>';
+        
+        html += `<h6 class="text-primary">${groupNames[groupKey] || groupKey}</h6>`;
+        html += '<div class="row">';
+        
+        groupedFields[groupKey].forEach(field => {
+          const currentValue = currentSpecs[field.name] || '';
+          
+          html += `<div class="col-md-6 mb-2">`;
+          html += `<label class="form-label">${field.label}${field.required ? ' <span class="text-danger">*</span>' : ''}</label>`;
+          
+          if (field.type === 'select') {
+            html += `<select class="form-select" name="specifications[${field.name}]" ${field.required ? 'required' : ''}>`;
+            html += `<option value="">Chọn ${field.label.toLowerCase()}</option>`;
+            field.options.forEach(option => {
+              const selected = currentValue === option ? 'selected' : '';
+              html += `<option value="${option}" ${selected}>${option}</option>`;
+            });
+            html += '</select>';
+          } else if (field.type === 'textarea') {
+            html += `<textarea class="form-control" name="specifications[${field.name}]" rows="3" placeholder="${field.placeholder}" ${field.required ? 'required' : ''}>${currentValue}</textarea>`;
+          } else {
+            html += `<input type="${field.type}" class="form-control" name="specifications[${field.name}]" value="${currentValue}" placeholder="${field.placeholder}" ${field.required ? 'required' : ''}>`;
+          }
+          
+          html += '</div>';
+        });
+        
+        html += '</div>';
+      });
+
+      specificationsContainer.innerHTML = html;
+    }
+
+    // Load specifications on page load
+    if (categorySelect.value) {
+      categorySelect.dispatchEvent(new Event('change'));
+    }
+  </script>
+  <script>
+    let videoIndex = <%= product.videos ? product.videos.length : 0 %>;
+
+    function addVideoField() {
+      const container = document.getElementById('videoContainer');
+      const videoItem = document.createElement('div');
+      videoItem.className = 'video-item border rounded p-3 mb-3';
+      videoItem.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0">Video ${videoIndex + 1}</h6>
+          <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeVideoField(this)">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-6 mb-2">
+            <label class="form-label">Loại Video</label>
+            <select class="form-select" name="videos[${videoIndex}][type]" onchange="toggleVideoFields(this, ${videoIndex})">
+              <option value="">Chọn loại video</option>
+              <option value="video">Video File (MP4)</option>
+              <option value="youtube">YouTube Video</option>
+            </select>
+          </div>
+          <div class="col-md-6 mb-2">
+            <label class="form-label">Tiêu đề Video</label>
+            <input type="text" class="form-control" name="videos[${videoIndex}][title]" placeholder="Nhập tiêu đề video">
+          </div>
+        </div>
+
+        <div class="video-file-fields" id="videoFile_${videoIndex}" style="display: none;">
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <label class="form-label">File Video</label>
+              <input type="file" class="form-control" name="videos[${videoIndex}][file]" accept="video/*">
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label">Thumbnail Video</label>
+              <input type="file" class="form-control" name="videos[${videoIndex}][thumbnail]" accept="image/*">
+            </div>
+          </div>
+        </div>
+
+        <div class="youtube-fields" id="youtube_${videoIndex}" style="display: none;">
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <label class="form-label">YouTube URL</label>
+              <input type="url" class="form-control" name="videos[${videoIndex}][url]" placeholder="https://www.youtube.com/watch?v=...">
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label">Video ID</label>
+              <input type="text" class="form-control" name="videos[${videoIndex}][videoId]" placeholder="dQw4w9WgXcQ">
+              <small class="text-muted">ID từ URL YouTube (phần sau v=)</small>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      container.appendChild(videoItem);
+      videoIndex++;
+    }
+
+    function removeVideoField(button) {
+      button.closest('.video-item').remove();
+    }
+
+    function toggleVideoFields(select, index) {
+      const videoFileFields = document.getElementById(`videoFile_${index}`);
+      const youtubeFields = document.getElementById(`youtube_${index}`);
+      
+      if (select.value === 'video') {
+        videoFileFields.style.display = 'block';
+        youtubeFields.style.display = 'none';
+      } else if (select.value === 'youtube') {
+        videoFileFields.style.display = 'none';
+        youtubeFields.style.display = 'block';
+      } else {
+        videoFileFields.style.display = 'none';
+        youtubeFields.style.display = 'none';
+      }
+    }
+  </script>
+  <script>
+    // Image preview and primary selection for edit form
+    function previewImages(input) {
+      const container = document.getElementById('imagePreviewContainer');
+      const grid = document.getElementById('imagePreviewGrid');
+      const primaryInput = document.getElementById('primaryImageIndex');
+      
+      if (input.files && input.files.length > 0) {
+        container.style.display = 'block';
+        grid.innerHTML = '';
+        primaryInput.value = 0; // Reset to first image
+        
+        Array.from(input.files).forEach((file, index) => {
+          const reader = new FileReader();
+          
+          reader.onload = function(e) {
+            const col = document.createElement('div');
+            col.className = 'col-md-3 col-sm-4 col-6';
+            
+            col.innerHTML = `
+              <div class="image-preview-item ${index === 0 ? 'primary' : ''}" onclick="selectPrimaryImage(${index})">
+                <img src="${e.target.result}" class="img-thumbnail" style="width: 100%; height: 120px; object-fit: cover;">
+                <div class="primary-badge ${index === 0 ? 'show' : ''}">
+                  <i class="bi bi-star-fill"></i> Ảnh chính
+                </div>
+                <div class="image-index">${index + 1}</div>
+              </div>
+            `;
+            
+            grid.appendChild(col);
+          };
+          
+          reader.readAsDataURL(file);
+        });
+      } else {
+        container.style.display = 'none';
+      }
+    }
+    
+    function selectPrimaryImage(index) {
+      // Remove primary class from all new images
+      document.querySelectorAll('.image-preview-item').forEach(item => {
+        item.classList.remove('primary');
+      });
+      
+      document.querySelectorAll('#imagePreviewGrid .primary-badge').forEach(badge => {
+        badge.classList.remove('show');
+      });
+      
+      // Add primary class to selected item
+      const selectedItem = document.querySelectorAll('.image-preview-item')[index];
+      const selectedBadge = document.querySelectorAll('#imagePreviewGrid .primary-badge')[index];
+      
+      if (selectedItem && selectedBadge) {
+        selectedItem.classList.add('primary');
+        selectedBadge.classList.add('show');
+      }
+      
+      // Update hidden input
+      document.getElementById('primaryImageIndex').value = index;
+      
+      console.log('New primary image selected:', index);
+    }
+    
+    function selectCurrentPrimary(index) {
+      // Remove primary class from all current images
+      document.querySelectorAll('.current-image-item').forEach(item => {
+        item.classList.remove('primary');
+      });
+      
+      document.querySelectorAll('.current-image-item .primary-badge').forEach(badge => {
+        badge.classList.remove('show');
+      });
+      
+      // Add primary class to selected item
+      const selectedItem = document.querySelectorAll('.current-image-item')[index];
+      const selectedBadge = document.querySelectorAll('.current-image-item .primary-badge')[index];
+      
+      if (selectedItem && selectedBadge) {
+        selectedItem.classList.add('primary');
+        selectedBadge.classList.add('show');
+      }
+      
+      // Update hidden input
+      document.getElementById('currentPrimaryIndex').value = index;
+      
+      console.log('Current primary image selected:', index);
+    }
+  </script>
+  
+  <style>
+    .image-preview-item, .current-image-item {
+      position: relative;
+      cursor: pointer;
+      border: 3px solid transparent;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .image-preview-item:hover, .current-image-item:hover {
+      border-color: #007bff;
+      transform: translateY(-2px);
+    }
+    
+    .image-preview-item.primary, .current-image-item.primary {
+      border-color: #28a745;
+      box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.25);
+    }
+    
+    .primary-badge {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      background: #28a745;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: bold;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.3s ease;
+    }
+    
+    .primary-badge.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+    
+    .image-index {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: bold;
+    }
+  </style>

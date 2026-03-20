@@ -17,13 +17,7 @@
     <div class="row">
       <div class="col-12">
         <h1 class="product-main-title"><%= product.title %></h1>
-        <div class="product-meta">
-          <span class="rating-badge">
-            <i class="bi bi-star-fill text-warning"></i> 4.9
-          </span>
-          <span class="review-count">(326 đánh giá)</span>
-          <span class="sold-count">Đã bán 326,7k</span>
-        </div>
+       
       </div>
     </div>
 
@@ -32,28 +26,108 @@
       <div class="col-lg-7">
         <!-- Product Gallery -->
         <div class="product-gallery-box">
+          <!-- Main Image/Video Container -->
           <div class="main-image-wrapper">
-            <img id="mainImage" src="<%= product.thumbnail || '/images/no-image.png' %>" class="main-product-img" alt="<%= product.title %>">
+            <div class="main-image-container">
+              <!-- Loading Spinner -->
+              <div class="gallery-loading" id="galleryLoading">
+                <div class="spinner"></div>
+              </div>
+              
+              <!-- Main Image -->
+              <img id="mainImage" 
+                   src="<%= product.thumbnail || '/images/no-image.png' %>" 
+                   class="main-product-img active" 
+                   alt="<%= product.title %>"
+                   onload="hideGalleryLoading()">
+              
+              <!-- Main Video (hidden by default) -->
+              <div id="mainVideo" class="main-video-container" style="display: none;">
+                <video id="videoPlayer" class="main-product-video" controls>
+                  <source src="" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+                <div id="youtubePlayer" class="youtube-player"></div>
+              </div>
+              
+              <!-- Navigation Arrows -->
+              <button class="gallery-nav gallery-nav-prev" id="prevBtn" onclick="navigateGallery(-1)">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <button class="gallery-nav gallery-nav-next" id="nextBtn" onclick="navigateGallery(1)">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+              
+              <!-- Media Counter -->
+              <div class="media-counter">
+                <span id="currentIndex">1</span> / <span id="totalMedia">1</span>
+              </div>
+              
+              <!-- Current Media Info -->
+              <div class="current-media-info">
+                <span id="currentMediaType">Image</span>
+              </div>
+            </div>
           </div>
           
           <!-- Thumbnail Gallery -->
-          <div class="thumbnail-gallery-grid">
-            <div class="thumbnail-item active" onclick="changeImage('<%= product.thumbnail || '/images/no-image.png' %>')">
-              <img src="<%= product.thumbnail || '/images/no-image.png' %>" alt="<%= product.title %>">
-            </div>
-            <% if (product.images && product.images.length > 0) { %>
-              <% product.images.slice(0, 7).forEach(function(img) { %>
-                <div class="thumbnail-item" onclick="changeImage('<%= img %>')">
-                  <img src="<%= img %>" alt="<%= product.title %>">
+          <div class="thumbnail-gallery-container">
+            <div class="thumbnail-gallery-grid" id="thumbnailGallery">
+              <!-- Main thumbnail -->
+              <div class="thumbnail-item active" 
+                   data-type="image" 
+                   data-src="<%= product.thumbnail || '/images/no-image.png' %>"
+                   data-index="0"
+                   data-media-type="image"
+                   title="Ảnh chính: <%= product.title %>">>
+                <img src="<%= product.thumbnail || '/images/no-image.png' %>" alt="<%= product.title %>">
+                <div class="thumbnail-overlay"></div>
+                <div class="primary-indicator">
+                  <i class="bi bi-star-fill"></i>
                 </div>
-              <% }); %>
-            <% } %>
+              </div>
+              
+              <!-- Additional images -->
+              <% if (product.images && product.images.length > 0) { %>
+                <% product.images.slice(0, 6).forEach(function(img, index) { %>
+                  <div class="thumbnail-item" 
+                       data-type="image" 
+                       data-src="<%= img %>"
+                       data-index="<%= index + 1 %>"
+                       data-media-type="image"
+                       title="Ảnh <%= index + 2 %>: <%= product.title %>">>
+                    <img src="<%= img %>" alt="<%= product.title %>">
+                    <div class="thumbnail-overlay"></div>
+                  </div>
+                <% }); %>
+              <% } %>
+              
+              <!-- Product videos -->
+              <% if (product.videos && product.videos.length > 0) { %>
+                <% product.videos.forEach(function(video, index) { %>
+                  <div class="thumbnail-item video-thumbnail" 
+                       data-type="<%= video.type %>" 
+                       data-src="<%= video.url %>"
+                       data-video-id="<%= video.videoId || '' %>"
+                       data-index="<%= (product.images ? product.images.length : 0) + index + 1 %>"
+                       data-media-type="<%= video.type %>"
+                       title="<%= video.type === 'youtube' ? 'YouTube' : 'Video MP4' %>: <%= video.title || 'Video ' + (index + 1) %>"></div>>
+                    <img src="<%= video.thumbnail %>" alt="Video <%= index + 1 %>">
+                    <div class="thumbnail-overlay">
+                      <div class="play-icon">
+                        <i class="bi bi-play-fill"></i>
+                      </div>
+                    </div>
+                  </div>
+                <% }); %>
+              <% } %>
+            </div>
           </div>
         </div>
 
         <!-- Commitment Section -->
         <div class="commitment-box mt-3">
-          <h6 class="commitment-title">Thế Giới Di Động cam kết</h6>
+          <h6 class="commitment-title">Nexus cam kết</h6>
           <div class="row g-2">
             <div class="col-6">
               <div class="commitment-item-small">
@@ -100,145 +174,65 @@
           <div class="tab-content specs-tab-content">
             <!-- Specs Tab -->
             <div class="tab-pane fade show active" id="specs-tab">
-              <!-- General Specs -->
-              <div class="spec-section">
-                <button class="spec-section-header" type="button" data-bs-toggle="collapse" data-bs-target="#generalSpecs">
-                  <span>Cấu hình & Bộ nhớ</span>
-                  <i class="bi bi-chevron-down"></i>
-                </button>
-                <div class="collapse show" id="generalSpecs">
-                  <div class="specs-grid">
-                    <div class="spec-row">
-                      <span class="spec-label">Hệ điều hành:</span>
-                      <span class="spec-value">iOS 18</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">Chip xử lý (CPU):</span>
-                      <span class="spec-value">Apple A18 Pro 6 nhân</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">Tốc độ CPU:</span>
-                      <span class="spec-value">Hãng không công bố</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">Chip đồ họa (GPU):</span>
-                      <span class="spec-value">Apple GPU 6 nhân</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">RAM:</span>
-                      <span class="spec-value">8 GB</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">Dung lượng lưu trữ:</span>
-                      <span class="spec-value">256 GB</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">Dung lượng còn lại (khả dụng) khoảng:</span>
-                      <span class="spec-value">241 GB</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">Danh bạ:</span>
-                      <span class="spec-value">Không giới hạn</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Camera & Screen -->
-              <div class="spec-section">
-                <button class="spec-section-header" type="button" data-bs-toggle="collapse" data-bs-target="#cameraSpecs">
-                  <span>Camera & Màn hình</span>
-                  <i class="bi bi-chevron-down"></i>
-                </button>
-                <div class="collapse" id="cameraSpecs">
-                  <div class="specs-grid">
-                    <div class="spec-row">
-                      <span class="spec-label">Độ phân giải camera sau:</span>
-                      <span class="spec-value">Chính 48 MP & Phụ 48 MP, 12 MP</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">Quay phim:</span>
-                      <span class="spec-value">4K@60fps, 1080p@240fps</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">Độ phân giải camera trước:</span>
-                      <span class="spec-value">12 MP</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">Công nghệ màn hình:</span>
-                      <span class="spec-value">Super Retina XDR OLED</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">Độ phân giải:</span>
-                      <span class="spec-value">2796 x 1290 pixels</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">Màn hình rộng:</span>
-                      <span class="spec-value">6.9 inch</span>
+              <% if (product.specifications && product.specifications.size > 0) { %>
+                <% 
+                  // Group specifications by category
+                  const specGroups = {};
+                  const groupNames = {
+                    'general': 'Cấu hình chung',
+                    'display': 'Màn hình',
+                    'camera': 'Camera',
+                    'battery': 'Pin & Sạc',
+                    'connectivity': 'Kết nối'
+                  };
+                  
+                  // Get category specification fields to determine groups
+                  let categoryFields = [];
+                  if (product.category && product.category.specificationFields) {
+                    categoryFields = product.category.specificationFields;
+                  }
+                  
+                  // Group specs based on category fields
+                  for (const [key, value] of product.specifications) {
+                    const field = categoryFields.find(f => f.name === key);
+                    const group = field ? field.group : 'general';
+                    
+                    if (!specGroups[group]) {
+                      specGroups[group] = [];
+                    }
+                    
+                    specGroups[group].push({
+                      key,
+                      value,
+                      label: field ? field.label : key
+                    });
+                  }
+                %>
+                
+                <% Object.keys(specGroups).forEach((groupKey, index) => { %>
+                  <div class="spec-section">
+                    <button class="spec-section-header" type="button" data-bs-toggle="collapse" data-bs-target="#specs<%= groupKey %>">
+                      <span><%= groupNames[groupKey] || groupKey %></span>
+                      <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <div class="collapse <%= index === 0 ? 'show' : '' %>" id="specs<%= groupKey %>">
+                      <div class="specs-grid">
+                        <% specGroups[groupKey].forEach(spec => { %>
+                          <div class="spec-row">
+                            <span class="spec-label"><%= spec.label %>:</span>
+                            <span class="spec-value"><%= spec.value %></span>
+                          </div>
+                        <% }); %>
+                      </div>
                     </div>
                   </div>
+                <% }); %>
+              <% } else { %>
+                <div class="text-center text-muted py-4">
+                  <i class="bi bi-info-circle fs-1 mb-3"></i>
+                  <p>Chưa có thông số kỹ thuật cho sản phẩm này</p>
                 </div>
-              </div>
-
-              <!-- Battery & Charging -->
-              <div class="spec-section">
-                <button class="spec-section-header" type="button" data-bs-toggle="collapse" data-bs-target="#batterySpecs">
-                  <span>Pin & Sạc</span>
-                  <i class="bi bi-chevron-down"></i>
-                </button>
-                <div class="collapse" id="batterySpecs">
-                  <div class="specs-grid">
-                    <div class="spec-row">
-                      <span class="spec-label">Dung lượng pin:</span>
-                      <span class="spec-value">4685 mAh</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">Loại pin:</span>
-                      <span class="spec-value">Li-Ion</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">Hỗ trợ sạc tối đa:</span>
-                      <span class="spec-value">45W</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">Công nghệ sạc:</span>
-                      <span class="spec-value">Sạc không dây MagSafe 25W, Sạc không dây Qi 15W</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Connectivity -->
-              <div class="spec-section">
-                <button class="spec-section-header" type="button" data-bs-toggle="collapse" data-bs-target="#connectivitySpecs">
-                  <span>Tiện ích</span>
-                  <i class="bi bi-chevron-down"></i>
-                </button>
-                <div class="collapse" id="connectivitySpecs">
-                  <div class="specs-grid">
-                    <div class="spec-row">
-                      <span class="spec-label">Mạng di động:</span>
-                      <span class="spec-value">5G</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">SIM:</span>
-                      <span class="spec-value">1 Nano SIM & 1 eSIM</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">Wifi:</span>
-                      <span class="spec-value">Wi-Fi 7 (802.11be)</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">Bluetooth:</span>
-                      <span class="spec-value">v5.3</span>
-                    </div>
-                    <div class="spec-row">
-                      <span class="spec-label">Cổng kết nối/sạc:</span>
-                      <span class="spec-value">Type-C</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <% } %>
             </div>
             
             <!-- Info Tab -->
