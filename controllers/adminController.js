@@ -211,10 +211,19 @@ exports.getEditProduct = async (req, res) => {
       return res.redirect('/admin/products');
     }
 
+    // Map Mongoose → object plain (JSON.stringify(Map) = "{}" → form thông số mất dữ liệu)
+    let specificationsPlain = {};
+    if (product.specifications instanceof Map) {
+      specificationsPlain = Object.fromEntries(product.specifications);
+    } else if (product.specifications && typeof product.specifications === 'object') {
+      specificationsPlain = { ...product.specifications };
+    }
+
     res.render('admin/products/edit', {
       title: 'Chỉnh sửa sản phẩm',
       product,
-      categories
+      categories,
+      specificationsPlain
     });
   } catch (error) {
     console.error(error);

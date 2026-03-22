@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const User = require('../models/User');
 const Category = require('../models/Category');
 const Product = require('../models/Product');
+const { categorySpecifications } = require('./categorySpecifications');
 
 const seedData = async () => {
   try {
@@ -35,6 +36,17 @@ const seedData = async () => {
 
     const createdCategories = await Category.insertMany(categories);
     console.log('Created categories');
+
+    // Gắn thông số kỹ thuật theo slug (để form admin hiển thị đúng)
+    for (const cat of createdCategories) {
+      const spec = categorySpecifications[cat.slug];
+      if (spec && spec.specificationFields && spec.specificationFields.length) {
+        await Category.findByIdAndUpdate(cat._id, {
+          specificationFields: spec.specificationFields
+        });
+      }
+    }
+    console.log('Linked category specification fields');
 
     // Tạo sản phẩm mẫu
     const products = [
