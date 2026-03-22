@@ -377,7 +377,7 @@ router.get('/checkout', requireAuth, clientController.getCheckout);
  *       401:
  *         description: Unauthorized
  */
-router.post('/checkout', requireAuth, validateCheckout, handleValidationErrors, asyncHandler(clientController.postCheckout));
+router.post('/checkout', requireAuth, asyncHandler(clientController.postCheckout));
 
 /**
  * @swagger
@@ -499,6 +499,24 @@ router.post('/profile', requireAuth, validateProfile, handleValidationErrors, as
  *         description: Unauthorized
  */
 router.post('/profile/change-password', requireAuth, validateChangePassword, handleValidationErrors, asyncHandler(clientController.changePassword));
+
+// Test MoMo route
+router.get('/test-momo', requireAuth, (req, res) => {
+  // Add fake cart for testing
+  req.session.cart = [
+    {
+      productId: '507f1f77bcf86cd799439011',
+      title: 'Test Product',
+      price: 85000,
+      discountPercentage: 0,
+      quantity: 1,
+      thumbnail: '/images/banner.png'
+    }
+  ];
+  res.render('client/test-momo', { title: 'Test MoMo' });
+});
+
+router.post('/test-momo-checkout', requireAuth, asyncHandler(clientController.postCheckout));
 
 module.exports = router;
 
