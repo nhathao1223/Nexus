@@ -472,6 +472,14 @@ exports.getUsers = async (req, res) => {
       query.role = req.query.role;
     }
 
+    if (req.query.status) {
+      if (req.query.status === 'active') {
+        query.isActive = true;
+      } else if (req.query.status === 'banned') {
+        query.isActive = false;
+      }
+    }
+
     if (req.query.search) {
       query.$or = [
         { fullName: { $regex: req.query.search, $options: 'i' } },
@@ -492,7 +500,8 @@ exports.getUsers = async (req, res) => {
       users,
       currentPage: page,
       totalPages,
-      query: req.query
+      query: req.query,
+      currentUser: req.user
     });
   } catch (error) {
     console.error(error);
@@ -529,11 +538,43 @@ exports.getUserDetail = async (req, res) => {
 exports.updateUserStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { action } = req.body;
 
-    await User.findByIdAndUpdate(id, { status });
+    // Prevent admin from banning themselves
+    if (id === req.user._id.toString()) {
+      return res.status(400).json({ success: false, message: 'Không thể thay đổi trạng thái của chính mình' });
+    }
 
-    res.json({ success: true, message: 'Cập nhật trạng thái người dùng thành công' });
+    const isActive = action === 'unban';
+    await User.findByIdAndUpdate(id, { isActive });
+
+    const message = isActive ? 'Mở khóa người dùng thành công' : 'Khóa người dùng thành công';
+    res.json({ success: true, message });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Có lỗi xảy ra' });
+  }
+};
+
+exports.updateUserRole = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+
+    // Prevent admin from changing their own role
+    if (id === req.user._id.toString()) {
+      return res.status(400).json({ success: false, message: 'Không thể thay đổi quyền của chính mình' });
+    }
+
+    // Validate role
+    if (!['user', 'admin'].includes(role)) {
+      return res.status(400).json({ success: false, message: 'Quyền không hợp lệ' });
+    }
+
+    await User.findByIdAndUpdate(id, { role });
+
+    const roleName = role === 'admin' ? 'Quản trị viên' : 'Người dùng';
+    res.json({ success: true, message: `Cập nhật quyền thành ${roleName} thành công` });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Có lỗi xảy ra' });
