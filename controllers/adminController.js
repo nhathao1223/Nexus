@@ -122,7 +122,11 @@ exports.postCreateProduct = async (req, res) => {
       .replace(/[^a-z0-9\s-]/g, '')
       .replace(/\s+/g, '-');
 
-    const images = req.files ? req.files.map(file => `/uploads/products/${file.filename}`) : [];
+    // Process uploaded images
+    const images = req.files ? req.files.map(file => {
+      // Cloudinary returns full URL, local returns filename
+      return file.path || `/uploads/products/${file.filename}`;
+    }) : [];
     
     // Determine primary image index and thumbnail
     const primaryIndex = parseInt(primaryImageIndex) || 0;
@@ -311,7 +315,10 @@ exports.putEditProduct = async (req, res) => {
     // Handle image updates
     if (req.files && req.files.length > 0) {
       // New images uploaded
-      const newImages = req.files.map(file => `/uploads/products/${file.filename}`);
+      const newImages = req.files.map(file => {
+        // Cloudinary returns full URL, local returns filename
+        return file.path || `/uploads/products/${file.filename}`;
+      });
       const newPrimaryIndex = parseInt(primaryImageIndex) || 0;
       
       updateData.images = newImages;

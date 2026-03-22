@@ -2,14 +2,18 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+// Import Cloudinary config
+const { storage: cloudinaryStorage } = require('../config/cloudinary');
+
 // Tạo thư mục uploads nếu chưa tồn tại (chỉ cho local development)
 const uploadDir = process.env.NODE_ENV === 'production' ? '/tmp/uploads/products' : 'uploads/products';
 
-if (!fs.existsSync(uploadDir)) {
+if (process.env.NODE_ENV !== 'production' && !fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-const storage = multer.diskStorage({
+// Local storage (development)
+const localStorage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, uploadDir);
   },
@@ -18,6 +22,9 @@ const storage = multer.diskStorage({
     cb(null, uniqueSuffix + path.extname(file.originalname));
   }
 });
+
+// Chọn storage dựa trên environment
+const storage = process.env.NODE_ENV === 'production' ? cloudinaryStorage : localStorage;
 
 const fileFilter = (req, file, cb) => {
   const allowedTypes = /jpeg|jpg|png|gif|webp/;
