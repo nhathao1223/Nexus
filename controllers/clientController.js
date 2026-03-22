@@ -440,28 +440,38 @@ exports.postCheckout = async (req, res) => {
 
     if (paymentMethod === 'momo') {
       try {
+        console.log('=== MOMO PAYMENT PROCESS ===');
         console.log('Creating MoMo payment for order:', order._id.toString());
-        const momoResponse = await createMomoPayment({
+        console.log('Total amount:', total);
+        console.log('Payment method:', paymentMethod);
+        
+        const momoPaymentData = {
           amount: total,
           orderId: order._id.toString(),
           orderInfo: `Thanh toán đơn hàng #${order._id}`,
           extraData: order._id.toString()
-        });
+        };
+        
+        console.log('MoMo payment data:', momoPaymentData);
+        
+        const momoResponse = await createMomoPayment(momoPaymentData);
 
-        console.log('MoMo response:', momoResponse);
+        console.log('MoMo response received:', momoResponse);
 
         if (momoResponse && momoResponse.payUrl) {
           // Xóa giỏ hàng sau khi tạo đơn và có link thanh toán
           req.session.cart = [];
-          console.log('Redirecting to MoMo payUrl:', momoResponse.payUrl);
+          console.log('SUCCESS: Redirecting to MoMo payUrl:', momoResponse.payUrl);
+          console.log('=== END MOMO PAYMENT PROCESS ===');
           return res.redirect(momoResponse.payUrl);
         }
 
-        console.error('MoMo response missing payUrl:', momoResponse);
+        console.error('FAILED: MoMo response missing payUrl:', momoResponse);
         req.flash('error_msg', 'Không tạo được thanh toán MoMo. Vui lòng thử lại hoặc chọn phương thức khác.');
         return res.redirect('/checkout');
       } catch (err) {
-        console.error('MoMo payment error:', err);
+        console.error('ERROR: MoMo payment error:', err);
+        console.error('Error stack:', err.stack);
         req.flash('error_msg', 'Có lỗi khi kết nối MoMo. Vui lòng thử lại sau.');
         return res.redirect('/checkout');
       }

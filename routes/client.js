@@ -516,6 +516,35 @@ router.get('/test-momo', requireAuth, (req, res) => {
   res.render('client/test-momo', { title: 'Test MoMo' });
 });
 
+// Direct MoMo test route
+router.get('/direct-momo-test', requireAuth, asyncHandler(async (req, res) => {
+  try {
+    console.log('=== DIRECT MOMO TEST ===');
+    const { createMomoPayment } = require('../services/momoService');
+    
+    const testData = {
+      amount: 85000,
+      orderId: 'direct-test-' + Date.now(),
+      orderInfo: 'Direct test payment',
+      extraData: 'direct-test'
+    };
+    
+    console.log('Test data:', testData);
+    const momoResponse = await createMomoPayment(testData);
+    console.log('MoMo response:', momoResponse);
+    
+    if (momoResponse && momoResponse.payUrl) {
+      console.log('Redirecting to:', momoResponse.payUrl);
+      return res.redirect(momoResponse.payUrl);
+    } else {
+      return res.json({ error: 'No payUrl', response: momoResponse });
+    }
+  } catch (error) {
+    console.error('Direct MoMo test error:', error);
+    return res.json({ error: error.message, stack: error.stack });
+  }
+}));
+
 router.post('/test-momo-checkout', requireAuth, asyncHandler(clientController.postCheckout));
 
 module.exports = router;
