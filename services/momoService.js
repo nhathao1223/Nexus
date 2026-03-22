@@ -5,7 +5,7 @@ const partnerCode = process.env.MOMO_PARTNER_CODE;
 const accessKey = process.env.MOMO_ACCESS_KEY;
 const secretKey = process.env.MOMO_SECRET_KEY;
 const redirectUrl =
-  process.env.MOMO_REDIRECT_URL || 'http://localhost:3000/orders';
+  process.env.MOMO_REDIRECT_URL || 'http://localhost:3000/payment/momo/return';
 const ipnUrl =
   process.env.MOMO_IPN_URL || 'http://localhost:3000/payment/momo/ipn';
 
@@ -19,6 +19,15 @@ function createMomoPayment({ amount, orderId, orderInfo, extraData = '' }) {
       if (!partnerCode || !accessKey || !secretKey) {
         throw new Error('Thiếu cấu hình MoMo (MOMO_PARTNER_CODE, MOMO_ACCESS_KEY, MOMO_SECRET_KEY)');
       }
+      
+      console.log('MoMo config:', {
+        partnerCode,
+        accessKey: accessKey ? 'SET' : 'NOT SET',
+        secretKey: secretKey ? 'SET' : 'NOT SET',
+        redirectUrl,
+        ipnUrl
+      });
+      
       const requestId = `${partnerCode}-${Date.now()}`;
       const requestType = 'captureWallet';
       const amountStr = String(Math.round(amount));
@@ -55,6 +64,8 @@ function createMomoPayment({ amount, orderId, orderInfo, extraData = '' }) {
         lang: 'vi',
       });
 
+      console.log('MoMo request body:', requestBody);
+
       const options = {
         hostname: 'test-payment.momo.vn',
         port: 443,
@@ -73,9 +84,11 @@ function createMomoPayment({ amount, orderId, orderInfo, extraData = '' }) {
         res.on('end', () => {
           try {
             const body = Buffer.concat(chunks).toString('utf8');
+            console.log('MoMo API response:', body);
             const data = JSON.parse(body);
             resolve(data);
           } catch (err) {
+            console.error('Error parsing MoMo response:', err);
             reject(err);
           }
         });
