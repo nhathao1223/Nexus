@@ -1,4 +1,24 @@
 // Client-side JavaScript
+
+// Ảnh sản phẩm 404 (file không có trên server sau deploy) → placeholder
+document.addEventListener(
+  'error',
+  function (e) {
+    const t = e.target;
+    if (
+      t &&
+      t.tagName === 'IMG' &&
+      (t.classList.contains('product-image') ||
+        t.classList.contains('flashsale-product-image') ||
+        t.classList.contains('main-product-img'))
+    ) {
+      t.onerror = null;
+      t.src = '/images/no-image.png';
+    }
+  },
+  true
+);
+
 document.addEventListener('DOMContentLoaded', function() {
   // Auto-hide alerts after 3 seconds
   const alerts = document.querySelectorAll('.alert');

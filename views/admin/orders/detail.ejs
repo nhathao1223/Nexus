@@ -62,7 +62,7 @@
                           <td>
                             <div class="d-flex align-items-center">
                               <% if (item.product && item.product.thumbnail) { %>
-                                <img src="<%= item.product.thumbnail %>" width="50" class="me-3">
+                                <img src="<%= publicUrl(item.product.thumbnail) %>" width="50" class="me-3 product-image">
                               <% } %>
                               <span><%= item.product ? item.product.title : 'Sản phẩm không tồn tại' %></span>
                             </div>
