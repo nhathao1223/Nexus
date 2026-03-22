@@ -47,6 +47,13 @@
                   <option value="admin" <%= query.role === 'admin' ? 'selected' : '' %>>Quản trị viên</option>
                 </select>
               </div>
+              <div class="col-md-3">
+                <select class="form-select" name="status">
+                  <option value="">Tất cả trạng thái</option>
+                  <option value="active" <%= query.status === 'active' ? 'selected' : '' %>>Hoạt động</option>
+                  <option value="banned" <%= query.status === 'banned' ? 'selected' : '' %>>Bị khóa</option>
+                </select>
+              </div>
               <div class="col-md-2">
                 <button type="submit" class="btn btn-primary">
                   <i class="bi bi-search"></i> Tìm kiếm
@@ -92,10 +99,10 @@
                       <% } %>
                     </td>
                     <td>
-                      <% if (user.status === 'active') { %>
+                      <% if (user.isActive) { %>
                         <span class="badge bg-success">Hoạt động</span>
                       <% } else { %>
-                        <span class="badge bg-secondary">Không hoạt động</span>
+                        <span class="badge bg-secondary">Bị khóa</span>
                       <% } %>
                     </td>
                     <td><%= new Date(user.createdAt).toLocaleDateString('vi-VN') %></td>
@@ -103,11 +110,49 @@
                       <a href="/admin/users/<%= user._id %>" class="btn btn-sm btn-outline-primary">
                         <i class="bi bi-eye"></i> Xem
                       </a>
-                      <% if (user.role !== 'admin') { %>
-                        <select class="form-select form-select-sm d-inline-block w-auto ms-2 status-select" data-user-id="<%= user._id %>">
-                          <option value="active" <%= user.status === 'active' ? 'selected' : '' %>>Hoạt động</option>
-                          <option value="inactive" <%= user.status === 'inactive' ? 'selected' : '' %>>Không hoạt động</option>
-                        </select>
+                      
+                      <% if (user._id.toString() !== currentUser._id.toString()) { %>
+                        <!-- Role Change Dropdown -->
+                        <div class="dropdown d-inline-block ms-1">
+                          <button class="btn btn-sm btn-outline-warning dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-gear"></i> Quyền
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li>
+                              <button class="dropdown-item role-change-btn" 
+                                      data-user-id="<%= user._id %>" 
+                                      data-role="user"
+                                      <%= user.role === 'user' ? 'disabled' : '' %>>
+                                <i class="bi bi-person"></i> Người dùng
+                              </button>
+                            </li>
+                            <li>
+                              <button class="dropdown-item role-change-btn" 
+                                      data-user-id="<%= user._id %>" 
+                                      data-role="admin"
+                                      <%= user.role === 'admin' ? 'disabled' : '' %>>
+                                <i class="bi bi-person-badge"></i> Quản trị viên
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
+
+                        <!-- Status Toggle -->
+                        <% if (user.isActive) { %>
+                          <button class="btn btn-sm btn-outline-danger ms-1 status-toggle-btn" 
+                                  data-user-id="<%= user._id %>" 
+                                  data-action="ban">
+                            <i class="bi bi-person-x"></i> Khóa
+                          </button>
+                        <% } else { %>
+                          <button class="btn btn-sm btn-outline-success ms-1 status-toggle-btn" 
+                                  data-user-id="<%= user._id %>" 
+                                  data-action="unban">
+                            <i class="bi bi-person-check"></i> Mở khóa
+                          </button>
+                        <% } %>
+                      <% } else { %>
+                        <span class="text-muted small">(Bạn)</span>
                       <% } %>
                     </td>
                   </tr>
@@ -147,11 +192,51 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Handle status change
-    document.querySelectorAll('.status-select').forEach(select => {
-      select.addEventListener('change', async function() {
+    // Handle role change
+    document.querySelectorAll('.role-change-btn').forEach(button => {
+      button.addEventListener('click', async function() {
         const userId = this.getAttribute('data-user-id');
-        const status = this.value;
+        const newRole = this.getAttribute('data-role');
+        const roleName = newRole === 'admin' ? 'Quản trị viên' : 'Người dùng';
+        
+        if (!confirm(`Bạn có chắc muốn thay đổi quyền thành "${roleName}"?`)) {
+          return;
+        }
+        
+        try {
+          const response = await fetch(`/admin/users/${userId}/role`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ role: newRole })
+          });
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            alert('Cập nhật quyền thành công');
+            location.reload();
+          } else {
+            alert(result.message || 'Có lỗi xảy ra');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Có lỗi xảy ra');
+        }
+      });
+    });
+
+    // Handle status toggle (ban/unban)
+    document.querySelectorAll('.status-toggle-btn').forEach(button => {
+      button.addEventListener('click', async function() {
+        const userId = this.getAttribute('data-user-id');
+        const action = this.getAttribute('data-action');
+        const actionText = action === 'ban' ? 'khóa' : 'mở khóa';
+        
+        if (!confirm(`Bạn có chắc muốn ${actionText} người dùng này?`)) {
+          return;
+        }
         
         try {
           const response = await fetch(`/admin/users/${userId}/status`, {
@@ -159,13 +244,13 @@
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ status })
+            body: JSON.stringify({ action })
           });
           
           const result = await response.json();
           
           if (result.success) {
-            alert('Cập nhật trạng thái thành công');
+            alert(`${actionText.charAt(0).toUpperCase() + actionText.slice(1)} người dùng thành công`);
             location.reload();
           } else {
             alert(result.message || 'Có lỗi xảy ra');

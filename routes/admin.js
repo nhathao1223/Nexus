@@ -530,4 +530,34 @@ router.get('/users/:id', adminController.getUserDetail);
  */
 router.patch('/users/:id/status', adminController.updateUserStatus);
 
+/**
+ * @swagger
+ * /admin/users/{id}/role:
+ *   patch:
+ *     summary: Update user role
+ *     tags: [Admin - Users]
+ *     security:
+ *       - sessionAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               role:
+ *                 type: string
+ *                 enum: [user, admin]
+ *     responses:
+ *       200:
+ *         description: Role updated
+ */
+router.patch('/users/:id/role', adminController.updateUserRole);
+
 module.exports = router;

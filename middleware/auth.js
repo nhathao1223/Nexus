@@ -16,6 +16,13 @@ exports.requireAuth = async (req, res, next) => {
       return res.redirect('/login');
     }
     
+    // Kiểm tra user có bị khóa không
+    if (!user.isActive) {
+      req.session.destroy();
+      req.flash('error_msg', 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.');
+      return res.redirect('/login');
+    }
+    
     req.user = user;
     next();
   } catch (error) {
@@ -35,6 +42,13 @@ exports.requireAdmin = async (req, res, next) => {
     if (!user || user.role !== 'admin') {
       req.session.destroy();
       return res.redirect('/');
+    }
+    
+    // Kiểm tra admin có bị khóa không
+    if (!user.isActive) {
+      req.session.destroy();
+      req.flash('error_msg', 'Tài khoản quản trị của bạn đã bị khóa.');
+      return res.redirect('/login');
     }
     
     req.user = user;
