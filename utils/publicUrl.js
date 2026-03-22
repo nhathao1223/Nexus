@@ -5,13 +5,13 @@
  * - Tên file đơn (vd: abc.webp) → /uploads/products/abc.webp
  */
 function publicUrl(u) {
-  if (u == null || u === '') return '/images/no-image.png';
+  if (u == null || u === '') return '/images/no-image.svg';
   let s = String(u).trim();
-  if (!s) return '/images/no-image.png';
+  if (!s) return '/images/no-image.svg';
 
   // Bỏ origin localhost (dev)
   if (/^https?:\/\/localhost(:\d+)?/i.test(s)) {
-    s = s.replace(/^https?:\/\/localhost(:\d+)?/i, '') || '/images/no-image.png';
+    s = s.replace(/^https?:\/\/localhost(:\d+)?/i, '') || '/images/no-image.svg';
   }
 
   // Ảnh ngoài (CDN, YouTube, …)

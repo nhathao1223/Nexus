@@ -13,7 +13,7 @@ document.addEventListener(
         t.classList.contains('main-product-img'))
     ) {
       t.onerror = null;
-      t.src = '/images/no-image.png';
+      t.src = '/images/no-image.svg';
     }
   },
   true
