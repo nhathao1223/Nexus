@@ -391,9 +391,15 @@ exports.getCheckout = (req, res) => {
 
 exports.postCheckout = async (req, res) => {
   try {
+    console.log('=== CHECKOUT DEBUG ===');
+    console.log('Request body:', req.body);
+    console.log('Session cart:', req.session.cart);
+    console.log('User:', req.user);
+    
     const cart = req.session.cart || [];
     
     if (cart.length === 0) {
+      console.log('Cart is empty, redirecting to /cart');
       return res.redirect('/cart');
     }
 
