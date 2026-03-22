@@ -3,6 +3,11 @@ const router = express.Router();
 const crypto = require('crypto');
 const Order = require('../models/Order');
 
+// Test route
+router.get('/test', (req, res) => {
+  res.json({ message: 'Payment routes working!', timestamp: new Date() });
+});
+
 // MoMo IPN callback handler
 router.post('/momo/ipn', async (req, res) => {
   try {
