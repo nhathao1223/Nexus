@@ -116,6 +116,22 @@
               <i class="bi bi-credit-card me-2"></i>Chuyển khoản ngân hàng
             <% } else if (order.paymentMethod === 'momo') { %>
               <i class="bi bi-phone me-2"></i>Ví MoMo
+              <% if (order.paymentStatus) { %>
+                <br>
+                <small class="text-muted">
+                  Trạng thái: 
+                  <% if (order.paymentStatus === 'paid') { %>
+                    <span class="badge bg-success">Đã thanh toán</span>
+                  <% } else if (order.paymentStatus === 'failed') { %>
+                    <span class="badge bg-danger">Thanh toán thất bại</span>
+                  <% } else { %>
+                    <span class="badge bg-warning">Chờ thanh toán</span>
+                  <% } %>
+                </small>
+                <% if (order.momoTransactionId) { %>
+                  <br><small class="text-muted">Mã giao dịch: <%= order.momoTransactionId %></small>
+                <% } %>
+              <% } %>
             <% } %>
           </div>
         </div>

@@ -434,6 +434,7 @@ exports.postCheckout = async (req, res) => {
 
     if (paymentMethod === 'momo') {
       try {
+        console.log('Creating MoMo payment for order:', order._id);
         const momoResponse = await createMomoPayment({
           amount: total,
           orderId: order._id.toString(),
@@ -441,12 +442,16 @@ exports.postCheckout = async (req, res) => {
           extraData: order._id.toString()
         });
 
+        console.log('MoMo response:', momoResponse);
+
         if (momoResponse && momoResponse.payUrl) {
           // Xóa giỏ hàng sau khi tạo đơn và có link thanh toán
           req.session.cart = [];
+          console.log('Redirecting to MoMo payment URL:', momoResponse.payUrl);
           return res.redirect(momoResponse.payUrl);
         }
 
+        console.error('MoMo payment creation failed:', momoResponse);
         req.flash('error_msg', 'Không tạo được thanh toán MoMo. Vui lòng thử lại hoặc chọn phương thức khác.');
         return res.redirect('/checkout');
       } catch (err) {
@@ -571,5 +576,117 @@ exports.changePassword = async (req, res) => {
     console.error(error);
     req.flash('error_msg', 'Có lỗi xảy ra');
     res.redirect('/profile');
+  }
+};
+// MoMo Payment Handlers
+exports.handleMomoIPN = async (req, res) => {
+  try {
+    console.log('MoMo IPN received:', req.body);
+    
+    const { 
+      partnerCode, 
+      orderId, 
+      requestId, 
+      amount, 
+      orderInfo, 
+      orderType, 
+      transId, 
+      resultCode, 
+      message, 
+      payType, 
+      responseTime, 
+      extraData, 
+      signature 
+    } = req.body;
+
+    // Verify signature (optional but recommended)
+    const crypto = require('crypto');
+    const secretKey = process.env.MOMO_SECRET_KEY;
+    
+    const rawSignature = 
+      `accessKey=${process.env.MOMO_ACCESS_KEY}` +
+      `&amount=${amount}` +
+      `&extraData=${extraData}` +
+      `&message=${message}` +
+      `&orderId=${orderId}` +
+      `&orderInfo=${orderInfo}` +
+      `&orderType=${orderType}` +
+      `&partnerCode=${partnerCode}` +
+      `&payType=${payType}` +
+      `&requestId=${requestId}` +
+      `&responseTime=${responseTime}` +
+      `&resultCode=${resultCode}` +
+      `&transId=${transId}`;
+
+    const expectedSignature = crypto
+      .createHmac('sha256', secretKey)
+      .update(rawSignature)
+      .digest('hex');
+
+    if (signature !== expectedSignature) {
+      console.error('MoMo IPN signature mismatch');
+      return res.status(400).json({ message: 'Invalid signature' });
+    }
+
+    // Update order status based on result code
+    const order = await Order.findById(orderId);
+    if (order) {
+      if (resultCode === 0) {
+        // Payment successful
+        order.status = 'confirmed';
+        order.paymentStatus = 'paid';
+        order.momoTransactionId = transId;
+      } else {
+        // Payment failed
+        order.status = 'cancelled';
+        order.paymentStatus = 'failed';
+      }
+      
+      order.momoResultCode = resultCode;
+      order.momoMessage = message;
+      await order.save();
+      
+      console.log(`Order ${orderId} updated with MoMo result: ${resultCode}`);
+    }
+
+    // Always return success to MoMo
+    res.status(200).json({ message: 'IPN processed successfully' });
+  } catch (error) {
+    console.error('MoMo IPN error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+exports.handleMomoReturn = async (req, res) => {
+  try {
+    console.log('MoMo return URL accessed:', req.query);
+    
+    const { partnerCode, orderId, resultCode, message } = req.query;
+
+    if (!orderId) {
+      req.flash('error_msg', 'Không tìm thấy thông tin đơn hàng');
+      return res.redirect('/orders');
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      req.flash('error_msg', 'Không tìm thấy đơn hàng');
+      return res.redirect('/orders');
+    }
+
+    if (resultCode === '0') {
+      // Payment successful
+      req.flash('success_msg', 'Thanh toán MoMo thành công! Đơn hàng của bạn đang được xử lý.');
+    } else {
+      // Payment failed or cancelled
+      req.flash('error_msg', `Thanh toán MoMo không thành công: ${message || 'Vui lòng thử lại'}`);
+    }
+
+    // Redirect to order detail page
+    res.redirect(`/orders/${orderId}`);
+  } catch (error) {
+    console.error('MoMo return URL error:', error);
+    req.flash('error_msg', 'Có lỗi xảy ra khi xử lý kết quả thanh toán');
+    res.redirect('/orders');
   }
 };

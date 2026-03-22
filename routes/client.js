@@ -500,6 +500,50 @@ router.post('/profile', requireAuth, validateProfile, handleValidationErrors, as
  */
 router.post('/profile/change-password', requireAuth, validateChangePassword, handleValidationErrors, asyncHandler(clientController.changePassword));
 
+// MoMo Payment Routes
+/**
+ * @swagger
+ * /payment/momo/ipn:
+ *   post:
+ *     summary: MoMo IPN (Instant Payment Notification) callback
+ *     tags: [Payment]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: IPN processed successfully
+ */
+router.post('/payment/momo/ipn', asyncHandler(clientController.handleMomoIPN));
+
+/**
+ * @swagger
+ * /payment/momo/return:
+ *   get:
+ *     summary: MoMo payment return URL
+ *     tags: [Payment]
+ *     parameters:
+ *       - in: query
+ *         name: partnerCode
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: orderId
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: resultCode
+ *         schema:
+ *           type: string
+ *     responses:
+ *       302:
+ *         description: Redirect to order page
+ */
+router.get('/payment/momo/return', asyncHandler(clientController.handleMomoReturn));
+
 module.exports = router;
 
 /**

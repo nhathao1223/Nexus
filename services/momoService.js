@@ -5,7 +5,7 @@ const partnerCode = process.env.MOMO_PARTNER_CODE;
 const accessKey = process.env.MOMO_ACCESS_KEY;
 const secretKey = process.env.MOMO_SECRET_KEY;
 const redirectUrl =
-  process.env.MOMO_REDIRECT_URL || 'http://localhost:3000/orders';
+  process.env.MOMO_REDIRECT_URL || 'http://localhost:3000/payment/momo/return';
 const ipnUrl =
   process.env.MOMO_IPN_URL || 'http://localhost:3000/payment/momo/ipn';
 
