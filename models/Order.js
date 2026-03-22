@@ -47,6 +47,15 @@ const orderSchema = new mongoose.Schema({
     enum: ['cod', 'bank_transfer', 'momo'],
     default: 'cod'
   },
+  paymentStatus: {
+    type: String,
+    enum: ['pending', 'paid', 'failed', 'refunded'],
+    default: 'pending'
+  },
+  transactionId: {
+    type: String,
+    default: null
+  },
   note: String
 }, {
   timestamps: true

@@ -73,6 +73,7 @@ app.use('/', require('./routes/client'));
 app.use('/admin', require('./routes/admin'));
 app.use('/admin/flashsale', require('./routes/flashsale'));
 app.use('/api/address', require('./routes/address'));
+app.use('/payment', require('./routes/payment'));
 
 // Error logging middleware
 app.use(errorLogger);

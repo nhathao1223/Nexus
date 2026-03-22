@@ -434,6 +434,7 @@ exports.postCheckout = async (req, res) => {
 
     if (paymentMethod === 'momo') {
       try {
+        console.log('Creating MoMo payment for order:', order._id.toString());
         const momoResponse = await createMomoPayment({
           amount: total,
           orderId: order._id.toString(),
@@ -441,12 +442,16 @@ exports.postCheckout = async (req, res) => {
           extraData: order._id.toString()
         });
 
+        console.log('MoMo response:', momoResponse);
+
         if (momoResponse && momoResponse.payUrl) {
           // Xóa giỏ hàng sau khi tạo đơn và có link thanh toán
           req.session.cart = [];
+          console.log('Redirecting to MoMo payUrl:', momoResponse.payUrl);
           return res.redirect(momoResponse.payUrl);
         }
 
+        console.error('MoMo response missing payUrl:', momoResponse);
         req.flash('error_msg', 'Không tạo được thanh toán MoMo. Vui lòng thử lại hoặc chọn phương thức khác.');
         return res.redirect('/checkout');
       } catch (err) {
