@@ -352,7 +352,7 @@
               <div class="flashsale-item card">
                 <div class="flashsale-img-container">
                   <a href="/products/<%= product.slug %>" class="text-decoration-none">
-                    <img src="<%= product.thumbnail || '/images/no-image.png' %>" class="flashsale-product-image" alt="<%= product.title %>">
+                    <img src="<%= publicUrl(product.thumbnail) %>" class="flashsale-product-image" alt="<%= product.title %>">
                     <% if (product.discountPercentage > 0) { %>
                       <span class="discount-badge">
                         Giảm <%= product.discountPercentage %>%
@@ -515,7 +515,7 @@
                 <div class="card h-100 product-card">
                   <div class="position-relative img-zoom">
                     <a href="/products/<%= product.slug %>" class="text-decoration-none">
-                      <img src="<%= product.thumbnail || '/images/no-image.png' %>" class="product-image" alt="<%= product.title %>">
+                      <img src="<%= publicUrl(product.thumbnail) %>" class="product-image" alt="<%= product.title %>">
                       <% if (product.discountPercentage > 0) { %>
                         <span class="position-absolute top-0 start-0 m-2 badge bg-danger discount-badge">
                           Giảm <%= product.discountPercentage %>%

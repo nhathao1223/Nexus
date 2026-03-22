@@ -36,7 +36,7 @@
               
               <!-- Main Image -->
               <img id="mainImage" 
-                   src="<%= product.thumbnail || '/images/no-image.png' %>" 
+                   src="<%= publicUrl(product.thumbnail) %>" 
                    class="main-product-img active" 
                    alt="<%= product.title %>"
                    onload="hideGalleryLoading()">
@@ -76,11 +76,11 @@
               <!-- Main thumbnail -->
               <div class="thumbnail-item active" 
                    data-type="image" 
-                   data-src="<%= product.thumbnail || '/images/no-image.png' %>"
+                   data-src="<%= publicUrl(product.thumbnail) %>"
                    data-index="0"
                    data-media-type="image"
                    title="Ảnh chính: <%= product.title %>">>
-                <img src="<%= product.thumbnail || '/images/no-image.png' %>" alt="<%= product.title %>">
+                <img src="<%= publicUrl(product.thumbnail) %>" alt="<%= product.title %>">
                 <div class="thumbnail-overlay"></div>
                 <div class="primary-indicator">
                   <i class="bi bi-star-fill"></i>
@@ -92,11 +92,11 @@
                 <% product.images.slice(0, 6).forEach(function(img, index) { %>
                   <div class="thumbnail-item" 
                        data-type="image" 
-                       data-src="<%= img %>"
+                       data-src="<%= publicUrl(img) %>"
                        data-index="<%= index + 1 %>"
                        data-media-type="image"
                        title="Ảnh <%= index + 2 %>: <%= product.title %>">>
-                    <img src="<%= img %>" alt="<%= product.title %>">
+                    <img src="<%= publicUrl(img) %>" alt="<%= product.title %>">
                     <div class="thumbnail-overlay"></div>
                   </div>
                 <% }); %>
@@ -510,7 +510,7 @@
               <a href="/products/<%= prod.slug %>" class="text-decoration-none">
                 <div class="related-product-card">
                   <div class="related-product-image">
-                    <img src="<%= prod.thumbnail || '/images/no-image.png' %>" alt="<%= prod.title %>">
+                    <img src="<%= publicUrl(prod.thumbnail) %>" alt="<%= prod.title %>">
                   </div>
                   <div class="related-product-info">
                     <h6 class="related-product-name"><%= prod.title %></h6>

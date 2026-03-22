@@ -146,7 +146,7 @@
                 <% const itemPrice = item.price * (1 - item.discountPercentage/100); %>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                   <div class="d-flex align-items-center">
-                    <img src="<%= item.thumbnail || '/images/no-image.png' %>" width="50" class="me-2 rounded">
+                    <img src="<%= publicUrl(item.thumbnail) %>" width="50" class="me-2 rounded">
                     <div>
                       <div class="fw-bold small"><%= item.title %></div>
                       <small class="text-muted">Số lượng: x<%= item.quantity %></small>
@@ -214,8 +214,51 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/main.js"></script>
   <script>
-    // Address API endpoints
-    const API_URL = '/api/address';
+    // Gọi trực tiếp Open API từ trình duyệt (ổn định trên Render);
+    // fallback qua backend /api/address nếu CORS / mạng lỗi.
+    const OPEN_API = 'https://provinces.open-api.vn/api';
+    const PROXY_API = '/api/address';
+
+    async function fetchProvincesList() {
+      try {
+        const r = await fetch(`${OPEN_API}/?depth=1`);
+        if (!r.ok) throw new Error('open-api provinces');
+        return await r.json();
+      } catch (e) {
+        const r = await fetch(`${PROXY_API}/provinces`);
+        const result = await r.json();
+        if (!result.success) throw new Error(result.message || 'proxy provinces');
+        return result.data;
+      }
+    }
+
+    async function fetchDistrictsList(provinceCode) {
+      try {
+        const r = await fetch(`${OPEN_API}/p/${provinceCode}?depth=2`);
+        if (!r.ok) throw new Error('open-api districts');
+        const province = await r.json();
+        return province && province.districts ? province.districts : [];
+      } catch (e) {
+        const r = await fetch(`${PROXY_API}/districts/${provinceCode}`);
+        const result = await r.json();
+        if (!result.success) throw new Error(result.message || 'proxy districts');
+        return result.data || [];
+      }
+    }
+
+    async function fetchWardsList(districtCode) {
+      try {
+        const r = await fetch(`${OPEN_API}/d/${districtCode}?depth=2`);
+        if (!r.ok) throw new Error('open-api wards');
+        const district = await r.json();
+        return district && district.wards ? district.wards : [];
+      } catch (e) {
+        const r = await fetch(`${PROXY_API}/wards/${districtCode}`);
+        const result = await r.json();
+        if (!result.success) throw new Error(result.message || 'proxy wards');
+        return result.data || [];
+      }
+    }
 
     // Load provinces on page load
     document.addEventListener('DOMContentLoaded', async () => {
@@ -225,18 +268,14 @@
     // Load provinces
     async function loadProvinces() {
       try {
-        const response = await fetch(`${API_URL}/provinces`);
-        const result = await response.json();
-        
-        if (result.success) {
-          const provinceSelect = document.getElementById('provinceCode');
-          result.data.forEach(province => {
-            const option = document.createElement('option');
-            option.value = province.code;
-            option.textContent = province.name;
-            provinceSelect.appendChild(option);
-          });
-        }
+        const list = await fetchProvincesList();
+        const provinceSelect = document.getElementById('provinceCode');
+        list.forEach(province => {
+          const option = document.createElement('option');
+          option.value = province.code;
+          option.textContent = province.name;
+          provinceSelect.appendChild(option);
+        });
       } catch (error) {
         console.error('Error loading provinces:', error);
       }
@@ -261,21 +300,17 @@
       }
 
       try {
-        const response = await fetch(`${API_URL}/districts/${provinceCode}`);
-        const result = await response.json();
-        
+        const districts = await fetchDistrictsList(provinceCode);
         const districtSelect = document.getElementById('districtCode');
         districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
         
-        if (result.success) {
-          result.data.forEach(district => {
-            const option = document.createElement('option');
-            option.value = district.code;
-            option.textContent = district.name;
-            districtSelect.appendChild(option);
-          });
-          districtSelect.disabled = false;
-        }
+        districts.forEach(district => {
+          const option = document.createElement('option');
+          option.value = district.code;
+          option.textContent = district.name;
+          districtSelect.appendChild(option);
+        });
+        districtSelect.disabled = false;
       } catch (error) {
         console.error('Error loading districts:', error);
       }
@@ -297,21 +332,17 @@
       }
 
       try {
-        const response = await fetch(`${API_URL}/wards/${districtCode}`);
-        const result = await response.json();
-        
+        const wards = await fetchWardsList(districtCode);
         const wardSelect = document.getElementById('wardCode');
         wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
         
-        if (result.success) {
-          result.data.forEach(ward => {
-            const option = document.createElement('option');
-            option.value = ward.code;
-            option.textContent = ward.name;
-            wardSelect.appendChild(option);
-          });
-          wardSelect.disabled = false;
-        }
+        wards.forEach(ward => {
+          const option = document.createElement('option');
+          option.value = ward.code;
+          option.textContent = ward.name;
+          wardSelect.appendChild(option);
+        });
+        wardSelect.disabled = false;
       } catch (error) {
         console.error('Error loading wards:', error);
       }

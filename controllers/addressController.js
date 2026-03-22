@@ -3,12 +3,33 @@ const logger = require('../config/logger');
 // API Vietnam địa chỉ
 const API_URL = 'https://provinces.open-api.vn/api';
 
+const fetchOpts = {
+  headers: {
+    Accept: 'application/json',
+    'User-Agent': 'Nexus-Ecommerce/1.0 (Render)'
+  }
+};
+
+async function fetchWithTimeout(url, ms = 20000) {
+  const controller = new AbortController();
+  const t = setTimeout(() => controller.abort(), ms);
+  try {
+    const response = await fetch(url, { ...fetchOpts, signal: controller.signal });
+    return response;
+  } finally {
+    clearTimeout(t);
+  }
+}
+
 /**
  * Get all provinces
  */
 exports.getProvinces = async (req, res) => {
   try {
-    const response = await fetch(`${API_URL}/?depth=1`);
+    const response = await fetchWithTimeout(`${API_URL}/?depth=1`);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
     const provinces = await response.json();
     
     res.json({
@@ -38,7 +59,10 @@ exports.getDistricts = async (req, res) => {
       });
     }
 
-    const response = await fetch(`${API_URL}/p/${provinceCode}?depth=2`);
+    const response = await fetchWithTimeout(`${API_URL}/p/${provinceCode}?depth=2`);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
     const province = await response.json();
     
     if (!province || !province.districts) {
@@ -75,7 +99,10 @@ exports.getWards = async (req, res) => {
       });
     }
 
-    const response = await fetch(`${API_URL}/d/${districtCode}?depth=2`);
+    const response = await fetchWithTimeout(`${API_URL}/d/${districtCode}?depth=2`);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
     const district = await response.json();
     
     if (!district || !district.wards) {

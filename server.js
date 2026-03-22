@@ -11,8 +11,13 @@ const swaggerSpec = require('./config/swagger');
 const logger = require('./config/logger');
 const { morganMiddleware, errorLogger, requestLogger } = require('./middleware/logger');
 const { sanitizeInput, rateLimitCheck, globalErrorHandler, notFoundHandler } = require('./middleware/validation');
+const publicUrl = require('./utils/publicUrl');
 
 const app = express();
+
+// Ảnh upload: production lưu /tmp/uploads (multer), dev dùng ./uploads
+const uploadStaticRoot =
+  process.env.NODE_ENV === 'production' ? '/tmp/uploads' : path.join(__dirname, 'uploads');
 
 // Database connection
 mongoose.connect(process.env.MONGODB_URI)
@@ -44,7 +49,7 @@ app.use(session({
 app.use(flash());
 app.use(methodOverride('_method'));
 app.use(express.static('public'));
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(uploadStaticRoot));
 
 // Swagger API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
@@ -59,6 +64,7 @@ app.use((req, res, next) => {
   res.locals.error_msg = req.flash('error_msg');
   res.locals.user = req.session.user || null;
   res.locals.cartCount = req.session.cart ? req.session.cart.length : 0;
+  res.locals.publicUrl = publicUrl;
   next();
 });
 
