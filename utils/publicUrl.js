@@ -14,7 +14,7 @@ function publicUrl(u) {
     s = s.replace(/^https?:\/\/localhost(:\d+)?/i, '') || '/images/no-image.svg';
   }
 
-  // Ảnh ngoài (CDN, YouTube, …)
+  // Ảnh ngoài (CDN, YouTube, Cloudinary, …)
   if (/^https?:\/\//i.test(s)) {
     return s;
   }
