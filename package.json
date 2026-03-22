@@ -8,7 +8,6 @@
     "dev": "nodemon server.js",
     "seed": "node scripts/seed.js",
     "seed:categories": "node scripts/seedCategorySpecs.js",
-    "test:momo": "node scripts/testMomoPayment.js",
     "build": "echo 'Build completed'",
     "vercel-build": "echo 'Vercel build completed'"
   },
