@@ -124,8 +124,12 @@ exports.postCreateProduct = async (req, res) => {
 
     // Process uploaded images
     const images = req.files ? req.files.map(file => {
-      // Cloudinary returns full URL, local returns filename
-      return file.path || `/uploads/products/${file.filename}`;
+      // Cloudinary returns full URL in file.path, local returns filename
+      if (file.path && file.path.startsWith('http')) {
+        return file.path; // Cloudinary URL
+      } else {
+        return `/uploads/products/${file.filename}`; // Local file
+      }
     }) : [];
     
     // Determine primary image index and thumbnail
@@ -316,8 +320,12 @@ exports.putEditProduct = async (req, res) => {
     if (req.files && req.files.length > 0) {
       // New images uploaded
       const newImages = req.files.map(file => {
-        // Cloudinary returns full URL, local returns filename
-        return file.path || `/uploads/products/${file.filename}`;
+        // Cloudinary returns full URL in file.path, local returns filename
+        if (file.path && file.path.startsWith('http')) {
+          return file.path; // Cloudinary URL
+        } else {
+          return `/uploads/products/${file.filename}`; // Local file
+        }
       });
       const newPrimaryIndex = parseInt(primaryImageIndex) || 0;
       
