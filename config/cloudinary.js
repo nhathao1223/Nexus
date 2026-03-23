@@ -1,6 +1,16 @@
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
+// Kiểm tra có đầy đủ config không
+if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+  console.warn('Cloudinary environment variables not found. Using local storage.');
+  module.exports = {
+    cloudinary: null,
+    storage: null
+  };
+  return;
+}
+
 // Cấu hình Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -19,6 +29,8 @@ const storage = new CloudinaryStorage({
     ]
   },
 });
+
+console.log('Cloudinary configured successfully');
 
 module.exports = {
   cloudinary,

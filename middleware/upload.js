@@ -2,9 +2,6 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Import Cloudinary config
-const { storage: cloudinaryStorage } = require('../config/cloudinary');
-
 // Tạo thư mục uploads nếu chưa tồn tại (chỉ cho local development)
 const uploadDir = process.env.NODE_ENV === 'production' ? '/tmp/uploads/products' : 'uploads/products';
 
@@ -23,8 +20,24 @@ const localStorage = multer.diskStorage({
   }
 });
 
-// Chọn storage dựa trên environment
-const storage = process.env.NODE_ENV === 'production' ? cloudinaryStorage : localStorage;
+// Chọn storage dựa trên environment và có Cloudinary config không
+let storage = localStorage;
+
+// Chỉ import Cloudinary nếu có đầy đủ config
+if (process.env.NODE_ENV === 'production' && 
+    process.env.CLOUDINARY_CLOUD_NAME && 
+    process.env.CLOUDINARY_API_KEY && 
+    process.env.CLOUDINARY_API_SECRET) {
+  try {
+    const { storage: cloudinaryStorage } = require('../config/cloudinary');
+    storage = cloudinaryStorage;
+    console.log('Using Cloudinary storage for production');
+  } catch (error) {
+    console.warn('Cloudinary not configured, using local storage:', error.message);
+  }
+} else {
+  console.log('Using local storage');
+}
 
 const fileFilter = (req, file, cb) => {
   const allowedTypes = /jpeg|jpg|png|gif|webp/;
