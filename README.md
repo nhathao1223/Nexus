@@ -1,80 +1,73 @@
-# Nexus - E-Commerce Website
+# Nexus - E-Commerce Platform
 
-A full-stack e-commerce web application built with Node.js, Express.js, and MongoDB. Features a complete MVC architecture with separate client and admin interfaces.
+A modern, full-stack e-commerce web application built with Node.js, Express.js, and MongoDB. Features a complete MVC architecture with separate client and admin interfaces, integrated payment gateway, and comprehensive product management system.
 
-## 🎯 Features
+## 🌟 Live Demo
 
-### Authentication & Authorization
-- Session-based authentication with secure password hashing (bcryptjs)
-- Role-based access control (Admin / User)
-- User registration and login with email validation
-- Password change functionality
-- Soft delete for user accounts
+**🔗 [Visit Nexus E-Commerce](https://nexus-t4sk.onrender.com)**
 
-### Product Management
-- Full CRUD operations for products and categories
-- Product filtering by category, price range, and brand
-- Advanced search functionality (case-insensitive)
-- Sorting by price and name
-- Pagination support (12 items per page for clients, 20 for admin)
-- Product status management (active/inactive)
-- Featured products support
-- Discount percentage support
-- Multiple image upload per product (up to 5 images, 5MB each)
-- Image format validation (JPEG, JPG, PNG, GIF, WebP)
+## ✨ Key Features
 
-### Shopping & Checkout
-- Session-based shopping cart
-- Add/remove/update cart items
-- Real-time cart count
-- Checkout workflow with shipping address
-- Order creation with status tracking
-- Support for multiple payment methods (COD, Bank Transfer)
+### 🔐 Authentication & Security
+- Session-based authentication with bcryptjs password hashing
+- Role-based access control (Admin/User)
+- Input validation and sanitization with express-validator
+- Rate limiting and XSS protection
+- Comprehensive logging system with Winston
 
-### Order Management
-- User order history with pagination
-- Order detail view with product information
-- Admin order management dashboard
-- Order status updates (pending, confirmed, shipping, delivered, cancelled)
-- Order search and filtering
+### 🛍️ E-Commerce Core
+- **Product Management**: Full CRUD with categories, filtering, search, and sorting
+- **Shopping Cart**: Session-based cart with real-time updates
+- **Order Processing**: Complete checkout workflow with status tracking
+- **Payment Integration**: MoMo Payment Gateway (UAT) with HMAC-SHA256 signature verification
+- **Flash Sales**: Time-based promotions with discount management
+- **Product Reviews**: Rating system with anti-spam measures
 
-### Admin Dashboard
-- Dashboard with key statistics:
-  - Total products
-  - Total orders
-  - Total users
-  - Total revenue (from delivered orders)
-  - Recent orders list
-- User management with status control
-- Comprehensive product management
-- Category management
-- Order management and status updates
+### 📱 User Experience
+- Responsive design with Bootstrap
+- Advanced product search and filtering
+- Pagination for optimal performance
+- Real-time cart count updates
+- Address management with Vietnam API integration
 
-### Data Management
-- Soft delete implementation for products, categories, and users
-- MongoDB with Mongoose ODM
-- Optimized database queries with proper indexing
-- Relationship management (Product → Category, Order → User, Order → Items)
-- Virtual fields for calculated values (final price with discount)
+### 🎛️ Admin Dashboard
+- Comprehensive analytics and statistics
+- Product and category management
+- Order processing and status updates
+- User management with role control
+- Revenue tracking and reporting
+
+### 🖼️ Media Management
+- Cloudinary integration for scalable image storage
+- Multiple image upload with primary image selection
+- Automatic image optimization and validation
 
 ## 🛠️ Tech Stack
 
-- **Backend**: Node.js, Express.js
-- **Database**: MongoDB, Mongoose
-- **Frontend**: EJS (Embedded JavaScript templating)
-- **Styling**: Bootstrap, Custom CSS
+### Backend
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Database**: MongoDB with Mongoose ODM
 - **Authentication**: express-session, bcryptjs
-- **File Upload**: Multer
 - **Validation**: express-validator
-- **Other**: dotenv, flash messages
+- **Logging**: Winston, Morgan
+- **File Upload**: Multer, Cloudinary
+- **Payment**: MoMo Payment API (UAT)
+- **Documentation**: Swagger/OpenAPI 3.0
 
-## 📋 Prerequisites
+### Frontend
+- **Template Engine**: EJS
+- **Styling**: Bootstrap, Custom CSS
+- **JavaScript**: Vanilla JS for interactivity
 
-- Node.js (v14 or higher)
-- MongoDB (local or cloud instance)
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js (v16 or higher)
+- MongoDB (local or cloud)
 - npm or yarn
 
-## 🚀 Installation
+### Installation
 
 1. **Clone the repository**
 ```bash
@@ -87,276 +80,210 @@ cd Nexus
 npm install
 ```
 
-3. **Configure environment variables**
+3. **Environment Setup**
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` file with your configuration:
-```
+Configure your `.env` file:
+```env
+# Server Configuration
 PORT=3000
-MONGODB_URI=mongodb://localhost:27017/nexus
-SESSION_SECRET=your_session_secret_key
 NODE_ENV=development
+
+# Database
+MONGODB_URI=mongodb://localhost:27017/nexus
+
+# Session
+SESSION_SECRET=your_super_secret_session_key
+
+# Cloudinary (Optional)
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+
+# MoMo Payment (UAT)
+MOMO_PARTNER_CODE=your_partner_code
+MOMO_ACCESS_KEY=your_access_key
+MOMO_SECRET_KEY=your_secret_key
+MOMO_REDIRECT_URL=http://localhost:3000/payment/momo/return
+MOMO_IPN_URL=http://localhost:3000/payment/momo/ipn
+
+# Logging
+LOG_LEVEL=debug
 ```
 
-4. **Start the application**
+4. **Seed Database (Optional)**
 ```bash
-npm start
+npm run seed
 ```
 
-The application will be available at `http://localhost:3000`
+5. **Start Development Server**
+```bash
+npm run dev
+```
 
-## 📁 Project Structure
+Visit `http://localhost:3000` to see the application.
+
+## 📁 Project Architecture
 
 ```
 Nexus/
-├── config/
-│   └── database.js              # MongoDB connection configuration
-├── controllers/
-│   ├── adminController.js       # Admin dashboard and management
-│   ├── authController.js        # Authentication logic
-│   ├── categoryController.js    # Category management
-│   └── clientController.js      # Client-side operations
-├── middleware/
-│   ├── auth.js                  # Authentication & authorization
-│   ├── upload.js                # File upload configuration
-│   └── validation.js            # Input validation rules
-├── models/
-│   ├── Category.js              # Category schema
-│   ├── Order.js                 # Order schema
-│   ├── Product.js               # Product schema
-│   └── User.js                  # User schema
-├── public/
-│   ├── css/                     # Stylesheets
-│   ├── js/                      # Client-side scripts
-│   └── vendor/                  # Third-party libraries
-├── routes/
-│   ├── admin.js                 # Admin routes
-│   └── client.js                # Client routes
-├── scripts/
-│   └── seed.js                  # Database seeding script
-├── uploads/
-│   └── products/                # Product image storage
-├── views/
-│   ├── admin/                   # Admin templates
-│   │   ├── categories/
-│   │   ├── orders/
-│   │   ├── products/
-│   │   ├── users/
-│   │   └── partials/
-│   └── client/                  # Client templates
-│       ├── partials/
-│       └── [various pages]
-├── server.js                    # Application entry point
-├── package.json
-└── README.md
+├── 📁 config/           # Configuration files
+│   ├── database.js      # MongoDB connection
+│   ├── logger.js        # Winston logging setup
+│   └── swagger.js       # API documentation
+├── 📁 controllers/      # Business logic
+│   ├── adminController.js
+│   ├── authController.js
+│   ├── clientController.js
+│   └── flashsaleController.js
+├── 📁 middleware/       # Custom middleware
+│   ├── auth.js          # Authentication middleware
+│   ├── logger.js        # Request logging
+│   ├── upload.js        # File upload handling
+│   └── validation.js    # Input validation & security
+├── 📁 models/           # Database schemas
+│   ├── Category.js
+│   ├── FlashSaleConfig.js
+│   ├── Order.js
+│   ├── Product.js
+│   ├── Review.js
+│   └── User.js
+├── 📁 routes/           # API routes
+│   ├── admin.js
+│   ├── client.js
+│   ├── flashsale.js
+│   └── payment.js
+├── 📁 services/         # External services
+│   └── momoService.js   # Payment integration
+├── 📁 views/            # EJS templates
+│   ├── admin/           # Admin interface
+│   └── client/          # Client interface
+├── 📁 public/           # Static assets
+├── 📁 scripts/          # Utility scripts
+└── 📁 logs/             # Application logs
 ```
 
-## 🔐 User Roles
+## 🔌 API Documentation
 
-### Admin
-- Access to admin dashboard at `/admin/dashboard`
-- Full product and category management
-- User management and status control
-- Order management and status updates
-- View dashboard statistics
+Interactive API documentation is available at `/api-docs` when running the application.
 
-### User
-- Browse products with search and filtering
-- Add products to cart
-- Checkout and place orders
-- View order history and details
-- Update profile information
-- Change password
+### Key Endpoints
 
-## 📊 Database Schemas
-
-### User
-```javascript
-{
-  fullName: String (required),
-  email: String (required, unique),
-  password: String (required, hashed),
-  role: String (enum: ['user', 'admin'], default: 'user'),
-  phone: String,
-  address: String,
-  isActive: Boolean (default: true),
-  deleted: Boolean (default: false),
-  deletedAt: Date,
-  timestamps: true
-}
-```
-
-### Product
-```javascript
-{
-  title: String (required, unique slug),
-  slug: String (required, unique),
-  description: String,
-  price: Number (required, min: 0),
-  discountPercentage: Number (0-100, default: 0),
-  stock: Number (required, min: 0),
-  category: ObjectId (ref: Category),
-  images: [String],
-  thumbnail: String,
-  status: String (enum: ['active', 'inactive'], default: 'active'),
-  featured: Boolean (default: false),
-  deleted: Boolean (default: false),
-  deletedAt: Date,
-  timestamps: true
-}
-```
-
-### Category
-```javascript
-{
-  name: String (required),
-  slug: String (required, unique),
-  description: String,
-  image: String,
-  status: String (enum: ['active', 'inactive'], default: 'active'),
-  deleted: Boolean (default: false),
-  deletedAt: Date,
-  timestamps: true
-}
-```
-
-### Order
-```javascript
-{
-  user: ObjectId (ref: User, required),
-  items: [{
-    product: ObjectId (ref: Product),
-    quantity: Number (required, min: 1),
-    price: Number (required)
-  }],
-  totalAmount: Number (required),
-  shippingAddress: {
-    fullName: String,
-    phone: String,
-    address: String,
-    city: String,
-    district: String
-  },
-  status: String (enum: ['pending', 'confirmed', 'shipping', 'delivered', 'cancelled'], default: 'pending'),
-  paymentMethod: String (enum: ['cod', 'bank_transfer'], default: 'cod'),
-  note: String,
-  timestamps: true
-}
-```
-
-## 🔗 API Endpoints
-
-### Authentication
-- `GET /register` - Registration page
-- `POST /register` - Register new user
-- `GET /login` - Login page
+#### Authentication
+- `POST /register` - User registration
 - `POST /login` - User login
 - `GET /logout` - User logout
 
-### Products (Client)
-- `GET /` - Home page with featured products
-- `GET /products` - Products list with filtering
-- `GET /products/:slug` - Product detail page
+#### Products
+- `GET /products` - List products with filtering
+- `GET /products/:slug` - Product details
+- `POST /cart/add` - Add to cart
+- `POST /checkout` - Process order
 
-### Cart
-- `GET /cart` - View shopping cart
-- `GET /cart/count` - Get cart item count (JSON)
-- `POST /cart/add` - Add product to cart (JSON)
-- `POST /cart/remove` - Remove product from cart (JSON)
-- `POST /cart/update` - Update cart item quantity (JSON)
-
-### Orders (Client)
-- `GET /checkout` - Checkout page (requires auth)
-- `POST /checkout` - Create order (requires auth)
-- `GET /orders` - User orders list (requires auth)
-- `GET /orders/:id` - Order detail (requires auth)
-
-### Profile (Client)
-- `GET /profile` - User profile page (requires auth)
-- `POST /profile` - Update profile (requires auth)
-- `POST /profile/change-password` - Change password (requires auth)
-
-### Admin - Products
-- `GET /admin/products` - Products list
-- `GET /admin/products/create` - Create product form
-- `POST /admin/products/create` - Create product
-- `GET /admin/products/:id/edit` - Edit product form
-- `PUT /admin/products/:id` - Update product
-- `PATCH /admin/products/:id/status` - Change product status
-- `DELETE /admin/products/:id` - Delete product (soft delete)
-
-### Admin - Categories
-- `GET /admin/categories` - Categories list
-- `GET /admin/categories/create` - Create category form
-- `POST /admin/categories/create` - Create category
-- `GET /admin/categories/:id/edit` - Edit category form
-- `PUT /admin/categories/:id` - Update category
-- `DELETE /admin/categories/:id` - Delete category (soft delete)
-
-### Admin - Orders
-- `GET /admin/orders` - Orders list
-- `GET /admin/orders/:id` - Order detail
+#### Admin
+- `GET /admin/dashboard` - Admin dashboard
+- `POST /admin/products` - Create product
 - `PATCH /admin/orders/:id/status` - Update order status
 
-### Admin - Users
-- `GET /admin/users` - Users list
-- `GET /admin/users/:id` - User detail
-- `PATCH /admin/users/:id/status` - Update user status
+## 🎯 User Roles & Permissions
 
-### Admin - Dashboard
-- `GET /admin/dashboard` - Dashboard with statistics
+### 👤 Customer
+- Browse and search products
+- Manage shopping cart
+- Place and track orders
+- Write product reviews
+- Update profile information
 
-## 🧪 Testing
+### 👨‍💼 Admin
+- Full dashboard access with analytics
+- Product and category management
+- Order processing and fulfillment
+- User management and role assignment
+- Flash sale configuration
 
-To seed the database with sample data:
-```bash
-node scripts/seed.js
-```
+## 💳 Payment Integration
+
+The application integrates with **MoMo Payment Gateway** (UAT environment) featuring:
+- Secure HMAC-SHA256 signature verification
+- Real-time payment processing
+- Webhook handling for payment confirmation
+- Support for multiple payment methods (MoMo, COD, Bank Transfer)
+
+## 📊 Database Schema
+
+### Core Models
+- **User**: Authentication, profile, and role management
+- **Product**: Catalog with categories, pricing, and inventory
+- **Order**: Transaction records with items and shipping
+- **Category**: Product organization and specifications
+- **Review**: Customer feedback and ratings
+- **FlashSaleConfig**: Promotional campaign management
 
 ## 🔒 Security Features
 
-- Password hashing with bcryptjs
-- Session-based authentication
-- Role-based access control
-- Input validation with express-validator
-- File upload validation (type and size)
-- Soft delete for data preservation
-- CSRF protection via session
+- **Authentication**: Secure session management with bcryptjs
+- **Authorization**: Role-based access control
+- **Input Validation**: Comprehensive sanitization and validation
+- **Rate Limiting**: Protection against abuse
+- **CSRF Protection**: Session-based security
+- **File Upload Security**: Type and size validation
+- **Logging**: Comprehensive audit trail
 
-## 📝 Environment Variables
+## 🧪 Development
 
+### Available Scripts
+```bash
+npm start          # Production server
+npm run dev        # Development with nodemon
+npm run seed       # Seed database with sample data
+npm run build      # Build for production
 ```
-PORT                 # Server port (default: 3000)
-MONGODB_URI         # MongoDB connection string
-SESSION_SECRET      # Secret key for session encryption
-NODE_ENV            # Environment (development/production)
+
+### Testing
+```bash
+# Seed sample data
+npm run seed
+
+# Test MoMo integration
+node scripts/testMomo.js
 ```
 
-## 📚 Additional Resources
+## 🚀 Deployment
 
-- [Express.js Documentation](https://expressjs.com/)
-- [MongoDB Documentation](https://docs.mongodb.com/)
-- [Mongoose Documentation](https://mongoosejs.com/)
-- [EJS Documentation](https://ejs.co/)
-
-## 👨‍💻 Author
-
-**Nhật Hào** - Backend Developer
-
-## 📄 License
-
-This project is open source and available under the MIT License.
+The application is deployed on **Render** with:
+- Automatic deployments from GitHub
+- Environment variable management
+- MongoDB Atlas integration
+- Cloudinary for media storage
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## 📞 Support
+## 📄 License
 
-For support, please open an issue on the GitHub repository.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👨‍💻 Author
+
+**Nhật Hào** - Full Stack Developer
+- GitHub: [@nhathao1223](https://github.com/nhathao1223)
+- Email: [your-email@example.com]
+
+## 🙏 Acknowledgments
+
+- Express.js team for the robust framework
+- MongoDB team for the flexible database
+- Bootstrap team for the responsive UI components
+- MoMo for payment gateway integration
+- Cloudinary for media management solutions
 
 ---
 
-**Last Updated**: February 2026
+⭐ **Star this repository if you found it helpful!**
