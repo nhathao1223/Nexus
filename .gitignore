@@ -62,3 +62,7 @@ uploads/products/*
 
 # Vercel
 .vercel
+
+# BFG cleanup artifacts
+nexus-cleanup.git/
+*.bfg-report/
