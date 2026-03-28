@@ -136,6 +136,9 @@ exports.postCreateProduct = async (req, res) => {
     const primaryIndex = parseInt(primaryImageIndex) || 0;
     const thumbnail = images[primaryIndex] || images[0] || '';
 
+    // Remove thumbnail from images array to avoid duplicate in gallery
+    const galleryImages = images.filter(img => img !== thumbnail);
+
     // Process dynamic specifications
     const processedSpecs = new Map();
     if (specifications && typeof specifications === 'object') {
@@ -177,7 +180,7 @@ exports.postCreateProduct = async (req, res) => {
       discountPercentage: discountPercentage ? parseFloat(discountPercentage) : 0,
       stock: parseInt(stock),
       category,
-      images,
+      images: galleryImages,
       thumbnail,
       primaryImageIndex: primaryIndex,
       status: status || 'active',
@@ -320,7 +323,6 @@ exports.putEditProduct = async (req, res) => {
     if (req.files && req.files.length > 0) {
       // New images uploaded
       const newImages = req.files.map(file => {
-        // Cloudinary returns full URL in file.path, local returns filename
         if (file.path && file.path.startsWith('http')) {
           return file.path; // Cloudinary URL
         } else {
@@ -328,16 +330,27 @@ exports.putEditProduct = async (req, res) => {
         }
       });
       const newPrimaryIndex = parseInt(primaryImageIndex) || 0;
-      
-      updateData.images = newImages;
-      updateData.thumbnail = newImages[newPrimaryIndex] || newImages[0];
+      const newThumbnail = newImages[newPrimaryIndex] || newImages[0];
+
+      // Remove thumbnail from images array to avoid duplicate in gallery
+      updateData.images = newImages.filter(img => img !== newThumbnail);
+      updateData.thumbnail = newThumbnail;
       updateData.primaryImageIndex = newPrimaryIndex;
     } else {
       // No new images, just update primary index for existing images
       const updatedPrimaryIndex = parseInt(currentPrimaryIndex) || 0;
-      
-      if (currentProduct.images && currentProduct.images.length > 0) {
-        updateData.thumbnail = currentProduct.images[updatedPrimaryIndex] || currentProduct.images[0];
+      const allImages = currentProduct.images || [];
+
+      // Rebuild: get thumbnail from all images (including current thumbnail)
+      const allImagesWithThumb = currentProduct.thumbnail
+        ? [currentProduct.thumbnail, ...allImages.filter(img => img !== currentProduct.thumbnail)]
+        : allImages;
+
+      const newThumbnail = allImagesWithThumb[updatedPrimaryIndex] || allImagesWithThumb[0];
+
+      if (newThumbnail) {
+        updateData.thumbnail = newThumbnail;
+        updateData.images = allImagesWithThumb.filter(img => img !== newThumbnail);
         updateData.primaryImageIndex = updatedPrimaryIndex;
       }
     }

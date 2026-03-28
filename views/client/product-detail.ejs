@@ -87,15 +87,16 @@
                 </div>
               </div>
               
-              <!-- Additional images -->
+              <!-- Additional images (exclude thumbnail to avoid duplicate) -->
               <% if (product.images && product.images.length > 0) { %>
-                <% product.images.slice(0, 6).forEach(function(img, index) { %>
+                <% const galleryImages = product.images.filter(img => publicUrl(img) !== publicUrl(product.thumbnail)); %>
+                <% galleryImages.slice(0, 6).forEach(function(img, index) { %>
                   <div class="thumbnail-item" 
                        data-type="image" 
                        data-src="<%= publicUrl(img) %>"
                        data-index="<%= index + 1 %>"
                        data-media-type="image"
-                       title="Ảnh <%= index + 2 %>: <%= product.title %>">>
+                       title="Ảnh <%= index + 2 %>: <%= product.title %>">
                     <img src="<%= publicUrl(img) %>" alt="<%= product.title %>">
                     <div class="thumbnail-overlay"></div>
                   </div>
@@ -104,12 +105,13 @@
               
               <!-- Product videos -->
               <% if (product.videos && product.videos.length > 0) { %>
+                <% const galleryImagesCount = product.images ? product.images.filter(img => publicUrl(img) !== publicUrl(product.thumbnail)).length : 0; %>
                 <% product.videos.forEach(function(video, index) { %>
                   <div class="thumbnail-item video-thumbnail" 
                        data-type="<%= video.type %>" 
                        data-src="<%= video.url %>"
                        data-video-id="<%= video.videoId || '' %>"
-                       data-index="<%= (product.images ? product.images.length : 0) + index + 1 %>"
+                       data-index="<%= galleryImagesCount + index + 1 %>"
                        data-media-type="<%= video.type %>"
                        title="<%= video.type === 'youtube' ? 'YouTube' : 'Video MP4' %>: <%= video.title || 'Video ' + (index + 1) %>"></div>>
                     <img src="<%= video.thumbnail %>" alt="Video <%= index + 1 %>">
