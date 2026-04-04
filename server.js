@@ -68,6 +68,18 @@ app.use((req, res, next) => {
   next();
 });
 
+// Health check
+app.get('/api/health', (req, res) => {
+  const dbState = mongoose.connection.readyState;
+  const dbStatus = ['disconnected', 'connected', 'connecting', 'disconnecting'][dbState] || 'unknown';
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    database: dbStatus
+  });
+});
+
 // Routes
 app.use('/', require('./routes/client'));
 app.use('/admin', require('./routes/admin'));

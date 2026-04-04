@@ -247,8 +247,12 @@ exports.globalErrorHandler = (err, req, res, next) => {
     user: req.session?.user?.email
   });
 
-  // For API requests
-  if (req.accepts('json')) {
+  // Only return JSON for explicit API requests
+  const isApiRequest = req.path.startsWith('/api/') || 
+    (req.xhr) || 
+    (req.headers['content-type'] === 'application/json' && req.method !== 'GET');
+
+  if (isApiRequest) {
     return res.status(status).json({
       success: false,
       message,
@@ -276,7 +280,12 @@ exports.asyncHandler = (fn) => (req, res, next) => {
 exports.notFoundHandler = (req, res) => {
   logger.warn(`404 Not Found: ${req.method} ${req.url}`);
   
-  if (req.accepts('json')) {
+  // Only return JSON for explicit API requests (not browser navigation)
+  const isApiRequest = req.path.startsWith('/api/') || 
+    (req.xhr) || 
+    (req.headers['content-type'] === 'application/json' && req.method !== 'GET');
+
+  if (isApiRequest) {
     return res.status(404).json({
       success: false,
       message: 'Resource not found'
